@@ -164,8 +164,10 @@ const Board = ({ title, loggedIn }) => {
 
   const test = (e) => {
     // console.log(`< page:${page} / total:${totalPage}`);
+
     const pNum = e.target.innerText;
     const cName = e.target.className;
+
     if (pNum === '') return;
     if (cName.includes('prev')) {
       if (page[0] !== 1) {
@@ -176,7 +178,7 @@ const Board = ({ title, loggedIn }) => {
     }
     if (cName.includes('next')) {
       // 수정 5인데 2칸으로 넘어감
-      if (page[page.length - 1] > totalPage) return;
+      if (page[page.length - 1] >= totalPage) return;
       setPage(page.map((num) => num + 5));
       fetchPosts(page[0] + 5);
       return;
@@ -197,6 +199,7 @@ const Board = ({ title, loggedIn }) => {
       fetchPosts(totalPage);
       return;
     }
+
     fetchPosts(pNum);
   };
 

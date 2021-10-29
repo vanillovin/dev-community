@@ -27,9 +27,6 @@ const Router = () => {
           <Route exact path="/board/free" component={Free} />
           <Route exact path="/write" component={Editor} />
           <Route exact path="/board/:type/:id" component={Detail} />
-
-          <Route exact path="/test1" component={Editor} />
-          <Route exact path="/test2" component={BoardTest} />
           <Redirect from="*" to="/" />
         </Switch>
       </>

@@ -122,7 +122,8 @@ const Signup = () => {
       .signup(body)
       .then((res) => {
         console.log('signup res', res);
-        // window.location.href = '/login';
+        alert('가입이 완료됐습니다.');
+        window.location.href = '/login';
       })
       .catch((err) => {
         console.log('signup err', err || err.response.data);
@@ -150,7 +151,6 @@ const Signup = () => {
       checkAge() === true &&
       checkPW() === true
     ) {
-      alert('가입이 완료됐습니다.');
       fetchSignUp();
     } else {
       alert('모두 입력해 주세요.');

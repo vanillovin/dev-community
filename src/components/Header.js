@@ -176,22 +176,6 @@ const Header = () => {
             <Text>자유게시판</Text>
           </SLink>
         </Item>
-        <Item>
-          <SLink to="/test1">
-            <Icon>
-              <AiOutlineQuestion />
-            </Icon>
-            <Text>TEditor</Text>
-          </SLink>
-        </Item>
-        <Item>
-          <SLink to="/test2">
-            <Icon>
-              <AiOutlineQuestion />
-            </Icon>
-            <Text>TBoard</Text>
-          </SLink>
-        </Item>
       </List>
     </HeaderContainer>
   );

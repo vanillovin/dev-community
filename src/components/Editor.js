@@ -97,8 +97,14 @@ const Editor = () => {
     ok &&
       boardApi
         .sendPost(type, data, t)
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err.response.data));
+        .then((res) => {
+          console.log('send pos res', res);
+          const id = res.data.id;
+          history.push(`/board/${type}/${id}`);
+        })
+        .catch((err) => {
+          console.log('send post err', err || err.response.data);
+        });
   };
 
   const cancelWrite = () => {
