@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Redirect, useHistory } from 'react-router';
+import { Redirect, useHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
 import { useT, useUser } from '../context';
 import { boardApi } from '../api';
@@ -54,17 +54,29 @@ const Button = styled.button`
   transition: all 0.1s linear;
 `;
 
-const Editor = () => {
+const Write = ({
+  match,
+  location: {
+    state: { type: bType },
+  },
+}) => {
+  console.log(match, bType);
+
   const t = useT();
   const history = useHistory();
   const loggedIn = Boolean(useUser());
 
   const [state, setState] = useState({
-    type: '',
+    type: bType,
     title: '',
     content: '',
   });
   const { type, title, content } = state;
+
+  let typeText;
+  if (type === 'qna') typeText = 'Q&A';
+  if (type === 'tech') typeText = 'Tech';
+  if (type === 'free') typeText = 'Free';
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -83,9 +95,9 @@ const Editor = () => {
     } else if (title.trim() === '' || title.trim().length < 2) {
       alert('제목은 2자 이상 입력해 주세요');
       return;
-    } else if (content.trim().length < 6) {
+    } else if (content.trim().length < 4) {
       // byte
-      alert('내용은 6자 이상 입력해 주세요');
+      alert('내용은 4자 이상 입력해 주세요');
       return;
     }
 
@@ -118,12 +130,12 @@ const Editor = () => {
         <EditorContainer>
           <Title>새 글 쓰기</Title>
           <Select name="type" required onChange={onChange}>
-            <option value="" defaultChecked>
-              게시판 선택
+            <option value={type} defaultChecked>
+              {typeText || '게시판 선택'}
             </option>
             <option value="qna">QnA</option>
             <option value="tech">Tech</option>
-            <option value="free">Free</option>
+            <option value="free">자유게시판</option>
           </Select>
           <TitleInput
             placeholder="제목을 입력해 주세요"
@@ -156,4 +168,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default withRouter(Write);

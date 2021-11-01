@@ -15,8 +15,37 @@ const api = axios.create({
 });
 
 export const boardApi = {
+  getPost: (id) => api.get(`boards/${id}`),
+  getPosts: (page, type) => api.get(`boards?page=${page}&type=${type}`),
   sendPost: (type, post, t) =>
     api.post(`boards?type=${type}`, post, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  deletePost: (id, t) =>
+    api.delete(`boards/${id}`, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  fixPost: (id, post, t) =>
+    api.put(`boards/${id}`, post, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  // likePost: (id, t) =>
+  //   api.put(`boards/${id}/likes`, null, {
+  //     headers: {
+  //       'X-AUTH-TOKEN': t,
+  //     },
+  //   }),
+};
+
+export const commentApi = {
+  fixComment: (pId, cId, comment, t) =>
+    api.put(`boards/${pId}/comments/${cId}`, comment, {
       headers: {
         'X-AUTH-TOKEN': t,
       },
@@ -27,12 +56,24 @@ export const boardApi = {
         'X-AUTH-TOKEN': t,
       },
     }),
-  getPost: (id) => api.get(`boards/${id}`),
-  getPosts: (page, type) => api.get(`boards?page=${page}&type=${type}`),
+  deleteComment: (pId, cId, t) =>
+    api.delete(`boards/${pId}/comments/${cId}`, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  // likeComment: (pId, cId, t) =>
+  //   api.put(`boards/${pId}/comments/${cId}/likes`, {
+  //     headers: {
+  //       'X-AUTH-TOKEN': t,
+  //     },
+  //   }),
 };
 
 export const memberApi = {
-  user: (id) => api.get(`members/${id}`),
+  user: (uid) => api.get(`members/${uid}`),
   login: (user) => api.post('members/login', user),
   signup: (user) => api.post('members', user),
+  getUserPosts: (uid) => api.get(`members/${uid}/boards`),
+  getUserComments: (uid) => api.get(`members/${uid}/comments`),
 };

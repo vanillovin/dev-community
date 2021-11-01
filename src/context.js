@@ -15,12 +15,12 @@ export function UserProvider({ children }) {
   const getUser = async () => {
     if (!userLS) return;
     try {
-      const response = await memberApi.user(userLS.memberId);
+      const { data } = await memberApi.user(userLS.memberId);
       setState({
         ...state,
         loading: false,
         t: userLS.token,
-        user: response.data,
+        user: { id: userLS.memberId, data },
         error: null,
       });
     } catch (err) {

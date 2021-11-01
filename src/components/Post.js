@@ -1,20 +1,21 @@
 import React from 'react';
+import { AiOutlineLike, AiOutlineComment } from 'react-icons/ai';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
 const PostContainer = styled.div`
   width: 100%;
   height: 65px;
+  padding: 6px;
   display: flex;
   align-items: center;
-  padding: 6px;
   border-bottom: 1px solid lightgray;
   border-top: ${(props) => props.first && '1px solid lightgray'};
 `;
 const PostLeft = styled.div`
   /* border: 1px solid lightgray; */
-  padding-right: 40px;
-  width: 75%;
+  padding-right: 25px;
+  width: 65%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -22,13 +23,22 @@ const PostLeft = styled.div`
 `;
 const PostRight = styled.div`
   /* border: 1px solid lightgray; */
-  width: 25%;
+  width: 35%;
   height: 100%;
-  /* padding-left: 10px; */
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
+`;
+const Like = styled.div`
+  /* border: 1px solid lightgray; */
+  color: gray;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-right: 25px;
+  span {
+    margin-left: 6px;
+  }
 `;
 const Title = styled.h1`
   color: #748ffc;
@@ -41,11 +51,18 @@ const Title = styled.h1`
 `;
 
 const Post = ({ post, type, fci }) => {
-  // console.log('Post', post);
+  // console.log('Post Component', post, type);
   const history = useHistory();
 
-  const detailPost = (id) => {
-    history.push(`/board/${type}/${id}`);
+  const detailPost = () => {
+    // history.push({
+    //   pathname: `/board/${type}/${post.id}`,
+    //   state: {
+    //     type,
+    //     id: post.id,
+    //   },
+    // });
+    history.push(`/board/${type}/${post.id}`);
   };
 
   return (
@@ -55,13 +72,23 @@ const Post = ({ post, type, fci }) => {
         <div style={{ fontSize: 12, marginBottom: 8, color: 'gray' }}>
           #{post.id}
         </div>
-        <Title onClick={() => detailPost(post.id)}>{post.title}</Title>
+        <Title onClick={detailPost}>{post.title}</Title>
       </PostLeft>
       <PostRight>
-        <div style={{ fontSize: 13, marginBottom: 5 }}>{post.author}</div>
-        <div style={{ fontSize: 11, color: 'gray' }}>{`${
-          post.createdDate.split('T')[0]
-        } ${post.createdDate.split('T')[1].substring(0, 8)}`}</div>
+        <Like>
+          <AiOutlineComment />
+          <span>{post.comments}</span>
+        </Like>
+        <Like>
+          <AiOutlineLike />
+          <span>{post.likes}</span>
+        </Like>
+        <div>
+          <div style={{ fontSize: 13, marginBottom: 5 }}>{post.author}</div>
+          <div style={{ fontSize: 11, color: 'gray' }}>{`${
+            post.createdDate.split('T')[0]
+          } ${post.createdDate.split('T')[1].substring(0, 8)}`}</div>
+        </div>
       </PostRight>
     </PostContainer>
   );

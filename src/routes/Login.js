@@ -18,9 +18,8 @@ const LoginForm = styled.form`
 `;
 const Input = styled.input`
   padding: 10px;
-  outline: none;
   margin-bottom: 6px;
-  /* border-radius: 2px; */
+  border-radius: 2px;
   border: 1px solid #e9ecef;
 `;
 const Button = styled.button`
@@ -28,7 +27,7 @@ const Button = styled.button`
   height: 40px;
   cursor: pointer;
   margin-top: 10px;
-  /* border-radius: 2px; */
+  border-radius: 2px;
   background-color: #bac8ff;
   &:hover {
     background-color: #91a7ff;
@@ -61,12 +60,27 @@ const Login = () => {
     memberApi
       .login({ loginId, password })
       .then((res) => {
-        console.log('login res', res);
+        console.log('login res', res, res.status);
         localStorage.setItem('user', JSON.stringify(res.data));
         window.location.href = '/';
       })
       .catch((err) => {
-        console.log('login err', err || err.response.data);
+        console.log('login err', err, err.response.status);
+        // const errCode = err.response.statue;
+        switch (err.response.status) {
+          case 400:
+            alert('로그인 실패 or 잘못된 요청 or 검증 실패');
+            return;
+          case 401:
+            alert('Unauthorized');
+            return;
+          case 403:
+            alert('Forbidden');
+            return;
+          case 404:
+            alert('Not Found');
+            return;
+        }
       });
   };
 

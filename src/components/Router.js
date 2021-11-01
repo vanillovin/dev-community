@@ -8,9 +8,9 @@ import QnA from '../routes/QnA';
 import Tech from '../routes/Tech';
 import Free from '../routes/Free';
 import Profile from '../routes/Profile';
-import Editor from './Editor';
+import Write from '../routes/Write';
+import Editor from '../routes/Editor';
 import Detail from '../routes/Detail';
-import BoardTest from './BoardTest';
 
 const Router = () => {
   return (
@@ -25,7 +25,8 @@ const Router = () => {
           <Route exact path="/board/qna" component={QnA} />
           <Route exact path="/board/tech" component={Tech} />
           <Route exact path="/board/free" component={Free} />
-          <Route exact path="/write" component={Editor} />
+          <Route exact path="/write" component={Write} />
+          <Route exact path="/edit" component={Editor} />
           <Route exact path="/board/:type/:id" component={Detail} />
           <Redirect from="*" to="/" />
         </Switch>

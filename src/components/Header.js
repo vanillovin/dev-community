@@ -110,7 +110,7 @@ const Text = styled.div`
 const Header = () => {
   const history = useHistory();
   const user = useUser();
-  console.log('Header', user);
+  // console.log('Header', user);
 
   const logout = () => {
     localStorage.removeItem('user');
@@ -128,10 +128,18 @@ const Header = () => {
         {user ? (
           <UserContainer>
             <Link to="/profile">
-              <div>{user.name}님</div>
+              <div>{user.data.name}님</div>
             </Link>
             <ButtonContainer>
-              <button className="btn" onClick={() => history.push('/write')}>
+              <button
+                className="btn"
+                onClick={() =>
+                  history.push({
+                    pathname: '/write',
+                    state: { type: '' },
+                  })
+                }
+              >
                 글쓰기
               </button>
               <button className="btn" onClick={logout}>

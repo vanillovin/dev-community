@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useHistory } from 'react-router';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Post from './Post';
@@ -77,6 +77,7 @@ const Button = styled.button`
   width: 80px;
   height: 100%;
   cursor: pointer;
+  border-radius: 2px;
   background-color: #dbe4ff;
   &:hover {
     background-color: #bac8ff;
@@ -87,13 +88,13 @@ const Button = styled.button`
   transition: all 0.1s linear;
 `;
 const PageContainer = styled.div`
+  user-select: none;
   margin: 20px 0 60px 0;
   font-size: 14px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* border: 1px solid black; */
 `;
 const PageUL = styled.ul`
   display: flex;
@@ -112,6 +113,9 @@ const PageLI = styled.li`
     border-right: 1px solid lightgray;
   }
   background-color: ${(props) => props.active && '#bac8ff'};
+  :hover {
+    background-color: ${(props) => !props.active && '#dbe4ff'};
+  }
 `;
 
 const Board = ({ title, loggedIn }) => {
@@ -163,12 +167,11 @@ const Board = ({ title, loggedIn }) => {
   }, []);
 
   const test = (e) => {
-    // console.log(`< page:${page} / total:${totalPage}`);
-
     const pNum = e.target.innerText;
     const cName = e.target.className;
 
     if (pNum === '') return;
+    if (currentPage === +pNum) return;
     if (cName.includes('prev')) {
       if (page[0] !== 1) {
         setPage(page.map((num) => num - 5));
@@ -184,6 +187,7 @@ const Board = ({ title, loggedIn }) => {
       return;
     }
     if (cName.includes('first')) {
+      if (currentPage === 1) return;
       setPage([1, 2, 3, 4, 5]);
       fetchPosts(1);
       return;
@@ -208,7 +212,18 @@ const Board = ({ title, loggedIn }) => {
       <BoardHeader>
         <Title>{title}</Title>
         {loggedIn && (
-          <Button onClick={() => history.push('/write')}>새 글 쓰기</Button>
+          <Button
+            onClick={() =>
+              history.push({
+                pathname: '/write',
+                state: {
+                  type,
+                },
+              })
+            }
+          >
+            새 글 쓰기
+          </Button>
         )}
       </BoardHeader>
 
@@ -235,29 +250,32 @@ const Board = ({ title, loggedIn }) => {
             {posts.map((post) => (
               <Post key={post.id} post={post} type={type} fci={posts[0].id} />
             ))}
+            {totalPage > 0 ? (
+              <PageContainer>
+                <PageUL onClick={test}>
+                  <PageLI className="first">&laquo;</PageLI>
+                  <PageLI className="prev">&#60;</PageLI>
+                  {page.map((num, i) => (
+                    <PageLI key={i} active={currentPage === num}>
+                      {num > totalPage ? '' : num}
+                    </PageLI>
+                  ))}
+                  <PageLI className="next">&#62;</PageLI>
+                  <PageLI className="last">&raquo;</PageLI>
+                </PageUL>
+              </PageContainer>
+            ) : (
+              <div style={{ marginTop: 150, textAlign: 'center' }}>
+                아직 게시물이 없습니다.
+              </div>
+            )}
           </>
         ) : (
-          <>
-            <h1>views</h1>
-          </>
+          <h1>views</h1>
         )
       ) : (
-        <div>loading...</div>
+        <div style={{ marginTop: 200, textAlign: 'center' }}>loading...</div>
       )}
-
-      <PageContainer>
-        <PageUL onClick={test}>
-          <PageLI className="first">&laquo;</PageLI>
-          <PageLI className="prev">&#60;</PageLI>
-          {page.map((num, i) => (
-            <PageLI key={i} active={currentPage === num}>
-              {num > totalPage ? '' : num}
-            </PageLI>
-          ))}
-          <PageLI className="next">&#62;</PageLI>
-          <PageLI className="last">&raquo;</PageLI>
-        </PageUL>
-      </PageContainer>
     </BoardContainer>
   );
 };
