@@ -147,44 +147,26 @@ const Detail = ({ match, location }) => {
   const { loading, post, comments } = state;
   const [toggle, setToggle] = useState(false);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const { data } = await boardApi.getPost(id);
-  //     console.log('detail getPost res', data);
-  //     setState({
-  //       ...state,
-  //       loading: false,
-  //       post: data,
-  //       comments: data.comments,
-  //     });
-  //   } catch (err) {
-  //     console.log('detail getPost err', err || err.reponse.data);
-  //     setState({ ...state, error: err });
-  //     // 삭제됐거나 잘못된 요청 어디로 이동?
-  //     // window.location.href = `/board/${type}`;
-  //     // history.push(`/board/${type}`);
-  //   }
-  // };
-
   useEffect(() => {
-    // console.log('Detail useEffet mount');
-
-    boardApi
-      .getPost(id)
-      .then((res) => {
-        console.log('detail getPost res', res);
-        setState({
-          ...state,
-          loading: false,
-          post: res.data,
-          comments: res.data.comments,
+    const fetchPost = () => {
+      boardApi
+        .getPost(id)
+        .then((res) => {
+          console.log('detail getPost res', res);
+          setState({
+            ...state,
+            loading: false,
+            post: res.data,
+            comments: res.data.comments,
+          });
+        })
+        .catch((err) => {
+          console.log('detail getPost err', err);
+          setState({ ...state, error: err });
+          history.push(`/board/${type}`);
         });
-      })
-      .catch((err) => {
-        console.log('detail getPost err', err);
-        setState({ ...state, error: err });
-        history.push(`/board/${type}`);
-      });
+    };
+    fetchPost();
   }, []);
 
   const sendComments = (e) => {
@@ -202,13 +184,12 @@ const Detail = ({ match, location }) => {
       .sendComment(id, { content }, t)
       .then((res) => {
         console.log('sendComment res', comments, res.data);
-        // window.location.href = location.pathname;
-        // history.push(location.pathname);
         setState({
           ...state,
           comments: [...comments, res.data],
         });
         setContent('');
+        // window.location.href = location.pathname;
       })
       .catch((err) => {
         console.log('sendComment err', err || err.reponse.data);
@@ -229,7 +210,7 @@ const Detail = ({ match, location }) => {
     });
   };
 
-  const delPost = (pId) => {
+  const delPost = () => {
     const ok = window.confirm('삭제하시겠습니까?');
     ok &&
       boardApi
@@ -238,10 +219,6 @@ const Detail = ({ match, location }) => {
           console.log('deletePost res', res);
           history.push(`/board/${type}`);
           // window.location.href = `/board/${type}`;
-          setState({
-            ...state,
-            comments: comments.filter((cmt) => cmt.id !== pId),
-          });
         })
         .catch((err) => {
           console.log('deletePost err', err);
@@ -249,18 +226,18 @@ const Detail = ({ match, location }) => {
   };
 
   const delComment = (cId) => {
+    // console.log(id, cId, t);
     const ok = window.confirm('댓글을 삭제하시겠습니까?');
     ok &&
       commentApi
         .deleteComment(id, cId, t)
         .then((res) => {
           console.log('delComment res', res);
-          // window.location.href = location.pathname;
-          // history.push(location.pathname);
           setState({
             ...state,
             comments: comments.filter((cmt) => cmt.id !== cId),
           });
+          // window.location.href = location.pathname;
         })
         .catch((err) => {
           console.log(err);

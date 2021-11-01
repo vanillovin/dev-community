@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AiOutlineLike } from 'react-icons/ai';
+import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
 
@@ -12,39 +12,28 @@ const Container = styled.div`
 `;
 const Content = styled.div`
   width: 100%;
-  padding: 10px 0 12px 0;
+  padding: 10px 0;
   font-size: 15px;
   line-height: 1.4;
   white-space: pre-line;
   overflow-wrap: break-word;
 `;
-const LikeContainer = styled.div`
-  width: 100%;
-`;
-const LikeButton = styled.div`
-  background-color: #fff;
-  color: #495057;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  display: flex;
-  & > div {
-    font-size: 14px;
-    margin-left: 5px;
-  }
-  &:hover {
-    color: #adb5bd;
-  }
-`;
 const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
 `;
-const Button = styled(LikeButton)`
-  color: #868e96;
+const Button = styled.div`
+  display: flex;
+  align-items: center;
   font-size: 15px;
-  &:first-child {
-    margin-right: 15px;
+  color: #495057;
+  cursor: pointer;
+  &:hover {
+    color: #adb5bd;
+  }
+  color: #868e96;
+  & + & {
+    margin-left: 20px;
   }
 `;
 const EditForm = styled.div`
@@ -67,6 +56,7 @@ const EditButtonContainer = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
+  border-left: 1px solid lightgray;
 `;
 const EditButton = styled.button`
   width: 100%;
@@ -74,9 +64,10 @@ const EditButton = styled.button`
   border: none;
   cursor: pointer;
   &:first-child {
-    background: #e9ecef;
+    background: #f1f3f5;
+    border-bottom: 1px solid lightgray;
     :hover {
-      background: #ced4da;
+      background: #dee2e6;
     }
   }
   &:last-child {
@@ -88,8 +79,7 @@ const EditButton = styled.button`
 `;
 
 const Comment = ({ cmt, delComment, fixComment }) => {
-  console.log('Comment', cmt);
-
+  // console.log('Comment', cmt);
   const user = useUser();
   const [edit, setEdit] = useState(false);
   const [text, setText] = useState(cmt.content);
@@ -108,17 +98,17 @@ const Comment = ({ cmt, delComment, fixComment }) => {
               justifyContent: 'space-between',
             }}
           >
-            <div style={{ fontSize: 15, marginRight: 5 }}>
+            <div>
               <span style={{ fontSize: 14, marginRight: 5, color: '#5c7cfa' }}>
                 {cmt.author}
               </span>
-              <span style={{ color: 'gray', fontSize: 12 }}>
+              <span style={{ color: 'gray', fontSize: 10 }}>
                 {cmt.createdDate &&
                   `${cmt.createdDate.split('T')[0]} ${cmt.createdDate
                     .split('T')[1]
                     .substring(0, 8)} 작성`}
               </span>
-              <span style={{ color: 'gray', fontSize: 12 }}>
+              <span style={{ color: 'gray', fontSize: 10 }}>
                 {cmt.createdDate &&
                   cmt.lastModifiedDate &&
                   (cmt.createdDate === cmt.lastModifiedDate
@@ -139,6 +129,10 @@ const Comment = ({ cmt, delComment, fixComment }) => {
               >
                 <ButtonContainer>
                   <Button>
+                    <AiOutlineLike />
+                    <span style={{ marginLeft: 4 }}>{}</span>
+                  </Button>
+                  <Button>
                     <FiEdit onClick={() => setEdit(!edit)} />
                   </Button>
                   <Button>
@@ -151,15 +145,7 @@ const Comment = ({ cmt, delComment, fixComment }) => {
         </div>
 
         {!edit ? (
-          <>
-            <Content>{cmt.content}</Content>
-            <LikeContainer>
-              <LikeButton>
-                <AiOutlineLike />
-                <div style={{ marginLeft: 5 }}>{cmt.likes}</div>
-              </LikeButton>
-            </LikeContainer>
-          </>
+          <Content>{cmt.content}</Content>
         ) : (
           <EditForm>
             <EditInput value={text} onChange={onChagne} />
