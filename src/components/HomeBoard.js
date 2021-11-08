@@ -85,7 +85,7 @@ const HomeBoard = ({ title, type }) => {
         setState({
           ...state,
           loading: false,
-          posts: response.data.contents.slice(0, 9),
+          posts: response.data.contents.slice(0, 10),
         });
       } else {
         response = await boardApi.getPosts(1, type);
@@ -93,7 +93,7 @@ const HomeBoard = ({ title, type }) => {
         setState({
           ...state,
           loading: false,
-          posts: response.data.contents.slice(0, 9),
+          posts: response.data.contents.slice(0, 10),
         });
       }
     } catch (err) {

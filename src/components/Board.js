@@ -221,11 +221,18 @@ const Board = ({ title, loggedIn }) => {
             {posts.map((post) => (
               <Post key={post.id} post={post} type={type} fci={posts[0].id} />
             ))}
-            <PageList
-              fetchContents={fetchPosts}
-              totalPage={totalPage}
-              currentPage={currentPage}
-            />
+
+            {totalPage > 0 ? (
+              <PageList
+                fetchContents={fetchPosts}
+                totalPage={totalPage}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div style={{ marginTop: 150, textAlign: 'center' }}>
+                아직 게시물이 없습니다.
+              </div>
+            )}
           </>
         ) : (
           <h1>views</h1>

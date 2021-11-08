@@ -33,6 +33,8 @@ const PageLI = styled.li`
 `;
 
 const PageList = ({ fetchContents, totalPage, currentPage }) => {
+  console.log('PageList', totalPage, currentPage);
+
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
 
   const test = (e) => {
@@ -75,7 +77,27 @@ const PageList = ({ fetchContents, totalPage, currentPage }) => {
     fetchContents(pNum);
   };
 
-  return totalPage > 0 ? (
+  // return totalPage > 0 ? (
+  //   <PageContainer>
+  //     <PageUL onClick={test}>
+  //       <PageLI className="first">&laquo;</PageLI>
+  //       <PageLI className="prev">&#60;</PageLI>
+  //       {page.map((num, i) => (
+  //         <PageLI key={i} active={currentPage === num}>
+  //           {num > totalPage ? '' : num}
+  //         </PageLI>
+  //       ))}
+  //       <PageLI className="next">&#62;</PageLI>
+  //       <PageLI className="last">&raquo;</PageLI>
+  //     </PageUL>
+  //   </PageContainer>
+  // ) : (
+  //   <div style={{ marginTop: 150, textAlign: 'center' }}>
+  //     아직 게시물이 없습니다.
+  //   </div>
+  // );
+
+  return (
     <PageContainer>
       <PageUL onClick={test}>
         <PageLI className="first">&laquo;</PageLI>
@@ -89,10 +111,6 @@ const PageList = ({ fetchContents, totalPage, currentPage }) => {
         <PageLI className="last">&raquo;</PageLI>
       </PageUL>
     </PageContainer>
-  ) : (
-    <div style={{ marginTop: 150, textAlign: 'center' }}>
-      아직 게시물이 없습니다.
-    </div>
   );
 };
 

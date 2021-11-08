@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 const AuthContainer = styled.div`
   width: 400px;
+  display: inline-block;
 `;
 const SignupForm = styled.form`
   display: flex;
@@ -16,8 +17,8 @@ const Text = styled.h3`
 `;
 const Input = styled.input`
   padding: 10px;
-  margin-bottom: 4px;
   border-radius: 2px;
+  margin-bottom: 4px;
   border: 1px solid lightgray;
 `;
 const Select = styled.select`
@@ -45,6 +46,7 @@ const CheckText = styled.p`
   color: #5c7cfa;
   font-size: 14px;
   margin: 0 0 14px 2px;
+  margin-bottom: ${(props) => props.margin && '0px'};
 `;
 
 const AuthForm = ({ initialState, onSubmit, text }) => {
@@ -182,7 +184,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
             />
           </>
         )}
-        <CheckText>{checkID()}</CheckText>
+        <CheckText margin={text === '저장하기'}>{checkID()}</CheckText>
         <Text>비밀번호</Text>
         <Input
           required

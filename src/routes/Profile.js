@@ -25,13 +25,13 @@ const UserActivity = styled.div`
 `;
 const Activity = styled.div`
   width: 85%;
-  margin-right: 15px;
+  margin-right: 20px;
 `;
 const ToggleList = styled.ul`
   width: 15%;
 `;
 const Item = styled.li`
-  padding: 10px;
+  padding: 10px 14px;
   cursor: pointer;
   &:hover {
     background-color: #e9ecef;
@@ -84,6 +84,22 @@ const Post = styled.div`
       text-decoration: underline;
     }
   }
+`;
+const Button = styled.button`
+  margin-top: 15px;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin-right: 10px;
+  border-radius: 2px;
+  background-color: #dbe4ff;
+  &:hover {
+    background-color: #bac8ff;
+  }
+  &:active {
+    background-color: #91a7ff;
+  }
+  transition: all 0.1s linear;
 `;
 
 const Comp = ({ arr, name }) => {
@@ -147,11 +163,13 @@ const Profile = ({
     posts: {
       totalPage: null,
       currentPage: null,
+      totalElements: null,
       contents: [],
     },
     comments: {
       totalPage: null,
       currentPage: null,
+      totalElements: null,
       contents: [],
     },
   });
@@ -183,12 +201,14 @@ const Profile = ({
           ...posts,
           totalPage: p.totalPage,
           currentPage: p.currentPage,
+          totalElements: p.totalElements,
           contents: p.contents,
         },
         comments: {
           ...comments,
           totalPage: c.totalPage,
           currentPage: c.currentPage,
+          totalElements: c.totalElements,
           contents: c.contents,
         },
       });
@@ -255,21 +275,23 @@ const Profile = ({
     <Container>
       {userInfo && (
         <UserInfo>
-          <div>name: {userInfo.name}</div>
-          <div>age: {userInfo.age}</div>
-          <div>id: {userInfo.loginId}</div>
-          <div>address: {userInfo.address}</div>
+          <div>이름: {userInfo.name}</div>
+          <div>나이: {userInfo.age}</div>
+          <div>아이디: {userInfo.loginId}</div>
+          <div>주소: {userInfo.address}</div>
           {user && user.id === memberId && (
             <div>
-              <button onClick={() => onToggle('edit')}>회원정보수정</button>
+              <Button onClick={() => onToggle('edit')}>회원정보수정</Button>
+              <Button onClick={quitMember}>회원탈퇴</Button>
               {editT && (
-                <AuthForm
-                  initialState={initialState}
-                  onSubmit={onSubmit}
-                  text="저장하기"
-                />
+                <div style={{ marginTop: 15 }}>
+                  <AuthForm
+                    initialState={initialState}
+                    onSubmit={onSubmit}
+                    text="저장하기"
+                  />
+                </div>
               )}
-              <button onClick={quitMember}>회원탈퇴</button>
             </div>
           )}
         </UserInfo>
@@ -281,20 +303,24 @@ const Profile = ({
             {postT ? (
               <>
                 <Comp arr={posts.contents} name="게시물" />
-                <PageList
-                  fetchContents={fetchContents}
-                  totalPage={posts.totalPage}
-                  currentPage={posts.currentPage}
-                />
+                {posts.totalElements > 0 && (
+                  <PageList
+                    fetchContents={fetchContents}
+                    totalPage={posts.totalPage}
+                    currentPage={posts.currentPage}
+                  />
+                )}
               </>
             ) : (
               <>
                 <Comp arr={comments.contents} name="댓글" />
-                <PageList
-                  fetchContents={fetchContents}
-                  totalPage={posts.totalPage}
-                  currentPage={posts.currentPage}
-                />
+                {comments.totalElements > 0 && (
+                  <PageList
+                    fetchContents={fetchContents}
+                    totalPage={comments.totalPage}
+                    currentPage={comments.currentPage}
+                  />
+                )}
               </>
             )}
           </Activity>
