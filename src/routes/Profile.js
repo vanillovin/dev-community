@@ -5,6 +5,7 @@ import { memberApi } from '../api';
 import AuthForm from '../components/AuthForm';
 import { useT, useUser } from '../context';
 import { withRouter } from 'react-router';
+import PageList from '../components/PageList';
 
 const Container = styled.div`
   width: 750px;
@@ -21,19 +22,16 @@ const UserActivity = styled.div`
   width: 100%;
   display: flex;
   border-radius: 2px;
-  .board {
-    width: 85%;
-    margin-right: 15px;
-    border-radius: 2px;
-    background-color: #fff;
-    border: 1px solid lightgray;
-  }
+`;
+const Activity = styled.div`
+  width: 85%;
+  margin-right: 15px;
 `;
 const ToggleList = styled.ul`
   width: 15%;
 `;
 const Item = styled.li`
-  padding: 8px;
+  padding: 10px;
   cursor: pointer;
   &:hover {
     background-color: #e9ecef;
@@ -48,9 +46,13 @@ const Item = styled.li`
 const Post = styled.div`
   padding: 10px;
   display: flex;
+  background-color: white;
   flex-direction: column;
   justify-content: center;
-  border-bottom: ${(props) => (props.fci ? 'none' : '1px solid lightgray')};
+  border-top: 1px solid lightgray;
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-bottom: ${(props) => props.fci && '1px solid lightgray'};
   .bot {
     margin-top: 10px;
   }
@@ -142,8 +144,16 @@ const Profile = ({
   const [state, setState] = useState({
     loading: true,
     userInfo: {},
-    posts: [],
-    comments: [],
+    posts: {
+      totalPage: null,
+      currentPage: null,
+      contents: [],
+    },
+    comments: {
+      totalPage: null,
+      currentPage: null,
+      contents: [],
+    },
   });
   const { loading, userInfo, posts, comments } = state;
   const [toggle, setToggle] = useState({
@@ -153,23 +163,34 @@ const Profile = ({
   });
   const { editT, postT, cmtT } = toggle;
 
-  const fetchData = async () => {
+  const fetchContents = async (num) => {
     const id = memberId ? memberId : user.id;
     try {
       const { data: userInfo } = await memberApi.getUser(id);
       console.log('userGet', userInfo);
-      const {
-        data: { contents: posts },
-      } = await memberApi.getUserPosts(id, 1);
-      const {
-        data: { contents: comments },
-      } = await memberApi.getUserComments(id, 1);
+
+      const { data: p } = await memberApi.getUserPosts(id, num);
+      console.log('Profile posts', p);
+
+      const { data: c } = await memberApi.getUserComments(id, num);
+      console.log('Profile comments', c);
+
       setState({
         ...state,
         userInfo,
         loading: false,
-        posts,
-        comments,
+        posts: {
+          ...posts,
+          totalPage: p.totalPage,
+          currentPage: p.currentPage,
+          contents: p.contents,
+        },
+        comments: {
+          ...comments,
+          totalPage: c.totalPage,
+          currentPage: c.currentPage,
+          contents: c.contents,
+        },
       });
     } catch (err) {
       console.log(err);
@@ -177,7 +198,7 @@ const Profile = ({
   };
 
   useEffect(() => {
-    fetchData();
+    fetchContents(1);
   }, [memberId]);
 
   const onToggle = (txt) =>
@@ -256,13 +277,27 @@ const Profile = ({
 
       {!loading ? (
         <UserActivity>
-          <div className="board">
+          <Activity>
             {postT ? (
-              <Comp arr={posts} name="게시물" />
+              <>
+                <Comp arr={posts.contents} name="게시물" />
+                <PageList
+                  fetchContents={fetchContents}
+                  totalPage={posts.totalPage}
+                  currentPage={posts.currentPage}
+                />
+              </>
             ) : (
-              <Comp arr={comments} name="댓글" />
+              <>
+                <Comp arr={comments.contents} name="댓글" />
+                <PageList
+                  fetchContents={fetchContents}
+                  totalPage={posts.totalPage}
+                  currentPage={posts.currentPage}
+                />
+              </>
             )}
-          </div>
+          </Activity>
           <ToggleList>
             <Item active={postT} onClick={() => onToggle('posts')}>
               게시물

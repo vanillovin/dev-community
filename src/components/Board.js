@@ -4,6 +4,7 @@ import { useHistory } from 'react-router';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Post from './Post';
 import { boardApi } from '../api';
+import PageList from './PageList';
 
 const BoardContainer = styled.div`
   width: 750px;
@@ -86,36 +87,6 @@ const Button = styled.button`
     background-color: #91a7ff;
   }
   transition: all 0.1s linear;
-`;
-const PageContainer = styled.div`
-  user-select: none;
-  margin: 20px 0 60px 0;
-  font-size: 14px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const PageUL = styled.ul`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid lightgray;
-`;
-const PageLI = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  width: 28px;
-  height: 28px;
-  :not(:last-child) {
-    border-right: 1px solid lightgray;
-  }
-  background-color: ${(props) => props.active && '#bac8ff'};
-  :hover {
-    background-color: ${(props) => !props.active && '#dbe4ff'};
-  }
 `;
 
 const Board = ({ title, loggedIn }) => {
@@ -250,25 +221,11 @@ const Board = ({ title, loggedIn }) => {
             {posts.map((post) => (
               <Post key={post.id} post={post} type={type} fci={posts[0].id} />
             ))}
-            {totalPage > 0 ? (
-              <PageContainer>
-                <PageUL onClick={test}>
-                  <PageLI className="first">&laquo;</PageLI>
-                  <PageLI className="prev">&#60;</PageLI>
-                  {page.map((num, i) => (
-                    <PageLI key={i} active={currentPage === num}>
-                      {num > totalPage ? '' : num}
-                    </PageLI>
-                  ))}
-                  <PageLI className="next">&#62;</PageLI>
-                  <PageLI className="last">&raquo;</PageLI>
-                </PageUL>
-              </PageContainer>
-            ) : (
-              <div style={{ marginTop: 150, textAlign: 'center' }}>
-                아직 게시물이 없습니다.
-              </div>
-            )}
+            <PageList
+              fetchContents={fetchPosts}
+              totalPage={totalPage}
+              currentPage={currentPage}
+            />
           </>
         ) : (
           <h1>views</h1>
