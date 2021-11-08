@@ -71,9 +71,22 @@ export const commentApi = {
 };
 
 export const memberApi = {
-  user: (uid) => api.get(`members/${uid}`),
+  getUser: (uid) => api.get(`members/${uid}`),
+  fixUser: (uid, user, t) =>
+    api.put(`members/${uid}`, user, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  quitUser: (uid, t) =>
+    api.delete(`members/${uid}`, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
   login: (user) => api.post('members/login', user),
   signup: (user) => api.post('members', user),
-  getUserPosts: (uid) => api.get(`members/${uid}/boards`),
-  getUserComments: (uid) => api.get(`members/${uid}/comments`),
+  getUserPosts: (uid, page) => api.get(`members/${uid}/boards?page=${page}`),
+  getUserComments: (uid, page) =>
+    api.get(`members/${uid}/comments?page=${page}`),
 };

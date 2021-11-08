@@ -27,6 +27,15 @@ const Header = styled.div`
     margin-bottom: 8px;
     justify-content: space-between;
   }
+  .author {
+    color: #5c7cfa;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px;
+    :hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const SettingContainer = styled.div`
   display: flex;
@@ -113,6 +122,8 @@ const CommentButton = styled.button`
   width: 20%;
   height: 100%;
   border: none;
+  font-size: 14px;
+  border-left: 1px solid lightgray;
   cursor: pointer;
   background-color: #dbe4ff;
   &:hover {
@@ -294,7 +305,17 @@ const Detail = ({ match, location }) => {
             </div>
             <Title>{post.title && post.title}</Title>
             <div>
-              <span style={{ fontSize: 14, marginRight: 5, color: '#5c7cfa' }}>
+              <span
+                className="author"
+                onClick={() =>
+                  history.push({
+                    pathname: `/profile/${post.memberId}`,
+                    state: {
+                      memberId: post.memberId,
+                    },
+                  })
+                }
+              >
                 {post.author}
               </span>
               <span style={{ color: 'gray', fontSize: 11 }}>
@@ -338,7 +359,7 @@ const Detail = ({ match, location }) => {
               borderBottom: '1px solid lightgray',
             }}
           >
-            댓글 {comments.length}개
+            댓글 {comments.length}
           </div>
           {comments.map((cmt) => (
             <Comment

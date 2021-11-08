@@ -15,7 +15,8 @@ export function UserProvider({ children }) {
   const getUser = async () => {
     if (!userLS) return;
     try {
-      const { data } = await memberApi.user(userLS.memberId);
+      const { data } = await memberApi.getUser(userLS.memberId);
+      console.log('context getUser res.data', data);
       setState({
         ...state,
         loading: false,
@@ -24,7 +25,7 @@ export function UserProvider({ children }) {
         error: null,
       });
     } catch (err) {
-      console.log(err, err.response.data);
+      console.log('context getUser err', err);
       setState({
         ...state,
         loading: false,

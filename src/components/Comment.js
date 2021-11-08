@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
+import { AiOutlineLike } from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
 
@@ -130,7 +130,7 @@ const Comment = ({ cmt, delComment, fixComment }) => {
                 <ButtonContainer>
                   <Button>
                     <AiOutlineLike />
-                    <span style={{ marginLeft: 4 }}>{}</span>
+                    <span style={{ marginLeft: 4 }}>{0}</span>
                   </Button>
                   <Button>
                     <FiEdit onClick={() => setEdit(!edit)} />

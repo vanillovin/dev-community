@@ -6,6 +6,7 @@ import { useUser } from '../context';
 const Grid = styled.div`
   /* border: 1px solid black; */
   display: grid;
+  margin-top: 20px;
   grid-gap: 45px 25px;
   grid-template-columns: repeat(2, 450px);
 `;

@@ -22,9 +22,7 @@ const Logo = styled.div`
   font-weight: bold;
   margin-bottom: 30px;
 `;
-const List = styled.ul`
-  /* border: 1px solid white; */
-`;
+const List = styled.ul``;
 const Item = styled.li`
   width: 100%;
   height: 60px;
@@ -37,7 +35,14 @@ const UserContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* border: 1px solid white; */
+  .username {
+    padding: 0 10px;
+    line-height: 1.2;
+    text-align: center;
+    :hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const ButtonContainer = styled.div`
   width: 100%;
@@ -108,9 +113,8 @@ const Text = styled.div`
 `;
 
 const Header = () => {
-  const history = useHistory();
   const user = useUser();
-  // console.log('Header', user);
+  const history = useHistory();
 
   const logout = () => {
     localStorage.removeItem('user');
@@ -127,8 +131,13 @@ const Header = () => {
       <>
         {user ? (
           <UserContainer>
-            <Link to="/profile">
-              <div>{user.data.name}님</div>
+            <Link
+              to={{
+                pathname: `/profile/${user.id}`,
+                state: { memberId: user.id },
+              }}
+            >
+              <div className="username">{user.data.name}</div>
             </Link>
             <ButtonContainer>
               <button

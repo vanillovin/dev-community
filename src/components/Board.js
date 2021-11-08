@@ -137,7 +137,7 @@ const Board = ({ title, loggedIn }) => {
   });
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
   const { latest, views } = filter;
-  const { loading, totalPage, currentPage, posts, err } = state;
+  const { loading, totalPage, currentPage, posts } = state;
 
   const filterPost = (text) => {
     if (text === 'latest') setFilter({ ...filter, latest: true, views: false });
@@ -274,7 +274,7 @@ const Board = ({ title, loggedIn }) => {
           <h1>views</h1>
         )
       ) : (
-        <div style={{ marginTop: 200, textAlign: 'center' }}>loading...</div>
+        <div style={{ marginTop: 100, textAlign: 'center' }}>loading...</div>
       )}
     </BoardContainer>
   );

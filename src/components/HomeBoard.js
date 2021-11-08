@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { boardApi, memberApi } from '../api';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-import { useUser } from '../context';
+import { useT, useUser } from '../context';
 
 const Container = styled.div``;
 const Header = styled.div`
@@ -24,39 +24,48 @@ const Header = styled.div`
   }
 `;
 const PostContainer = styled.div`
+  width: 100%;
   padding: 10px;
+  display: grid;
+  grid-template-columns: 75% 25%;
   font-size: 13px;
-  display: flex;
-  align-items: center;
   background-color: #fff;
-  justify-content: space-between;
   border-bottom: ${(props) => (props.lc ? 'none' : '1px solid lightgray')};
   .post-left {
-    /* border: 1px solid black; */
-    width: 70%;
+    color: black;
+    margin: auto 0;
     cursor: pointer;
-    color: royalblue;
     line-height: 1.2;
-    :hover {
-      text-decoration: underline royalblue;
+    overflow-wrap: break-word;
+    span:first-child {
+      :hover {
+        text-decoration: underline;
+      }
+    }
+    span:last-child {
+      color: royalblue;
     }
   }
   .post-right {
-    /* border: 1px solid black; */
-    width: 30%;
+    margin: auto 0;
+    font-size: 10px;
     text-align: end;
     .username {
-      font-size: 11px;
+      cursor: pointer;
+      color: royalblue;
+      :hover {
+        text-decoration: underline;
+      }
     }
     .date {
       color: gray;
-      font-size: 10px;
       margin-left: 4px;
     }
   }
 `;
 
 const HomeBoard = ({ title, type }) => {
+  const t = useT();
   const user = useUser();
   const history = useHistory();
 
@@ -65,25 +74,22 @@ const HomeBoard = ({ title, type }) => {
     posts: [],
     err: null,
   });
-  const { loading, posts, err } = state;
+  const { loading, posts } = state;
 
   const fetchPosts = async () => {
     try {
       let response;
       if (type === 'user') {
-        response = await memberApi.getUserPosts(user.id);
-        console.log('Board getPosts res', response.data);
+        response = await memberApi.getUserPosts(user.id, 1);
+        console.log('Board getUserPosts res', type, response.data);
         setState({
           ...state,
           loading: false,
-          posts: response.data._embedded.boardRetrieveOneResponseDtoList.slice(
-            0,
-            9
-          ),
+          posts: response.data.contents.slice(0, 9),
         });
       } else {
         response = await boardApi.getPosts(1, type);
-        console.log('Board getPosts res', response.data);
+        console.log('Board getPosts res', type, response.data);
         setState({
           ...state,
           loading: false,
@@ -123,7 +129,7 @@ const HomeBoard = ({ title, type }) => {
   }
 
   const morePost = () => {
-    if (type === 'user') history.push(`profile`);
+    if (type === 'user') history.push(`profile/${user.id}`);
     else history.push(`board/${type}`);
   };
 
@@ -146,10 +152,15 @@ const HomeBoard = ({ title, type }) => {
                     onClick={() => history.push(`/board/${type}/${post.id}`)}
                     className="post-left"
                   >
-                    {`${post.title} [${post.comments}]`}
+                    <span>{post.title}</span> <span>[{post.comments}]</span>
                   </div>
                   <div className="post-right">
-                    <span className="username">{post.author}</span>
+                    <span className="username">
+                      {/* {post.author} */}
+                      {post.author.length > 6
+                        ? post.author.substring(0, 6)
+                        : post.author}
+                    </span>
                     <span className="date">
                       {displayedAt(post.createdDate)}
                     </span>

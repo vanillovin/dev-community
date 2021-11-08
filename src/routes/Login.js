@@ -80,6 +80,8 @@ const Login = () => {
           case 404:
             alert('Not Found');
             return;
+          default:
+            console.log('default');
         }
       });
   };

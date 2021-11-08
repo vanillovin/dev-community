@@ -21,13 +21,15 @@ const Router = () => {
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup} />
-          <Route exact path="/profile" component={Profile} />
+          <Route exact path="/profile/:id" component={Profile} />
           <Route exact path="/board/qna" component={QnA} />
           <Route exact path="/board/tech" component={Tech} />
           <Route exact path="/board/free" component={Free} />
           <Route exact path="/write" component={Write} />
           <Route exact path="/edit" component={Editor} />
           <Route exact path="/board/:type/:id" component={Detail} />
+
+          {/* <Route exact path="/test" component={} /> */}
           <Redirect from="*" to="/" />
         </Switch>
       </>
