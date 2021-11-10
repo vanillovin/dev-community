@@ -33,8 +33,7 @@ const PageLI = styled.li`
 `;
 
 const PageList = ({ fetchContents, totalPage, currentPage }) => {
-  console.log('PageList', totalPage, currentPage);
-
+  console.log('PageList totalP', totalPage, 'currentPage', currentPage);
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
 
   const test = (e) => {
@@ -43,6 +42,10 @@ const PageList = ({ fetchContents, totalPage, currentPage }) => {
 
     if (pNum === '') return;
     if (currentPage === +pNum) return;
+
+    // 수정
+    if (totalPage < currentPage) return;
+
     if (cName.includes('prev')) {
       if (page[0] !== 1) {
         setPage(page.map((num) => num - 5));

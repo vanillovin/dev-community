@@ -98,7 +98,7 @@ const SLink = styled(Link)`
   }
 `;
 const Icon = styled.div`
-  margin-right: 22px;
+  margin-right: 20px;
   width: 22px;
   height: 22px;
   display: flex;

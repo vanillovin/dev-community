@@ -1,10 +1,11 @@
 import React from 'react';
-import { AiOutlineLike, AiOutlineComment } from 'react-icons/ai';
+import { AiOutlineLike, AiOutlineComment, AiOutlineEye } from 'react-icons/ai';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
 const PostContainer = styled.div`
   width: 750px;
+  /* width: 800px; */
   height: 65px;
   padding: 6px;
   display: flex;
@@ -14,30 +15,44 @@ const PostContainer = styled.div`
 `;
 const PostLeft = styled.div`
   /* border: 1px solid red; */
-  padding-right: 10px;
-  width: 450px;
+  padding-right: 15px;
+  width: 65%;
+  width: 500px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  .id {
+    color: gray;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .title {
+    padding-right: 10px;
+    color: #5c7cfa;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.1;
+    word-spacing: -1px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const PostRight = styled.div`
   /* border: 1px solid red; */
-  width: 300px;
+  width: 35%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   .left {
-    /* border: 1px solid red; */
-    width: 150px;
+    /* border: 1px solid blue; */
     display: flex;
     align-items: center;
-    padding-left: 30px;
   }
   .right {
     /* border: 1px solid red; */
-    width: 150px;
     .username {
       font-size: 12px;
       letter-spacing: -1px;
@@ -45,30 +60,20 @@ const PostRight = styled.div`
     }
     .date {
       color: gray;
-      font-size: 11px;
+      font-size: 10px;
     }
   }
 `;
 const Like = styled.div`
   /* border: 1px solid red; */
-  width: 50%;
+  width: 48px;
   color: gray;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   span {
-    margin-left: 6px;
-  }
-`;
-const Title = styled.h1`
-  /* color: #748ffc; */
-  color: #5c7cfa;
-  cursor: pointer;
-  font-size: 15px;
-  line-height: 1.1;
-  word-spacing: -1px;
-  &:hover {
-    text-decoration: underline;
+    font-size: 11px;
+    margin-left: 4px;
   }
 `;
 
@@ -83,20 +88,24 @@ const Post = ({ post, type, fci }) => {
     <PostContainer first={fci === post.id}>
       {/* onClick or Link? detail link to='/id/?' */}
       <PostLeft>
-        <div style={{ fontSize: 12, marginBottom: 8, color: 'gray' }}>
-          #{post.id}
+        <div className="id">#{post.id}</div>
+        <div className="title" onClick={detailPost}>
+          {post.title}
         </div>
-        <Title onClick={detailPost}>{post.title}</Title>
       </PostLeft>
       <PostRight>
         <div className="left">
           <Like>
             <AiOutlineComment />
-            <span>{post.comments}</span>
+            <span>{post.commentSize}</span>
           </Like>
           <Like>
             <AiOutlineLike />
             <span>{post.likes}</span>
+          </Like>
+          <Like>
+            <AiOutlineEye style={{ fontSize: 15 }} />
+            <span>{post.views}</span>
           </Like>
         </div>
         <div className="right">

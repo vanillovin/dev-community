@@ -16,10 +16,10 @@ const Home = () => {
 
   return (
     <Grid>
+      <HomeBoard title="Best" type="best" />
       <HomeBoard title="Q&amp;A" type="qna" />
       <HomeBoard title="Tech" type="tech" />
       <HomeBoard title="자유게시판" type="free" />
-      {loggedIn && <HomeBoard title="내가 쓴 글" type="user" />}
     </Grid>
   );
 };

@@ -17,6 +17,7 @@ const api = axios.create({
 export const boardApi = {
   getPost: (id) => api.get(`boards/${id}`),
   getPosts: (page, type) => api.get(`boards?page=${page}&type=${type}`),
+  getBestPosts: () => api.get('boards/best-likes'),
   sendPost: (type, post, t) =>
     api.post(`boards?type=${type}`, post, {
       headers: {
@@ -35,12 +36,12 @@ export const boardApi = {
         'X-AUTH-TOKEN': t,
       },
     }),
-  // likePost: (id, t) =>
-  //   api.put(`boards/${id}/likes`, null, {
-  //     headers: {
-  //       'X-AUTH-TOKEN': t,
-  //     },
-  //   }),
+  likePost: (id, t) =>
+    api.put(`boards/${id}/likes`, null, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
 };
 
 export const commentApi = {
@@ -62,12 +63,12 @@ export const commentApi = {
         'X-AUTH-TOKEN': t,
       },
     }),
-  // likeComment: (pId, cId, t) =>
-  //   api.put(`boards/${pId}/comments/${cId}/likes`, {
-  //     headers: {
-  //       'X-AUTH-TOKEN': t,
-  //     },
-  //   }),
+  likeComment: (pId, cId, t) =>
+    api.put(`boards/${pId}/comments/${cId}/likes`, null, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
 };
 
 export const memberApi = {

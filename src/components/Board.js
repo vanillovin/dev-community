@@ -8,7 +8,7 @@ import PageList from './PageList';
 
 const BoardContainer = styled.div`
   width: 750px;
-  min-width: 750px;
+  /* min-width: 750px; */
 `;
 const BoardHeader = styled.div`
   width: 100%;

@@ -3,17 +3,27 @@ import styled from 'styled-components';
 import { AiOutlineLike } from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
+import { useHistory } from 'react-router';
 
 const Container = styled.div`
   padding: 10px;
   border-bottom: 1px solid lightgray;
   white-space: pre-line;
   overflow-wrap: break-word;
+  .author {
+    cursor: pointer;
+    color: #5c7cfa;
+    font-size: 14px;
+    margin-right: 5px;
+    :hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const Content = styled.div`
   width: 100%;
   padding: 10px 0;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.4;
   white-space: pre-line;
   overflow-wrap: break-word;
@@ -78,8 +88,9 @@ const EditButton = styled.button`
   }
 `;
 
-const Comment = ({ cmt, delComment, fixComment }) => {
-  // console.log('Comment', cmt);
+const Comment = ({ cmt, delComment, fixComment, likeComment }) => {
+  console.log('Comment', cmt, cmt.likes);
+  const history = useHistory();
   const user = useUser();
   const [edit, setEdit] = useState(false);
   const [text, setText] = useState(cmt.content);
@@ -99,7 +110,17 @@ const Comment = ({ cmt, delComment, fixComment }) => {
             }}
           >
             <div>
-              <span style={{ fontSize: 14, marginRight: 5, color: '#5c7cfa' }}>
+              <span
+                className="author"
+                onClick={() =>
+                  history.push({
+                    pathname: `/profile/${cmt.memberId}`,
+                    state: {
+                      memberId: cmt.memberId,
+                    },
+                  })
+                }
+              >
                 {cmt.author}
               </span>
               <span style={{ color: 'gray', fontSize: 10 }}>
@@ -120,27 +141,29 @@ const Comment = ({ cmt, delComment, fixComment }) => {
                         .substring(0, 8)} 수정`)}
               </span>
             </div>
-            {user && cmt.memberId === user.id && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <ButtonContainer>
-                  <Button>
-                    <AiOutlineLike />
-                    <span style={{ marginLeft: 4 }}>{0}</span>
-                  </Button>
-                  <Button>
-                    <FiEdit onClick={() => setEdit(!edit)} />
-                  </Button>
-                  <Button>
-                    <FiTrash onClick={() => delComment(cmt.id)} />
-                  </Button>
-                </ButtonContainer>
-              </div>
-            )}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <ButtonContainer>
+                <Button onClick={() => likeComment(cmt.id)}>
+                  <AiOutlineLike />
+                  <span style={{ marginLeft: 4 }}>{cmt.likes}</span>
+                </Button>
+                {user && cmt.memberId === user.id && (
+                  <>
+                    <Button>
+                      <FiEdit onClick={() => setEdit(!edit)} />
+                    </Button>
+                    <Button>
+                      <FiTrash onClick={() => delComment(cmt.id)} />
+                    </Button>
+                  </>
+                )}
+              </ButtonContainer>
+            </div>
           </div>
         </div>
 

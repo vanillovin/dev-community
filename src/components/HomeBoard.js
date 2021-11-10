@@ -65,6 +65,7 @@ const PostContainer = styled.div`
 `;
 
 const HomeBoard = ({ title, type }) => {
+  // console.log('HomeBoard', title, type);
   const t = useT();
   const user = useUser();
   const history = useHistory();
@@ -87,15 +88,25 @@ const HomeBoard = ({ title, type }) => {
           loading: false,
           posts: response.data.contents.slice(0, 10),
         });
-      } else {
-        response = await boardApi.getPosts(1, type);
-        console.log('Board getPosts res', type, response.data);
+        return;
+      }
+      if (type == 'best') {
+        response = await boardApi.getBestPosts();
+        console.log('Board getBestPosts res', type, response.data);
         setState({
           ...state,
           loading: false,
           posts: response.data.contents.slice(0, 10),
         });
+        return;
       }
+      response = await boardApi.getPosts(1, type);
+      console.log('Board getPosts res', type, response.data);
+      setState({
+        ...state,
+        loading: false,
+        posts: response.data.contents.slice(0, 10),
+      });
     } catch (err) {
       console.log(err);
       setState({ ...state, error: err });
@@ -129,7 +140,11 @@ const HomeBoard = ({ title, type }) => {
   }
 
   const morePost = () => {
-    if (type === 'user') history.push(`profile/${user.id}`);
+    if (type === 'user')
+      history.push({
+        pathname: `profile/${user.id}`,
+        state: { memberId: user.id },
+      });
     else history.push(`board/${type}`);
   };
 
@@ -137,7 +152,7 @@ const HomeBoard = ({ title, type }) => {
     <Container>
       <Header>
         <div>{title}</div>
-        <div onClick={morePost}>더 보기</div>
+        <div onClick={morePost}>{!(type === 'best') && '더 보기'}</div>
       </Header>
       <div>
         {!loading ? (
@@ -152,10 +167,20 @@ const HomeBoard = ({ title, type }) => {
                     onClick={() => history.push(`/board/${type}/${post.id}`)}
                     className="post-left"
                   >
-                    <span>{post.title}</span> <span>[{post.comments}]</span>
+                    <span>{post.title}</span>
                   </div>
                   <div className="post-right">
-                    <span className="username">
+                    <span
+                      className="username"
+                      onClick={() =>
+                        history.push({
+                          pathname: `/profile/${post.memberId}`,
+                          state: {
+                            memberId: post.memberId,
+                          },
+                        })
+                      }
+                    >
                       {/* {post.author} */}
                       {post.author.length > 6
                         ? post.author.substring(0, 6)

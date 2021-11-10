@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 const AuthContainer = styled.div`
   width: 400px;
-  display: inline-block;
 `;
 const SignupForm = styled.form`
   display: flex;

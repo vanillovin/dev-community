@@ -3,7 +3,12 @@ import { useHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
 import { boardApi, commentApi } from '../api';
 import { useT, useUser } from '../context';
-import { AiOutlineSetting, AiOutlineLike } from 'react-icons/ai';
+import {
+  AiOutlineSetting,
+  AiOutlineLike,
+  AiOutlineEye,
+  AiOutlineComment,
+} from 'react-icons/ai';
 import Comment from '../components/Comment';
 
 const DetailContainer = styled.div`
@@ -16,16 +21,30 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid lightgray;
-  /* post.id setting */
-  & > div:first-child {
-    :first-child {
-      color: gray;
-    }
+  .top {
     height: 25px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
     justify-content: space-between;
+  }
+  .id {
+    color: gray;
+  }
+  .top-right {
+    display: flex;
+    align-items: center;
+  }
+  .icon {
+    color: gray;
+    font-size: 14px;
+    margin-left: 14px;
+    display: flex;
+    align-items: center;
+    span {
+      margin-left: 4px;
+      margin-right: 1px;
+    }
   }
   .author {
     color: #5c7cfa;
@@ -41,20 +60,21 @@ const SettingContainer = styled.div`
   display: flex;
   align-items: center;
   div {
-    margin-right: 10px;
     border-radius: 2px;
     border: 1px solid lightgray;
   }
   .setbtn {
-    color: #5c7cfa;
+    color: #495057;
     font-size: 20px;
     cursor: pointer;
+    margin-left: 5px;
     :hover {
-      color: #91a7ff;
+      color: #adb5bd;
     }
   }
 `;
 const SettingButton = styled.button`
+  color: #495057;
   border: none;
   cursor: pointer;
   padding: 5px 10px;
@@ -63,12 +83,13 @@ const SettingButton = styled.button`
     border-right: 1px solid lightgray;
   }
   &:hover {
-    background-color: #edf2ff;
+    background-color: #f1f3f5;
   }
 `;
 const Title = styled.div`
   font-size: 19px;
   font-weight: 700;
+  line-height: 1.2;
   margin-bottom: 12px;
 `;
 const Content = styled.div`
@@ -82,7 +103,11 @@ const Content = styled.div`
 `;
 const LikeContainer = styled.div`
   width: 100%;
-  padding: 0 0 10px 10px;
+  height: 40px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 const LikeButton = styled.button`
   all: unset;
@@ -136,6 +161,7 @@ const CommentButton = styled.button`
 `;
 
 const Detail = ({ match, location }) => {
+  // console.log('Detail');
   const history = useHistory();
 
   const { type, id } = match.params;
@@ -143,7 +169,7 @@ const Detail = ({ match, location }) => {
   let title;
   if (type === 'qna') title = 'Q&A';
   if (type === 'tech') title = 'Tech';
-  if (type === 'free') title = 'Free';
+  if (type === 'free') title = '사는 얘기';
 
   const t = useT();
   const user = useUser();
@@ -157,6 +183,7 @@ const Detail = ({ match, location }) => {
   });
   const { loading, post, comments } = state;
   const [toggle, setToggle] = useState(false);
+  const [likes, setLikes] = useState();
 
   useEffect(() => {
     const fetchPost = () => {
@@ -170,6 +197,7 @@ const Detail = ({ match, location }) => {
             post: res.data,
             comments: res.data.comments,
           });
+          setLikes(res.data.likes);
         })
         .catch((err) => {
           console.log('detail getPost err', err);
@@ -179,6 +207,10 @@ const Detail = ({ match, location }) => {
     };
     fetchPost();
   }, []);
+
+  // useEffect(() => {
+  //   console.log('useEffect', comments);
+  // }, [comments]);
 
   const sendComments = (e) => {
     e.preventDefault();
@@ -256,7 +288,40 @@ const Detail = ({ match, location }) => {
   };
 
   const likePost = () => {
-    console.log('likePost');
+    boardApi
+      .likePost(id, t)
+      .then((res) => {
+        console.log('likePost', res);
+        setLikes(likes + 1);
+      })
+      .catch((err) => {
+        console.log('likePost', err);
+        alert('이미 좋아요를 누르셨습니다');
+      });
+  };
+
+  const likeComment = (cId) => {
+    // console.log('likeComment', id, cId, t);
+    if (!user) {
+      const ok = window.confirm('로그인 하시겠습니까?');
+      ok && history.push('/login');
+      return;
+    }
+    commentApi
+      .likeComment(id, cId, t)
+      .then((res) => {
+        console.log('likeComment', res);
+        setState({
+          ...state,
+          comments: comments.map((cmt) =>
+            cmt.id === cId ? { ...cmt, likes: likes + 1 } : cmt
+          ),
+        });
+      })
+      .catch((err) => {
+        console.log('likeComment', err);
+        alert('이미 좋아요를 누르셨습니다');
+      });
   };
 
   const fixComment = (cId, text) => {
@@ -286,22 +351,18 @@ const Detail = ({ match, location }) => {
       <DetailContainer>
         <div style={{ border: '1px solid lightgray', background: '#fff' }}>
           <Header>
-            <div>
-              <div>#{post.id && post.id}</div>
-              {user && post && post.memberId === user.id && (
-                <SettingContainer>
-                  {toggle && (
-                    <div>
-                      <SettingButton onClick={goEditor}>수정</SettingButton>
-                      <SettingButton onClick={delPost}>삭제</SettingButton>
-                    </div>
-                  )}
-                  <AiOutlineSetting
-                    className="setbtn"
-                    onClick={() => setToggle(!toggle)}
-                  />
-                </SettingContainer>
-              )}
+            <div className="top">
+              <div className="id">#{post.id && post.id}</div>
+              <div className="top-right">
+                <div className="icon">
+                  <AiOutlineComment />
+                  <span>{comments.length}</span>
+                </div>
+                <div className="icon">
+                  <AiOutlineEye />
+                  <span>{post.views}</span>
+                </div>
+              </div>
             </div>
             <Title>{post.title && post.title}</Title>
             <div>
@@ -339,14 +400,28 @@ const Detail = ({ match, location }) => {
           </Header>
 
           <Content>
-            <div>{post.content}</div>
+            <div>{post.content ? post.content : '로딩 중입니다!'}</div>
           </Content>
 
           <LikeContainer>
             <LikeButton type="submit" onClick={likePost}>
               <AiOutlineLike />
-              <div>{post.likes && post.likes}</div>
+              <div>{likes}</div>
             </LikeButton>
+            {user && post && post.memberId === user.id && (
+              <SettingContainer>
+                {toggle && (
+                  <>
+                    <SettingButton onClick={goEditor}>수정</SettingButton>
+                    <SettingButton onClick={delPost}>삭제</SettingButton>
+                  </>
+                )}
+                <AiOutlineSetting
+                  className="setbtn"
+                  onClick={() => setToggle(!toggle)}
+                />
+              </SettingContainer>
+            )}
           </LikeContainer>
         </div>
 
@@ -367,6 +442,7 @@ const Detail = ({ match, location }) => {
               cmt={cmt}
               delComment={delComment}
               fixComment={fixComment}
+              likeComment={likeComment}
             />
           ))}
 

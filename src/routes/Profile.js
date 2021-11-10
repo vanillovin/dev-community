@@ -11,12 +11,60 @@ const Container = styled.div`
   width: 750px;
 `;
 const UserInfo = styled.div`
+  padding: 15px;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 10px;
   border-radius: 2px;
   margin-bottom: 30px;
   background-color: #fff;
   border: 1px solid lightgray;
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mid {
+    color: #adb5bd;
+    font-size: 12px;
+    margin: 15px 0 25px 1px;
+  }
+
+  .bot {
+    display: flex;
+    & > div {
+      width: 100px;
+      color: #868e96;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-right: 10px;
+    }
+    .num {
+      margin-top: 10px;
+      font-size: 20px;
+      color: royalblue;
+      font-weight: bold;
+    }
+  }
+`;
+const Image = styled.div`
+  width: 150px;
+  height: 150px;
+  font-size: 25px;
+  letter-spacing: 2px;
+  margin-right: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dee2e6;
+`;
+const Info = styled.div`
+  flex: 1;
+  /* border: 1px solid red; */
 `;
 const UserActivity = styled.div`
   width: 100%;
@@ -86,11 +134,10 @@ const Post = styled.div`
   }
 `;
 const Button = styled.button`
-  margin-top: 15px;
   border: none;
   cursor: pointer;
   padding: 5px 10px;
-  margin-right: 10px;
+  margin-left: 10px;
   border-radius: 2px;
   background-color: #dbe4ff;
   &:hover {
@@ -181,7 +228,8 @@ const Profile = ({
   });
   const { editT, postT, cmtT } = toggle;
 
-  const fetchContents = async (num) => {
+  const fetchData = async (num) => {
+    console.log('fetchData num', num);
     const id = memberId ? memberId : user.id;
     try {
       const { data: userInfo } = await memberApi.getUser(id);
@@ -217,8 +265,48 @@ const Profile = ({
     }
   };
 
+  const fetchContents = async (num) => {
+    console.log('fetchContent', num);
+    const id = memberId ? memberId : user.id;
+    try {
+      if (postT) {
+        const { data: p } = await memberApi.getUserPosts(id, num);
+        console.log('fetchContents posts', p);
+        setState({
+          ...state,
+          userInfo,
+          loading: false,
+          posts: {
+            ...posts,
+            totalPage: p.totalPage,
+            currentPage: p.currentPage,
+            totalElements: p.totalElements,
+            contents: p.contents,
+          },
+        });
+      } else {
+        const { data: c } = await memberApi.getUserComments(id, num);
+        console.log('fetchContents comments', c);
+        setState({
+          ...state,
+          userInfo,
+          loading: false,
+          comments: {
+            ...comments,
+            totalPage: c.totalPage,
+            currentPage: c.currentPage,
+            totalElements: c.totalElements,
+            contents: c.contents,
+          },
+        });
+      }
+    } catch (err) {
+      console.log('fetchContents err', err);
+    }
+  };
+
   useEffect(() => {
-    fetchContents(1);
+    fetchData(1);
   }, [memberId]);
 
   const onToggle = (txt) =>
@@ -275,25 +363,61 @@ const Profile = ({
     <Container>
       {userInfo && (
         <UserInfo>
-          <div>이름: {userInfo.name}</div>
-          <div>나이: {userInfo.age}</div>
-          <div>아이디: {userInfo.loginId}</div>
-          <div>주소: {userInfo.address}</div>
-          {user && user.id === memberId && (
-            <div>
-              <Button onClick={() => onToggle('edit')}>회원정보수정</Button>
-              <Button onClick={quitMember}>회원탈퇴</Button>
-              {editT && (
-                <div style={{ marginTop: 15 }}>
-                  <AuthForm
-                    initialState={initialState}
-                    onSubmit={onSubmit}
-                    text="저장하기"
-                  />
+          <Image>
+            {userInfo.name && userInfo.name.length > 3
+              ? userInfo.name.substring(0, 3)
+              : userInfo.name}
+          </Image>
+          <Info>
+            <div className="top">
+              <div style={{ fontSize: 25, letterSpacing: 2 }}>
+                {userInfo.name}
+              </div>
+              {user && user.id === memberId && (
+                <div>
+                  <Button onClick={() => onToggle('edit')}>
+                    {!editT ? '회원정보수정' : '취소하기'}
+                  </Button>
+                  <Button onClick={quitMember}>회원탈퇴</Button>
                 </div>
               )}
             </div>
-          )}
+
+            {!editT ? (
+              <>
+                <div className="mid">
+                  <span>
+                    나이: {userInfo.age} / 주소: {userInfo.address}
+                  </span>
+                </div>
+
+                <div className="bot">
+                  <div style={{ marginLeft: -18 }}>
+                    <span>활동 점수</span>
+                    <span className="num">
+                      {posts.totalElements + comments.totalElements * 2}
+                    </span>
+                  </div>
+                  <div>
+                    <span>게시물 수</span>
+                    <span className="num">{posts.totalElements}</span>
+                  </div>
+                  <div>
+                    <span>댓글 수</span>
+                    <span className="num">{comments.totalElements}</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div style={{ margin: '15px 0' }}>
+                <AuthForm
+                  initialState={initialState}
+                  onSubmit={onSubmit}
+                  text="저장하기"
+                />
+              </div>
+            )}
+          </Info>
         </UserInfo>
       )}
 
