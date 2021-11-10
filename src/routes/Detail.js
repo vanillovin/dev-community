@@ -314,7 +314,7 @@ const Detail = ({ match, location }) => {
         setState({
           ...state,
           comments: comments.map((cmt) =>
-            cmt.id === cId ? { ...cmt, likes: likes + 1 } : cmt
+            cmt.id === cId ? { ...cmt, likes: cmt.likes + 1 } : cmt
           ),
         });
       })
