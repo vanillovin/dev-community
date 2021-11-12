@@ -7,9 +7,11 @@ const PostContainer = styled.div`
   width: 750px;
   /* width: 800px; */
   height: 65px;
-  padding: 6px;
+  padding: 10px;
   display: flex;
   align-items: center;
+  border-left: ${(props) =>
+    props.cmt ? '4px solid #91a7ff' : '4px solid #dbe4ff'};
   border-bottom: 1px solid lightgray;
   border-top: ${(props) => props.first && '1px solid lightgray'};
 `;
@@ -78,6 +80,7 @@ const Like = styled.div`
 `;
 
 const Post = ({ post, type, fci }) => {
+  console.log('Post', post);
   const history = useHistory();
 
   const detailPost = () => {
@@ -85,7 +88,7 @@ const Post = ({ post, type, fci }) => {
   };
 
   return (
-    <PostContainer first={fci === post.id}>
+    <PostContainer first={fci === post.id} cmt={post.commentSize > 0}>
       {/* onClick or Link? detail link to='/id/?' */}
       <PostLeft>
         <div className="id">#{post.id}</div>

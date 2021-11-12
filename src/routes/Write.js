@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useT, useUser } from '../context';
 import { boardApi } from '../api';
 
-const EditorContainer = styled.div`
+const Container = styled.div`
   width: 700px;
 `;
 const Title = styled.h1`
@@ -87,6 +87,7 @@ const Write = ({
   };
 
   const onSubmit = (e) => {
+    // e.preventDefault();
     console.log(type, title, content);
 
     if (type === '') {
@@ -127,7 +128,7 @@ const Write = ({
   return (
     <>
       {loggedIn ? (
-        <EditorContainer>
+        <Container>
           <Title>새 글 쓰기</Title>
           <Select name="type" required onChange={onChange}>
             <option value={type} defaultChecked>
@@ -145,19 +146,21 @@ const Write = ({
             maxLength="50"
             required
           />
+
           <ContentInput
             name="content"
             value={content}
             onChange={onChange}
             required
           />
+
           <ButtonContainer>
             <Button onClick={cancelWrite}>취소하기</Button>
             <Button type="submit" onClick={onSubmit}>
               등록하기
             </Button>
           </ButtonContainer>
-        </EditorContainer>
+        </Container>
       ) : (
         <>
           <div>작성권한없음</div>

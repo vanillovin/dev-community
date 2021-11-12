@@ -28,7 +28,6 @@ const Router = () => {
           <Route exact path="/write" component={Write} />
           <Route exact path="/edit" component={Editor} />
           <Route exact path="/board/:type/:id" component={Detail} />
-
           {/* <Route exact path="/test" component={} /> */}
           <Redirect from="*" to="/" />
         </Switch>

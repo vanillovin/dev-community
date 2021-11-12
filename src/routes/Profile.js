@@ -92,15 +92,18 @@ const Item = styled.li`
     `}
 `;
 const Post = styled.div`
+  border-radius: ${(props) => props.lci && ' 2px 2px 0 0'};
+  border-radius: ${(props) => props.fci && '0 0 2px 2px'};
   padding: 10px;
   display: flex;
   background-color: white;
   flex-direction: column;
   justify-content: center;
   border-top: 1px solid lightgray;
-  border-left: 1px solid lightgray;
   border-right: 1px solid lightgray;
   border-bottom: ${(props) => props.fci && '1px solid lightgray'};
+  border-left: ${(props) =>
+    props.cmt ? '3px solid #91a7ff' : '3px solid #dbe4ff'};
   .bot {
     margin-top: 10px;
   }
@@ -152,7 +155,12 @@ const Button = styled.button`
 const Comp = ({ arr, name }) => {
   return arr && arr.length > 0 ? (
     arr.map((item) => (
-      <Post key={item.id} fci={arr[arr.length - 1].id === item.id}>
+      <Post
+        key={item.id}
+        lci={arr[0].id === item.id}
+        fci={arr[arr.length - 1].id === item.id}
+        cmt={item.commentSize > 0}
+      >
         <div>
           <Link
             to={`/board/${
@@ -201,6 +209,7 @@ const Profile = ({
     state: { memberId },
   },
 }) => {
+  console.log('Profile memeberId', memberId);
   const t = useT();
   const user = useUser();
 

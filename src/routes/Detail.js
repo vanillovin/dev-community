@@ -10,6 +10,7 @@ import {
   AiOutlineComment,
 } from 'react-icons/ai';
 import Comment from '../components/Comment';
+import ReactHtmlParser from 'react-html-parser';
 
 const DetailContainer = styled.div`
   width: 750px;
@@ -38,11 +39,11 @@ const Header = styled.div`
   .icon {
     color: gray;
     font-size: 14px;
-    margin-left: 14px;
+    margin-left: 10px;
     display: flex;
     align-items: center;
     span {
-      margin-left: 4px;
+      margin-left: 3px;
       margin-right: 1px;
     }
   }
@@ -67,23 +68,31 @@ const SettingContainer = styled.div`
     color: #495057;
     font-size: 20px;
     cursor: pointer;
-    margin-left: 5px;
+    margin-left: 6px;
     :hover {
       color: #adb5bd;
     }
   }
 `;
 const SettingButton = styled.button`
+  user-select: none;
   color: #495057;
   border: none;
   cursor: pointer;
   padding: 5px 10px;
   background-color: transparent;
-  &:first-child {
-    border-right: 1px solid lightgray;
-  }
+  border-top: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
   &:hover {
     background-color: #f1f3f5;
+  }
+  &:nth-child(1) {
+    border-left: 1px solid lightgray;
+    border-radius: 2px 0 0 2px;
+  }
+  &:nth-child(2) {
+    border-radius: 0 2px 2px 0;
   }
 `;
 const Title = styled.div`
@@ -400,7 +409,9 @@ const Detail = ({ match, location }) => {
           </Header>
 
           <Content>
-            <div>{post.content ? post.content : '로딩 중입니다!'}</div>
+            <div>
+              {post.content ? ReactHtmlParser(post.content) : '로딩 중입니다!'}
+            </div>
           </Content>
 
           <LikeContainer>

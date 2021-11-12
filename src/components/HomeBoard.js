@@ -10,12 +10,12 @@ const Header = styled.div`
   padding: 0 2px;
   align-items: center;
   justify-content: space-between;
-  div:first-child {
+  .title {
     font-size: 15px;
     font-weight: bold;
     margin-bottom: 15px;
   }
-  div:last-child {
+  .more {
     cursor: pointer;
     font-size: 12px;
     :hover {
@@ -24,6 +24,8 @@ const Header = styled.div`
   }
 `;
 const PostContainer = styled.div`
+  border-left: ${(props) =>
+    props.cmt ? '3px solid #91a7ff' : '3px solid #dbe4ff'};
   width: 100%;
   padding: 10px;
   display: grid;
@@ -51,11 +53,11 @@ const PostContainer = styled.div`
     font-size: 10px;
     text-align: end;
     .username {
-      cursor: pointer;
+      /* cursor: pointer;
       color: royalblue;
       :hover {
         text-decoration: underline;
-      }
+      } */
     }
     .date {
       color: gray;
@@ -151,17 +153,20 @@ const HomeBoard = ({ title, type }) => {
   return (
     <Container>
       <Header>
-        <div>{title}</div>
-        <div onClick={morePost}>{!(type === 'best') && '더 보기'}</div>
+        <div className="title">{title}</div>
+        <div className="more" onClick={morePost}>
+          {!(type === 'best') && '더 보기'}
+        </div>
       </Header>
       <div>
         {!loading ? (
-          <div style={{ border: '1px solid lightgray' }}>
+          <div style={{ border: '1px solid lightgray', borderLeft: 'none' }}>
             {posts &&
               posts.map((post) => (
                 <PostContainer
                   key={post.id}
                   lc={posts[posts.length - 1].id === post.id}
+                  cmt={post.commentSize > 0}
                 >
                   <div
                     onClick={() => history.push(`/board/${type}/${post.id}`)}
@@ -172,19 +177,16 @@ const HomeBoard = ({ title, type }) => {
                   <div className="post-right">
                     <span
                       className="username"
-                      onClick={() =>
-                        history.push({
-                          pathname: `/profile/${post.memberId}`,
-                          state: {
-                            memberId: post.memberId,
-                          },
-                        })
-                      }
+                      // onClick={() =>
+                      //   history.push({
+                      //     pathname: `/profile/${post.memberId}`,
+                      //     state: {
+                      //       memberId: post.memberId,
+                      //     },
+                      //   })
+                      // }
                     >
-                      {/* {post.author} */}
-                      {post.author.length > 6
-                        ? post.author.substring(0, 6)
-                        : post.author}
+                      {post.author}
                     </span>
                     <span className="date">
                       {displayedAt(post.createdDate)}

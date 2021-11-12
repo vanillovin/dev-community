@@ -5,6 +5,7 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import Post from './Post';
 import { boardApi } from '../api';
 import PageList from './PageList';
+import { useUser } from '../context';
 
 const BoardContainer = styled.div`
   width: 750px;
@@ -40,7 +41,7 @@ const FilterLI = styled.div`
   padding: 2px 1px;
   font-size: 14px;
   cursor: pointer;
-  margin-right: 12px;
+  margin-right: 18px;
   font-weight: bold;
   color: ${(props) => props.active && '#000'};
 `;
@@ -89,11 +90,13 @@ const Button = styled.button`
   transition: all 0.1s linear;
 `;
 
-const Board = ({ title, loggedIn }) => {
+const Board = ({ title }) => {
+  const loggedIn = Boolean(useUser());
+
   let type;
   if (title === 'Q&A') type = 'qna';
   if (title === 'Tech') type = 'tech';
-  if (title === 'Free') type = 'free';
+  if (title === '자유게시판') type = 'free';
   const history = useHistory();
   const [filter, setFilter] = useState({
     latest: true,
@@ -151,7 +154,6 @@ const Board = ({ title, loggedIn }) => {
       return;
     }
     if (cName.includes('next')) {
-      // 수정 5인데 2칸으로 넘어감
       if (page[page.length - 1] >= totalPage) return;
       setPage(page.map((num) => num + 5));
       fetchPosts(page[0] + 5);
@@ -235,7 +237,9 @@ const Board = ({ title, loggedIn }) => {
             )}
           </>
         ) : (
-          <h1>views</h1>
+          <>
+            <h1>views</h1>
+          </>
         )
       ) : (
         <div style={{ marginTop: 100, textAlign: 'center' }}>loading...</div>
