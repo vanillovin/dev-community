@@ -200,7 +200,9 @@ const Comp = ({ arr, name }) => {
       </Post>
     ))
   ) : (
-    <div>작성한 {name}이 없습니다.</div>
+    <div style={{ textAlign: 'center', marginTop: 30 }}>
+      작성한 {name}이 없습니다.
+    </div>
   );
 };
 
@@ -213,6 +215,7 @@ const Profile = ({
   const t = useT();
   const user = useUser();
 
+  const [page, setPage] = useState([1, 2, 3, 4, 5]);
   const [state, setState] = useState({
     loading: true,
     userInfo: {},
@@ -318,10 +321,18 @@ const Profile = ({
     fetchData(1);
   }, [memberId]);
 
-  const onToggle = (txt) =>
-    (txt === 'posts' && setToggle({ ...toggle, postT: true, cmtT: false })) ||
-    (txt === 'cmts' && setToggle({ ...toggle, postT: false, cmtT: true })) ||
-    (txt === 'edit' && setToggle((prev) => ({ ...prev, editT: !editT })));
+  const onToggle = (txt) => {
+    if (txt === 'posts') {
+      setToggle({ ...toggle, postT: true, cmtT: false });
+      fetchContents(1);
+      setPage([1, 2, 3, 4, 5]);
+    }
+    if (txt === 'cmts') {
+      setToggle({ ...toggle, postT: false, cmtT: true });
+      fetchContents(1);
+      setPage([1, 2, 3, 4, 5]);
+    }
+  };
 
   const onSubmit = (ok, state) => {
     console.log(ok, state);
@@ -384,7 +395,11 @@ const Profile = ({
               </div>
               {user && user.id === memberId && (
                 <div>
-                  <Button onClick={() => onToggle('edit')}>
+                  <Button
+                    onClick={() =>
+                      setToggle((cur) => ({ ...cur, editT: !editT }))
+                    }
+                  >
                     {!editT ? '회원정보수정' : '취소하기'}
                   </Button>
                   <Button onClick={quitMember}>회원탈퇴</Button>
@@ -403,9 +418,7 @@ const Profile = ({
                 <div className="bot">
                   <div style={{ marginLeft: -18 }}>
                     <span>활동 점수</span>
-                    <span className="num">
-                      {posts.totalElements + comments.totalElements * 2}
-                    </span>
+                    <span className="num">{userInfo.activeScore}</span>
                   </div>
                   <div>
                     <span>게시물 수</span>
@@ -438,6 +451,8 @@ const Profile = ({
                 <Comp arr={posts.contents} name="게시물" />
                 {posts.totalElements > 0 && (
                   <PageList
+                    page={page}
+                    setPage={setPage}
                     fetchContents={fetchContents}
                     totalPage={posts.totalPage}
                     currentPage={posts.currentPage}
@@ -449,6 +464,8 @@ const Profile = ({
                 <Comp arr={comments.contents} name="댓글" />
                 {comments.totalElements > 0 && (
                   <PageList
+                    page={page}
+                    setPage={setPage}
                     fetchContents={fetchContents}
                     totalPage={comments.totalPage}
                     currentPage={comments.currentPage}

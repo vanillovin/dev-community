@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { boardApi, memberApi } from '../api';
+import { boardApi } from '../api';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-import { useT, useUser } from '../context';
+import { useUser } from '../context';
 
 const Container = styled.div``;
 const Header = styled.div`
@@ -33,6 +33,8 @@ const PostContainer = styled.div`
   font-size: 13px;
   background-color: #fff;
   border-bottom: ${(props) => (props.lc ? 'none' : '1px solid lightgray')};
+  border-radius: ${(props) => props.fc && '1px 1px 0 0'};
+  border-radius: ${(props) => props.lc && ' 0 0 1px 1px'};
   .post-left {
     color: black;
     margin: auto 0;
@@ -68,7 +70,6 @@ const PostContainer = styled.div`
 
 const HomeBoard = ({ title, type }) => {
   // console.log('HomeBoard', title, type);
-  const t = useT();
   const user = useUser();
   const history = useHistory();
 
@@ -82,17 +83,17 @@ const HomeBoard = ({ title, type }) => {
   const fetchPosts = async () => {
     try {
       let response;
-      if (type === 'user') {
-        response = await memberApi.getUserPosts(user.id, 1);
-        console.log('Board getUserPosts res', type, response.data);
-        setState({
-          ...state,
-          loading: false,
-          posts: response.data.contents.slice(0, 10),
-        });
-        return;
-      }
-      if (type == 'best') {
+      // if (type === 'user') {
+      //   response = await memberApi.getUserPosts(user.id, 1);
+      //   console.log('Board getUserPosts res', type, response.data);
+      //   setState({
+      //     ...state,
+      //     loading: false,
+      //     posts: response.data.contents.slice(0, 10),
+      //   });
+      //   return;
+      // }
+      if (type === 'best') {
         response = await boardApi.getBestPosts();
         console.log('Board getBestPosts res', type, response.data);
         setState({
@@ -102,7 +103,7 @@ const HomeBoard = ({ title, type }) => {
         });
         return;
       }
-      response = await boardApi.getPosts(1, type);
+      response = await boardApi.getPosts(1, 'createdDate', type);
       console.log('Board getPosts res', type, response.data);
       setState({
         ...state,
@@ -160,11 +161,18 @@ const HomeBoard = ({ title, type }) => {
       </Header>
       <div>
         {!loading ? (
-          <div style={{ border: '1px solid lightgray', borderLeft: 'none' }}>
+          <div
+            style={{
+              border: '1px solid lightgray',
+
+              borderRadius: 2,
+            }}
+          >
             {posts &&
               posts.map((post) => (
                 <PostContainer
                   key={post.id}
+                  fc={posts[0].id === post.id}
                   lc={posts[posts.length - 1].id === post.id}
                   cmt={post.commentSize > 0}
                 >

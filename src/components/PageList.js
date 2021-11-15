@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -15,48 +15,72 @@ const PageUL = styled.ul`
   align-items: center;
   justify-content: center;
   border: 1px solid lightgray;
+
+  .first {
+    font-weight: bold;
+  }
+  .last {
+    font-weight: bold;
+  }
 `;
 const PageLI = styled.li`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  /* cursor: pointer; */
+  cursor: ${(props) => (props.cs ? 'not-allowed' : 'pointer')};
+
   width: 28px;
   height: 28px;
+  width: ${(props) => (props.test ? '0px' : '28px')};
+  height: ${(props) => (props.test ? '0px' : '28px')};
+
   :not(:last-child) {
     border-right: 1px solid lightgray;
+    border-right: ${(props) => (props.test ? 'none' : ' 1px solid lightgray')};
   }
+
   background-color: ${(props) => props.active && '#bac8ff'};
   :hover {
     background-color: ${(props) => !props.active && '#dbe4ff'};
   }
 `;
 
-const PageList = ({ fetchContents, totalPage, currentPage }) => {
-  const [page, setPage] = useState([1, 2, 3, 4, 5]);
+const PageList = ({
+  page,
+  setPage,
+  fetchContents,
+  totalPage,
+  currentPage,
+  sort,
+}) => {
+  console.log(
+    `PageList totalP: ${totalPage}, currentP: ${currentPage}, sortBy: ${sort}, pageState: ${page}`
+  );
 
-  const test = (e) => {
+  const onListClick = (e) => {
     const pNum = e.target.innerText;
     const cName = e.target.className;
     if (pNum === '') return;
     if (currentPage === +pNum) return;
+    if (e.target.tagName === 'UL') return;
     if (cName.includes('prev')) {
       if (page[0] !== 1) {
         setPage(page.map((num) => num - 5));
-        fetchContents(page[0] - 5);
+        fetchContents(page[0] - 5, sort);
       }
       return;
     }
     if (cName.includes('next')) {
       if (page[page.length - 1] >= totalPage) return;
       setPage(page.map((num) => num + 5));
-      fetchContents(page[0] + 5);
+      fetchContents(page[0] + 5, sort);
       return;
     }
     if (cName.includes('first')) {
       if (currentPage === 1) return;
       setPage([1, 2, 3, 4, 5]);
-      fetchContents(1);
+      fetchContents(1, sort);
       return;
     }
     if (cName.includes('last')) {
@@ -67,24 +91,45 @@ const PageList = ({ fetchContents, totalPage, currentPage }) => {
       if (totalPage % 5 === 4) x += 1;
       if (currentPage === totalPage) return;
       setPage([1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1)));
-      fetchContents(totalPage);
+      fetchContents(totalPage, sort);
       return;
     }
-    fetchContents(pNum);
+    fetchContents(pNum, sort);
   };
 
   return (
     <PageContainer>
-      <PageUL onClick={test}>
-        <PageLI className="first">&laquo;</PageLI>
-        <PageLI className="prev">&#60;</PageLI>
+      <PageUL onClick={onListClick}>
+        <PageLI className="first" title="맨 앞 페이지" cs={currentPage === 1}>
+          &laquo;
+        </PageLI>
+        {/* {page[0] > 5 && ( */}
+        <PageLI className="prev" title="앞으로 5페이지">
+          &#60;
+        </PageLI>
+        {/* )} */}
         {page.map((num, i) => (
-          <PageLI key={i} active={currentPage === num}>
+          <PageLI
+            key={i}
+            active={currentPage === num}
+            test={num > totalPage && i + 1}
+            title={num > totalPage ? '' : num}
+          >
             {num > totalPage ? '' : num}
           </PageLI>
         ))}
-        <PageLI className="next">&#62;</PageLI>
-        <PageLI className="last">&raquo;</PageLI>
+        {/* {totalPage > 5 && page[page.length - 1] < totalPage && ( */}
+        <PageLI className="next" name="li" title="뒤로 5페이지">
+          &#62;
+        </PageLI>
+        {/* )} */}
+        <PageLI
+          className="last"
+          title="맨 뒤 페이지"
+          cs={currentPage === totalPage}
+        >
+          &raquo;
+        </PageLI>
       </PageUL>
     </PageContainer>
   );

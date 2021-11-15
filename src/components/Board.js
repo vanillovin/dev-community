@@ -32,11 +32,11 @@ const FilterContainer = styled.div`
   margin-bottom: 20px;
   /* border: 1px solid black; */
 `;
-const FilterUL = styled.ul`
+const OrderUL = styled.ul`
   display: flex;
   align-items: center;
 `;
-const FilterLI = styled.div`
+const OlderLI = styled.div`
   color: gray;
   padding: 2px 1px;
   font-size: 14px;
@@ -92,16 +92,20 @@ const Button = styled.button`
 
 const Board = ({ title }) => {
   const loggedIn = Boolean(useUser());
-
+  const [page, setPage] = useState([1, 2, 3, 4, 5]);
   let type;
   if (title === 'Q&A') type = 'qna';
   if (title === 'Tech') type = 'tech';
   if (title === '자유게시판') type = 'free';
+
   const history = useHistory();
-  const [filter, setFilter] = useState({
+  const [order, setOrder] = useState({
     latest: true,
     views: false,
+    comments: false,
+    likes: false,
   });
+  const { latest, views, comments, likes } = order;
   const [state, setState] = useState({
     loading: true,
     totalPage: null,
@@ -109,19 +113,13 @@ const Board = ({ title }) => {
     posts: [],
     err: null,
   });
-  const [page, setPage] = useState([1, 2, 3, 4, 5]);
-  const { latest, views } = filter;
   const { loading, totalPage, currentPage, posts } = state;
 
-  const filterPost = (text) => {
-    if (text === 'latest') setFilter({ ...filter, latest: true, views: false });
-    if (text === 'views') setFilter({ ...filter, latest: false, views: true });
-  };
+  const fetchPosts = async (num, sort = 'createdDate') => {
+    console.log('Board fetchPosts', num, sort, type);
 
-  const fetchPosts = async (num) => {
-    // console.log(num, type);
     try {
-      const response = await boardApi.getPosts(num, type);
+      const response = await boardApi.getPosts(num, sort, type);
       console.log('Board getPosts res', response.data);
       setState({
         ...state,
@@ -137,47 +135,57 @@ const Board = ({ title }) => {
   };
 
   useEffect(() => {
+    console.log('Board useEffect');
     fetchPosts(1);
   }, []);
 
-  const test = (e) => {
-    const pNum = e.target.innerText;
-    const cName = e.target.className;
-
-    if (pNum === '') return;
-    if (currentPage === +pNum) return;
-    if (cName.includes('prev')) {
-      if (page[0] !== 1) {
-        setPage(page.map((num) => num - 5));
-        fetchPosts(page[0] - 5);
-      }
-      return;
-    }
-    if (cName.includes('next')) {
-      if (page[page.length - 1] >= totalPage) return;
-      setPage(page.map((num) => num + 5));
-      fetchPosts(page[0] + 5);
-      return;
-    }
-    if (cName.includes('first')) {
-      if (currentPage === 1) return;
+  const filterPost = (text) => {
+    // text:true, all:false
+    if (order[text]) return;
+    if (text === 'latest') {
+      setOrder({
+        ...order,
+        latest: true,
+        views: false,
+        comments: false,
+        likes: false,
+      });
       setPage([1, 2, 3, 4, 5]);
-      fetchPosts(1);
-      return;
+      fetchPosts(1, 'createdDate', type);
     }
-    if (cName.includes('last')) {
-      let x = totalPage;
-      if (totalPage % 5 === 1) x += 4;
-      if (totalPage % 5 === 2) x += 3;
-      if (totalPage % 5 === 3) x += 2;
-      if (totalPage % 5 === 4) x += 1;
-      if (currentPage === totalPage) return;
-      setPage([1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1)));
-      fetchPosts(totalPage);
-      return;
+    if (text === 'views') {
+      setOrder({
+        ...order,
+        latest: false,
+        views: true,
+        comments: false,
+        likes: false,
+      });
+      setPage([1, 2, 3, 4, 5]);
+      fetchPosts(1, 'views', type);
     }
-
-    fetchPosts(pNum);
+    if (text === 'comments') {
+      setOrder({
+        ...order,
+        latest: false,
+        views: false,
+        comments: true,
+        likes: false,
+      });
+      setPage([1, 2, 3, 4, 5]);
+      fetchPosts(1, 'commentSize', type);
+    }
+    if (text === 'likes') {
+      setOrder({
+        ...order,
+        latest: false,
+        views: false,
+        comments: false,
+        likes: true,
+      });
+      setPage([1, 2, 3, 4, 5]);
+      fetchPosts(1, 'likes', type);
+    }
   };
 
   return (
@@ -201,14 +209,21 @@ const Board = ({ title }) => {
       </BoardHeader>
 
       <FilterContainer>
-        <FilterUL>
-          <FilterLI active={latest} onClick={() => filterPost('latest')}>
+        <OrderUL>
+          <OlderLI active={latest} onClick={() => filterPost('latest')}>
             최신순
-          </FilterLI>
-          <FilterLI active={views} onClick={() => filterPost('views')}>
+          </OlderLI>
+          <OlderLI active={views} onClick={() => filterPost('views')}>
             조회순
-          </FilterLI>
-        </FilterUL>
+          </OlderLI>
+          <OlderLI active={comments} onClick={() => filterPost('comments')}>
+            댓글순
+          </OlderLI>
+          <OlderLI active={likes} onClick={() => filterPost('likes')}>
+            좋아요순
+          </OlderLI>
+        </OrderUL>
+
         <SearchContainer>
           <SearchInput />
           <SearchButton>
@@ -218,29 +233,30 @@ const Board = ({ title }) => {
       </FilterContainer>
 
       {!loading ? (
-        latest ? (
-          <>
-            {posts.map((post) => (
-              <Post key={post.id} post={post} type={type} fci={posts[0].id} />
-            ))}
-
-            {totalPage > 0 ? (
-              <PageList
-                fetchContents={fetchPosts}
-                totalPage={totalPage}
-                currentPage={currentPage}
-              />
-            ) : (
-              <div style={{ marginTop: 150, textAlign: 'center' }}>
-                아직 게시물이 없습니다.
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            <h1>views</h1>
-          </>
-        )
+        <>
+          {posts.map((post) => (
+            <Post key={post.id} post={post} type={type} fci={posts[0].id} />
+          ))}
+          {totalPage > 0 ? (
+            <PageList
+              page={page}
+              setPage={setPage}
+              fetchContents={fetchPosts}
+              totalPage={totalPage}
+              currentPage={currentPage}
+              sort={
+                (latest && 'createdDate') ||
+                (views && 'views') ||
+                (comments && 'commentSize') ||
+                (likes && 'likes')
+              }
+            />
+          ) : (
+            <div style={{ marginTop: 150, textAlign: 'center' }}>
+              아직 게시물이 없습니다.
+            </div>
+          )}
+        </>
       ) : (
         <div style={{ marginTop: 100, textAlign: 'center' }}>loading...</div>
       )}

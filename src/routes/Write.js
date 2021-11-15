@@ -73,11 +73,6 @@ const Write = ({
   });
   const { type, title, content } = state;
 
-  let typeText;
-  if (type === 'qna') typeText = 'Q&A';
-  if (type === 'tech') typeText = 'Tech';
-  if (type === 'free') typeText = 'Free';
-
   const onChange = (e) => {
     const { name, value } = e.target;
     setState({
@@ -124,6 +119,11 @@ const Write = ({
     const ok = window.confirm('취소하시겠습니까?');
     ok && history.goBack(); // 뒤로이동
   };
+
+  let typeText;
+  if (type === 'qna') typeText = 'Q&A';
+  if (type === 'tech') typeText = 'Tech';
+  if (type === 'free') typeText = '자유게시판';
 
   return (
     <>

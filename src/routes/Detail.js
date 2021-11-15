@@ -151,6 +151,7 @@ const CommentInput = styled.textarea`
   border: none;
   resize: none;
   outline: none;
+  border-bottom: 1px solid lightgray;
 `;
 const CommentButton = styled.button`
   width: 20%;

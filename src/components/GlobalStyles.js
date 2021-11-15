@@ -12,7 +12,7 @@ const globalStyles = createGlobalStyle`
   }
   body {
     /* font-family: 'Gowun Dodum', sans-serif; */
-    font-family: 'Noto Sans KR', sans-serif;
+    /* font-family: 'Noto Sans KR', sans-serif; */
     padding-top: 40px;
     padding-bottom: 40px;
     padding-left: 210px; // h180+g30

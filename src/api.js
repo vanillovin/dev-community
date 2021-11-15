@@ -16,7 +16,8 @@ const api = axios.create({
 
 export const boardApi = {
   getPost: (id) => api.get(`boards/${id}`),
-  getPosts: (page, type) => api.get(`boards?page=${page}&type=${type}`),
+  getPosts: (page, sort, type) =>
+    api.get(`boards?page=${page}&sort=${sort}&type=${type}`),
   getBestPosts: () => api.get('boards/best-likes'),
   sendPost: (type, post, t) =>
     api.post(`boards?type=${type}`, post, {

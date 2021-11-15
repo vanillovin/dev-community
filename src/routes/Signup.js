@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Redirect, useHistory } from 'react-router';
 import styled from 'styled-components';
 import { memberApi } from '../api';
@@ -79,9 +79,24 @@ const Signup = () => {
             history.push('/login');
           })
           .catch((err) => {
-            console.log('signup err', err || err.response.data);
+            console.log('signup err', err.response.status, err.response.data);
+            switch (err.response.status) {
+              case 400:
+                alert(err.response.data.message);
+                return;
+              case 401:
+                alert('Unauthorized');
+                return;
+              case 403:
+                alert('Forbidden');
+                return;
+              case 404:
+                alert('Not Found');
+                return;
+              default:
+            }
           })
-      : alert('모두 입력');
+      : alert('모두 입력해 주세요.');
   };
 
   const initialState = {

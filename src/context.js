@@ -26,6 +26,8 @@ export function UserProvider({ children }) {
       });
     } catch (err) {
       console.log('context getUser err', err);
+      localStorage.removeItem('user');
+      window.location.href = '/';
       setState({
         ...state,
         loading: false,

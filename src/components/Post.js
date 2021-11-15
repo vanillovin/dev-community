@@ -6,19 +6,21 @@ import styled from 'styled-components';
 const PostContainer = styled.div`
   width: 750px;
   /* width: 800px; */
-  height: 65px;
   padding: 10px;
   display: flex;
   align-items: center;
+  background-color: #fff;
+
   border-left: ${(props) =>
     props.cmt ? '4px solid #91a7ff' : '4px solid #dbe4ff'};
+  border-right: 1px solid lightgray;
   border-bottom: 1px solid lightgray;
   border-top: ${(props) => props.first && '1px solid lightgray'};
 `;
 const PostLeft = styled.div`
   /* border: 1px solid red; */
   padding-right: 15px;
-  width: 65%;
+  width: 60%;
   width: 500px;
   height: 100%;
   display: flex;
@@ -43,22 +45,22 @@ const PostLeft = styled.div`
 `;
 const PostRight = styled.div`
   /* border: 1px solid red; */
-  width: 35%;
+  width: 40%;
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   .left {
     /* border: 1px solid blue; */
     display: flex;
     align-items: center;
   }
   .right {
+    margin-left: 8px;
     /* border: 1px solid red; */
     .username {
       font-size: 12px;
-      letter-spacing: -1px;
       margin-bottom: 3px;
+      letter-spacing: -1px;
     }
     .date {
       color: gray;
@@ -68,19 +70,19 @@ const PostRight = styled.div`
 `;
 const Like = styled.div`
   /* border: 1px solid red; */
-  width: 48px;
-  color: gray;
-  font-size: 13px;
+  width: 46px;
+  font-size: 14px;
   display: flex;
   align-items: center;
+  color: ${(props) => (props.len ? '#495057' : '#adb5bd')};
   span {
-    font-size: 11px;
-    margin-left: 4px;
+    font-size: 12px;
+    margin-left: 2px;
   }
 `;
 
 const Post = ({ post, type, fci }) => {
-  console.log('Post', post);
+  // console.log('Post', post);
   const history = useHistory();
 
   const detailPost = () => {
@@ -98,15 +100,15 @@ const Post = ({ post, type, fci }) => {
       </PostLeft>
       <PostRight>
         <div className="left">
-          <Like>
+          <Like len={post.commentSize > 0}>
             <AiOutlineComment />
             <span>{post.commentSize}</span>
           </Like>
-          <Like>
+          <Like len={post.likes > 0}>
             <AiOutlineLike />
             <span>{post.likes}</span>
           </Like>
-          <Like>
+          <Like len={post.views > 0}>
             <AiOutlineEye style={{ fontSize: 15 }} />
             <span>{post.views}</span>
           </Like>
