@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AiOutlineLike } from 'react-icons/ai';
+import { AiOutlineLike, AiOutlineCheck } from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
 import { useHistory } from 'react-router';
@@ -10,6 +10,10 @@ const Container = styled.div`
   border-bottom: 1px solid lightgray;
   white-space: pre-line;
   overflow-wrap: break-word;
+  .left {
+    display: flex;
+    align-items: center;
+  }
   .author {
     cursor: pointer;
     color: #5c7cfa;
@@ -19,14 +23,34 @@ const Container = styled.div`
       text-decoration: underline;
     }
   }
+  .date {
+    color: gray;
+    font-size: 10px;
+  }
+`;
+const SButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  cursor: pointer;
+  margin-right: 6px;
+  border-radius: 50%;
+  background-color: #edf2ff;
+  background-color: ${(props) => (props.selected ? '#51cf66' : '#edf2ff')};
+  border: 1px solid lightgray;
+  &:hover {
+    color: #fff;
+    background-color: #51cf66;
+  }
 `;
 const Content = styled.div`
   width: 100%;
-  padding: 10px 0;
   font-size: 14px;
   line-height: 1.4;
   white-space: pre-line;
   overflow-wrap: break-word;
+  padding: 14px 10px 10px 4px;
 `;
 const ButtonContainer = styled.div`
   display: flex;
@@ -88,8 +112,15 @@ const EditButton = styled.button`
   }
 `;
 
-const Comment = ({ cmt, delComment, fixComment, likeComment }) => {
-  console.log('Comment', cmt, cmt.likes);
+const Comment = ({
+  cmt,
+  author,
+  delComment,
+  fixComment,
+  likeComment,
+  selectComment,
+}) => {
+  console.log('Comment', author, cmt);
   const history = useHistory();
   const user = useUser();
   const [edit, setEdit] = useState(false);
@@ -103,67 +134,76 @@ const Comment = ({ cmt, delComment, fixComment, likeComment }) => {
         <div>
           <div
             style={{
-              height: 25,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              height: 40,
+              // backgroundColor: 'orange',
             }}
           >
-            <div>
-              <span
-                className="author"
-                onClick={() =>
-                  history.push({
-                    pathname: `/profile/${cmt.memberId}`,
-                    state: {
-                      memberId: cmt.memberId,
-                    },
-                  })
-                }
-              >
-                {cmt.author}
-              </span>
-              <span style={{ color: 'gray', fontSize: 10 }}>
-                {cmt.createdDate &&
-                  `${cmt.createdDate.split('T')[0]} ${cmt.createdDate
-                    .split('T')[1]
-                    .substring(0, 8)} 작성`}
-              </span>
-              <span style={{ color: 'gray', fontSize: 10 }}>
-                {cmt.createdDate &&
-                  cmt.lastModifiedDate &&
-                  (cmt.createdDate === cmt.lastModifiedDate
-                    ? ''
-                    : ` ∙ ${
-                        cmt.lastModifiedDate.split('T')[0]
-                      } ${cmt.lastModifiedDate
+            <div className="left">
+              {author && (
+                <SButton
+                  title="댓글 채택"
+                  selected={cmt.selected}
+                  onClick={() => selectComment(cmt.id)}
+                >
+                  <AiOutlineCheck />
+                </SButton>
+              )}
+
+              <div>
+                <div
+                  className="author"
+                  onClick={() =>
+                    history.push({
+                      pathname: `/profile/${cmt.memberId}`,
+                      state: {
+                        memberId: cmt.memberId,
+                      },
+                    })
+                  }
+                >
+                  {cmt.author}
+                </div>
+                <div>
+                  <span className="date">
+                    {cmt.createdDate &&
+                      `${cmt.createdDate.split('T')[0]} ${cmt.createdDate
                         .split('T')[1]
-                        .substring(0, 8)} 수정`)}
-              </span>
+                        .substring(0, 8)} 작성`}
+                  </span>
+                  <span className="date">
+                    {cmt.createdDate &&
+                      cmt.lastModifiedDate &&
+                      (cmt.createdDate === cmt.lastModifiedDate
+                        ? ''
+                        : ` ∙ ${
+                            cmt.lastModifiedDate.split('T')[0]
+                          } ${cmt.lastModifiedDate
+                            .split('T')[1]
+                            .substring(0, 8)} 수정`)}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <ButtonContainer>
-                <Button onClick={() => likeComment(cmt.id)}>
-                  <AiOutlineLike />
-                  <span style={{ marginLeft: 4 }}>{cmt.likes}</span>
-                </Button>
-                {user && cmt.memberId === user.id && (
-                  <>
-                    <Button>
-                      <FiEdit onClick={() => setEdit(!edit)} />
-                    </Button>
-                    <Button>
-                      <FiTrash onClick={() => delComment(cmt.id)} />
-                    </Button>
-                  </>
-                )}
-              </ButtonContainer>
-            </div>
+
+            <ButtonContainer>
+              <Button onClick={() => likeComment(cmt.id)} title="댓글 좋아요">
+                <AiOutlineLike />
+                <span style={{ marginLeft: 4 }}>{cmt.likes}</span>
+              </Button>
+              {user && cmt.memberId === user.id && (
+                <>
+                  <Button title="댓글 수정">
+                    <FiEdit onClick={() => setEdit(!edit)} />
+                  </Button>
+                  <Button title="댓글 삭제">
+                    <FiTrash onClick={() => delComment(cmt.id)} />
+                  </Button>
+                </>
+              )}
+            </ButtonContainer>
           </div>
         </div>
 

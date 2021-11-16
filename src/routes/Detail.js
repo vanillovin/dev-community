@@ -171,7 +171,6 @@ const CommentButton = styled.button`
 `;
 
 const Detail = ({ match, location }) => {
-  // console.log('Detail');
   const history = useHistory();
 
   const { type, id } = match.params;
@@ -183,6 +182,7 @@ const Detail = ({ match, location }) => {
 
   const t = useT();
   const user = useUser();
+  console.log('Detail user', user);
 
   const [content, setContent] = useState('');
   const [state, setState] = useState({
@@ -239,7 +239,8 @@ const Detail = ({ match, location }) => {
         console.log('sendComment res', comments, res.data);
         setState({
           ...state,
-          comments: [...comments, res.data],
+          // comments: [...comments, res.data],
+          comments: [res.data, ...comments],
         });
         setContent('');
         // window.location.href = location.pathname;
@@ -308,6 +309,27 @@ const Detail = ({ match, location }) => {
         console.log('likePost', err);
         alert('이미 좋아요를 누르셨습니다');
       });
+  };
+
+  const selectComment = (cId) => {
+    // console.log('selectComment', cId, comments);
+    const some = comments.some((cmt) => cmt.selected === true);
+    !some &&
+      window.confirm('댓글을 채택하시겠습니까?') &&
+      boardApi
+        .selectComment(id, cId, t)
+        .then((res) => {
+          console.log('selectComment', res);
+          setState({
+            ...state,
+            comments: comments.map((cmt) =>
+              cmt.id === cId ? { ...cmt, selected: true } : cmt
+            ),
+          });
+        })
+        .catch((err) => {
+          console.log('selectComment', err);
+        });
   };
 
   const likeComment = (cId) => {
@@ -416,7 +438,7 @@ const Detail = ({ match, location }) => {
           </Content>
 
           <LikeContainer>
-            <LikeButton type="submit" onClick={likePost}>
+            <LikeButton type="submit" onClick={likePost} title="게시글 좋아요">
               <AiOutlineLike />
               <div>{likes}</div>
             </LikeButton>
@@ -429,6 +451,7 @@ const Detail = ({ match, location }) => {
                   </>
                 )}
                 <AiOutlineSetting
+                  title="게시글 설정"
                   className="setbtn"
                   onClick={() => setToggle(!toggle)}
                 />
@@ -452,9 +475,11 @@ const Detail = ({ match, location }) => {
             <Comment
               key={cmt.id}
               cmt={cmt}
+              author={user && post && post.memberId === user.id}
               delComment={delComment}
               fixComment={fixComment}
               likeComment={likeComment}
+              selectComment={selectComment}
             />
           ))}
 
@@ -464,7 +489,11 @@ const Detail = ({ match, location }) => {
               onChange={onChange}
               placeholder="댓글 달기"
             />
-            <CommentButton type="submit" onClick={sendComments}>
+            <CommentButton
+              type="submit"
+              title="댓글 등록"
+              onClick={sendComments}
+            >
               등록
             </CommentButton>
           </CommentForm>

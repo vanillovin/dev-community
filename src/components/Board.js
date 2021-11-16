@@ -116,11 +116,12 @@ const Board = ({ title }) => {
   const { loading, totalPage, currentPage, posts } = state;
 
   const fetchPosts = async (num, sort = 'createdDate') => {
-    console.log('Board fetchPosts', num, sort, type);
-
     try {
       const response = await boardApi.getPosts(num, sort, type);
-      console.log('Board getPosts res', response.data);
+      console.log(
+        `Board getPosts res num: ${num}, sort: ${sort}, type: ${type} =>`,
+        response.data
+      );
       setState({
         ...state,
         loading: false,

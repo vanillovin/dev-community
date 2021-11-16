@@ -12,7 +12,8 @@ const PostContainer = styled.div`
   background-color: #fff;
 
   border-left: ${(props) =>
-    props.cmt ? '4px solid #91a7ff' : '4px solid #dbe4ff'};
+    props.cmt ? '4px solid #748ffc' : '4px solid #dbe4ff'};
+  border-left: ${(props) => props.selected && '4px solid #51cf66'};
   border-right: 1px solid lightgray;
   border-bottom: 1px solid lightgray;
   border-top: ${(props) => props.first && '1px solid lightgray'};
@@ -90,7 +91,11 @@ const Post = ({ post, type, fci }) => {
   };
 
   return (
-    <PostContainer first={fci === post.id} cmt={post.commentSize > 0}>
+    <PostContainer
+      first={fci === post.id}
+      cmt={post.commentSize > 0}
+      selected={post.selected}
+    >
       {/* onClick or Link? detail link to='/id/?' */}
       <PostLeft>
         <div className="id">#{post.id}</div>

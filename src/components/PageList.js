@@ -54,10 +54,9 @@ const PageList = ({
   currentPage,
   sort,
 }) => {
-  console.log(
-    `PageList totalP: ${totalPage}, currentP: ${currentPage}, sortBy: ${sort}, pageState: ${page}`
-  );
-
+  // console.log(
+  //   `PageList totalP: ${totalPage}, currentP: ${currentPage}, sortBy: ${sort}, pageState: ${page}`
+  // );
   const onListClick = (e) => {
     const pNum = e.target.innerText;
     const cName = e.target.className;
@@ -103,11 +102,9 @@ const PageList = ({
         <PageLI className="first" title="맨 앞 페이지" cs={currentPage === 1}>
           &laquo;
         </PageLI>
-        {/* {page[0] > 5 && ( */}
         <PageLI className="prev" title="앞으로 5페이지">
           &#60;
         </PageLI>
-        {/* )} */}
         {page.map((num, i) => (
           <PageLI
             key={i}
@@ -118,11 +115,9 @@ const PageList = ({
             {num > totalPage ? '' : num}
           </PageLI>
         ))}
-        {/* {totalPage > 5 && page[page.length - 1] < totalPage && ( */}
         <PageLI className="next" name="li" title="뒤로 5페이지">
           &#62;
         </PageLI>
-        {/* )} */}
         <PageLI
           className="last"
           title="맨 뒤 페이지"

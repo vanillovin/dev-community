@@ -43,6 +43,12 @@ export const boardApi = {
         'X-AUTH-TOKEN': t,
       },
     }),
+  selectComment: (pId, cId, t) =>
+    api.put(`boards/${pId}/comments/${cId}/selections`, null, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
 };
 
 export const commentApi = {
