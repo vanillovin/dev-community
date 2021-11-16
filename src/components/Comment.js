@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AiOutlineLike, AiOutlineCheck } from 'react-icons/ai';
+import {
+  AiOutlineLike,
+  AiOutlineCheck,
+  AiOutlineComment,
+} from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
 import { useHistory } from 'react-router';
@@ -33,15 +37,14 @@ const SButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: 8px;
-  cursor: pointer;
   margin-right: 6px;
   border-radius: 50%;
   background-color: #edf2ff;
-  background-color: ${(props) => (props.selected ? '#51cf66' : '#edf2ff')};
   border: 1px solid lightgray;
+  cursor: ${(props) => props.some && 'pointer'};
+  background-color: ${(props) => (props.selected ? '#51cf66' : '#edf2ff')};
   &:hover {
-    color: #fff;
-    background-color: #51cf66;
+    background-color: ${(props) => props.some && '#51cf66'};
   }
 `;
 const Content = styled.div`
@@ -114,6 +117,7 @@ const EditButton = styled.button`
 
 const Comment = ({
   cmt,
+  some,
   author,
   delComment,
   fixComment,
@@ -142,16 +146,26 @@ const Comment = ({
             }}
           >
             <div className="left">
-              {author && (
+              {!some && author && (
                 <SButton
                   title="댓글 채택"
-                  selected={cmt.selected}
+                  some={!some}
                   onClick={() => selectComment(cmt.id)}
                 >
                   <AiOutlineCheck />
                 </SButton>
               )}
-
+              {some ? (
+                cmt.selected ? (
+                  <SButton selected={cmt.selected}>
+                    <AiOutlineCheck />
+                  </SButton>
+                ) : (
+                  <SButton selected={cmt.selected}>
+                    <AiOutlineComment />
+                  </SButton>
+                )
+              ) : null}
               <div>
                 <div
                   className="author"

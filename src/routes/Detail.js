@@ -194,6 +194,7 @@ const Detail = ({ match, location }) => {
   const { loading, post, comments } = state;
   const [toggle, setToggle] = useState(false);
   const [likes, setLikes] = useState();
+  const some = comments.some((cmt) => cmt.selected === true);
 
   useEffect(() => {
     const fetchPost = () => {
@@ -239,8 +240,8 @@ const Detail = ({ match, location }) => {
         console.log('sendComment res', comments, res.data);
         setState({
           ...state,
-          // comments: [...comments, res.data],
-          comments: [res.data, ...comments],
+          comments: [...comments, res.data],
+          // comments: [res.data, ...comments],
         });
         setContent('');
         // window.location.href = location.pathname;
@@ -313,8 +314,10 @@ const Detail = ({ match, location }) => {
 
   const selectComment = (cId) => {
     // console.log('selectComment', cId, comments);
-    const some = comments.some((cmt) => cmt.selected === true);
-    !some &&
+
+    const author = user && post && post.memberId === user.id;
+    author &&
+      !some &&
       window.confirm('댓글을 채택하시겠습니까?') &&
       boardApi
         .selectComment(id, cId, t)
@@ -475,6 +478,7 @@ const Detail = ({ match, location }) => {
             <Comment
               key={cmt.id}
               cmt={cmt}
+              some={some}
               author={user && post && post.memberId === user.id}
               delComment={delComment}
               fixComment={fixComment}
