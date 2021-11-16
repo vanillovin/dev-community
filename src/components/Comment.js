@@ -146,15 +146,6 @@ const Comment = ({
             }}
           >
             <div className="left">
-              {!some && author && (
-                <SButton
-                  title="댓글 채택"
-                  some={!some}
-                  onClick={() => selectComment(cmt.id)}
-                >
-                  <AiOutlineCheck />
-                </SButton>
-              )}
               {some ? (
                 cmt.selected ? (
                   <SButton selected={cmt.selected}>
@@ -165,7 +156,24 @@ const Comment = ({
                     <AiOutlineComment />
                   </SButton>
                 )
-              ) : null}
+              ) : (
+                <>
+                  {author && (
+                    <SButton
+                      title="댓글 채택"
+                      some={!some}
+                      onClick={() => selectComment(cmt.id)}
+                    >
+                      <AiOutlineCheck />
+                    </SButton>
+                  )}
+                  {!author && (
+                    <SButton>
+                      <AiOutlineComment />
+                    </SButton>
+                  )}
+                </>
+              )}
               <div>
                 <div
                   className="author"
