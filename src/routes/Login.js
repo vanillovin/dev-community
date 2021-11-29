@@ -66,7 +66,6 @@ const Login = () => {
       })
       .catch((err) => {
         console.log('login err', err, err.response.status);
-        // const errCode = err.response.statue;
         switch (err.response.status) {
           case 400:
             alert('로그인 실패 or 잘못된 요청 or 검증 실패');

@@ -49,6 +49,16 @@ export const boardApi = {
         'X-AUTH-TOKEN': t,
       },
     }),
+  scrapPost: (pId, t) =>
+    api.put(`boards/${pId}/scraps`, null, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  searchPosts: (kword, page, cond, type) =>
+    api.get(
+      `boards/v2?keyWord=${kword}&page=${page}&searchCond=${cond}&type=${type}`
+    ),
 };
 
 export const commentApi = {
@@ -95,6 +105,9 @@ export const memberApi = {
   login: (user) => api.post('members/login', user),
   signup: (user) => api.post('members', user),
   getUserPosts: (uid, page) => api.get(`members/${uid}/boards?page=${page}`),
+  getUserData: (uid, type, page) =>
+    api.get(`members/${uid}/${type}?page=${page}`),
   getUserComments: (uid, page) =>
     api.get(`members/${uid}/comments?page=${page}`),
+  getUserScraps: (uid, page) => api.get(`members/${uid}/scraps?page=${page}`),
 };

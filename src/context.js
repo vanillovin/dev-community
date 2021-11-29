@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { memberApi } from './api';
+import { useHistory } from 'react-router';
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
+  const history = useHistory();
   const [state, setState] = useState({
     loading: true,
     t: null,
@@ -27,7 +29,7 @@ export function UserProvider({ children }) {
     } catch (err) {
       console.log('context getUser err', err);
       localStorage.removeItem('user');
-      window.location.href = '/';
+      // 로그인페이지이동
       setState({
         ...state,
         loading: false,

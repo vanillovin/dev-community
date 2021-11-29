@@ -3,6 +3,7 @@ import reset from 'styled-reset';
 
 const globalStyles = createGlobalStyle`
   ${reset};
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
   a {
     text-decoration: none;
     color: inherit;
@@ -11,8 +12,7 @@ const globalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
   body {
-    /* font-family: 'Gowun Dodum', sans-serif; */
-    /* font-family: 'Noto Sans KR', sans-serif; */
+    font-family: 'Noto Sans KR', sans-serif;
     padding-top: 40px;
     padding-bottom: 40px;
     padding-left: 210px; // h180+g30

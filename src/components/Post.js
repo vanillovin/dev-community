@@ -5,7 +5,6 @@ import styled from 'styled-components';
 
 const PostContainer = styled.div`
   width: 750px;
-  /* width: 800px; */
   padding: 10px;
   display: flex;
   align-items: center;
@@ -13,13 +12,12 @@ const PostContainer = styled.div`
 
   border-left: ${(props) =>
     props.cmt ? '4px solid #748ffc' : '4px solid #dbe4ff'};
-  border-left: ${(props) => props.selected && '4px solid #51cf66'};
+  border-left: ${(props) => props.selected && '4px solid #94d82d'};
   border-right: 1px solid lightgray;
   border-bottom: 1px solid lightgray;
   border-top: ${(props) => props.first && '1px solid lightgray'};
 `;
 const PostLeft = styled.div`
-  /* border: 1px solid red; */
   padding-right: 15px;
   width: 60%;
   width: 500px;
@@ -45,19 +43,16 @@ const PostLeft = styled.div`
   }
 `;
 const PostRight = styled.div`
-  /* border: 1px solid red; */
   width: 40%;
   height: 100%;
   display: flex;
   align-items: center;
   .left {
-    /* border: 1px solid blue; */
     display: flex;
     align-items: center;
   }
   .right {
-    margin-left: 8px;
-    /* border: 1px solid red; */
+    margin-left: 10px;
     .username {
       font-size: 12px;
       margin-bottom: 3px;
@@ -70,7 +65,6 @@ const PostRight = styled.div`
   }
 `;
 const Like = styled.div`
-  /* border: 1px solid red; */
   width: 46px;
   font-size: 14px;
   display: flex;
@@ -83,7 +77,6 @@ const Like = styled.div`
 `;
 
 const Post = ({ post, type, fci }) => {
-  // console.log('Post', post);
   const history = useHistory();
 
   const detailPost = () => {
@@ -96,7 +89,6 @@ const Post = ({ post, type, fci }) => {
       cmt={post.commentSize > 0}
       selected={post.selected}
     >
-      {/* onClick or Link? detail link to='/id/?' */}
       <PostLeft>
         <div className="id">#{post.id}</div>
         <div className="title" onClick={detailPost}>

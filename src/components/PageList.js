@@ -47,16 +47,13 @@ const PageLI = styled.li`
 `;
 
 const PageList = ({
-  page,
+  page = [1, 2, 3, 4, 5],
   setPage,
   fetchContents,
   totalPage,
   currentPage,
   sort,
 }) => {
-  // console.log(
-  //   `PageList totalP: ${totalPage}, currentP: ${currentPage}, sortBy: ${sort}, pageState: ${page}`
-  // );
   const onListClick = (e) => {
     const pNum = e.target.innerText;
     const cName = e.target.className;

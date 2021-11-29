@@ -14,10 +14,7 @@ const Container = styled.div`
   border-bottom: 1px solid lightgray;
   white-space: pre-line;
   overflow-wrap: break-word;
-  .left {
-    display: flex;
-    align-items: center;
-  }
+
   .author {
     cursor: pointer;
     color: #5c7cfa;
@@ -32,6 +29,13 @@ const Container = styled.div`
     font-size: 10px;
   }
 `;
+const Top = styled.div`
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  // background-color: orange,
+`;
 const SButton = styled.button`
   display: flex;
   align-items: center;
@@ -40,11 +44,13 @@ const SButton = styled.button`
   margin-right: 6px;
   border-radius: 50%;
   background-color: #edf2ff;
-  border: 1px solid lightgray;
+  border: 1px solid #f1f3f5;
   cursor: ${(props) => props.some && 'pointer'};
-  background-color: ${(props) => (props.selected ? '#51cf66' : '#edf2ff')};
+  color: ${(props) => props.selected && '#fff'};
+  background-color: ${(props) => (props.selected ? '#94d82d' : '#edf2ff')};
   &:hover {
-    background-color: ${(props) => props.some && '#51cf66'};
+    color: ${(props) => props.some && '#fff'};
+    background-color: ${(props) => props.some && '#94d82d'};
   }
 `;
 const Content = styled.div`
@@ -136,19 +142,11 @@ const Comment = ({
     <>
       <Container>
         <div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              height: 40,
-              // backgroundColor: 'orange',
-            }}
-          >
-            <div className="left">
+          <Top>
+            <ButtonContainer>
               {some ? (
                 cmt.selected ? (
-                  <SButton selected={cmt.selected}>
+                  <SButton selected={cmt.selected} title="채택된 댓글">
                     <AiOutlineCheck />
                   </SButton>
                 ) : (
@@ -179,7 +177,7 @@ const Comment = ({
                   className="author"
                   onClick={() =>
                     history.push({
-                      pathname: `/profile/${cmt.memberId}`,
+                      pathname: `/user/info/${cmt.memberId}`,
                       state: {
                         memberId: cmt.memberId,
                       },
@@ -208,7 +206,7 @@ const Comment = ({
                   </span>
                 </div>
               </div>
-            </div>
+            </ButtonContainer>
 
             <ButtonContainer>
               <Button onClick={() => likeComment(cmt.id)} title="댓글 좋아요">
@@ -218,15 +216,27 @@ const Comment = ({
               {user && cmt.memberId === user.id && (
                 <>
                   <Button title="댓글 수정">
-                    <FiEdit onClick={() => setEdit(!edit)} />
+                    <FiEdit
+                      onClick={() => {
+                        cmt.selected
+                          ? alert('채택된 댓글은 수정할 수 없습니다.')
+                          : setEdit(!edit);
+                      }}
+                    />
                   </Button>
                   <Button title="댓글 삭제">
-                    <FiTrash onClick={() => delComment(cmt.id)} />
+                    <FiTrash
+                      onClick={() => {
+                        cmt.selected
+                          ? alert('채택된 댓글은 삭제할 수 없습니다.')
+                          : delComment(cmt.id);
+                      }}
+                    />
                   </Button>
                 </>
               )}
             </ButtonContainer>
-          </div>
+          </Top>
         </div>
 
         {!edit ? (

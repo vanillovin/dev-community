@@ -133,7 +133,7 @@ const Header = () => {
           <UserContainer>
             <Link
               to={{
-                pathname: `/profile/${user.id}`,
+                pathname: `/user/info/${user.id}`,
                 state: { memberId: user.id },
               }}
             >
@@ -170,7 +170,12 @@ const Header = () => {
 
       <List>
         <Item>
-          <SLink to="/board/qna">
+          <SLink
+            to={{
+              pathname: '/board/qna',
+              state: { type: 'qna', sort: 'id' },
+            }}
+          >
             <Icon>
               <AiOutlineQuestion />
             </Icon>
@@ -178,7 +183,12 @@ const Header = () => {
           </SLink>
         </Item>
         <Item>
-          <SLink to="/board/tech">
+          <SLink
+            to={{
+              pathname: '/board/tech',
+              state: { type: 'tech', sort: 'id' },
+            }}
+          >
             <Icon>
               <AiOutlineCodepen />
             </Icon>
@@ -186,7 +196,12 @@ const Header = () => {
           </SLink>
         </Item>
         <Item>
-          <SLink to="/board/free">
+          <SLink
+            to={{
+              pathname: '/board/free',
+              state: { type: 'free', sort: 'id' },
+            }}
+          >
             <Icon>
               <AiFillWechat />
             </Icon>

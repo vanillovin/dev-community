@@ -33,8 +33,8 @@ const PostContainer = styled.div`
   font-size: 13px;
   background-color: #fff;
   border-bottom: ${(props) => (props.lc ? 'none' : '1px solid lightgray')};
-  border-radius: ${(props) => props.fc && '1px 1px 0 0'};
-  border-radius: ${(props) => props.lc && ' 0 0 1px 1px'};
+  /* border-radius: ${(props) => props.fc && '1px 1px 0 0'};
+  border-radius: ${(props) => props.lc && ' 0 0 1px 1px'}; */
   .post-left {
     color: black;
     margin: auto 0;
@@ -83,16 +83,6 @@ const HomeBoard = ({ title, type }) => {
   const fetchPosts = async () => {
     try {
       let response;
-      // if (type === 'user') {
-      //   response = await memberApi.getUserPosts(user.id, 1);
-      //   console.log('Board getUserPosts res', type, response.data);
-      //   setState({
-      //     ...state,
-      //     loading: false,
-      //     posts: response.data.contents.slice(0, 10),
-      //   });
-      //   return;
-      // }
       if (type === 'best') {
         response = await boardApi.getBestPosts();
         console.log('Board getBestPosts res', type, response.data);
@@ -148,7 +138,11 @@ const HomeBoard = ({ title, type }) => {
         pathname: `profile/${user.id}`,
         state: { memberId: user.id },
       });
-    else history.push(`board/${type}`);
+    else
+      history.push({
+        pathname: `board/${type}`,
+        state: { type, sort: 'id' },
+      });
   };
 
   return (
@@ -164,8 +158,8 @@ const HomeBoard = ({ title, type }) => {
           <div
             style={{
               border: '1px solid lightgray',
-
-              borderRadius: 2,
+              borderLeft: 0,
+              // borderRadius: 2,
             }}
           >
             {posts &&
@@ -185,6 +179,7 @@ const HomeBoard = ({ title, type }) => {
                   <div className="post-right">
                     <span
                       className="username"
+                      title={post.author}
                       // onClick={() =>
                       //   history.push({
                       //     pathname: `/profile/${post.memberId}`,
@@ -196,7 +191,7 @@ const HomeBoard = ({ title, type }) => {
                     >
                       {post.author}
                     </span>
-                    <span className="date">
+                    <span className="date" title={post.createdDate}>
                       {displayedAt(post.createdDate)}
                     </span>
                   </div>

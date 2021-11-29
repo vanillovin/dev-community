@@ -83,8 +83,7 @@ const Write = ({
 
   const onSubmit = (e) => {
     // e.preventDefault();
-    console.log(type, title, content);
-
+    console.log('Write onSubmit', type, title, content);
     if (type === '') {
       alert('게시판을 선택해 주세요');
       return;
@@ -108,7 +107,7 @@ const Write = ({
         .then((res) => {
           console.log('send pos res', res);
           const id = res.data.id;
-          history.push(`/board/${type}/${id}`);
+          // history.push(`/board/${type}/${id}`);
         })
         .catch((err) => {
           console.log('send post err', err || err.response.data);

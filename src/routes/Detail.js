@@ -9,6 +9,7 @@ import {
   AiOutlineEye,
   AiOutlineComment,
 } from 'react-icons/ai';
+import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
 import Comment from '../components/Comment';
 import ReactHtmlParser from 'react-html-parser';
 
@@ -23,8 +24,9 @@ const Header = styled.div`
   flex-direction: column;
   border-bottom: 1px solid lightgray;
   .top {
+    /* border: 1px solid black; */
     height: 25px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -55,6 +57,10 @@ const Header = styled.div`
     :hover {
       text-decoration: underline;
     }
+  }
+  .date {
+    color: gray;
+    font-size: 11px;
   }
 `;
 const SettingContainer = styled.div`
@@ -99,7 +105,7 @@ const Title = styled.div`
   font-size: 19px;
   font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 `;
 const Content = styled.div`
   width: 100%;
@@ -135,9 +141,11 @@ const LikeButton = styled.button`
 `;
 const CommentContainer = styled.div`
   width: 100%;
-  margin-top: 25px;
+  margin-top: 30px;
   background: white;
+  /* border-radius: 2px; */
   border: 1px solid lightgray;
+  /* box-shadow: 0 1px 8px 0px rgba(0, 0, 0, 0.1); */
 `;
 const CommentForm = styled.form`
   width: 100%;
@@ -146,12 +154,10 @@ const CommentForm = styled.form`
 `;
 const CommentInput = styled.textarea`
   width: 80%;
-  height: 100%;
   padding: 10px;
   border: none;
   resize: none;
   outline: none;
-  border-bottom: 1px solid lightgray;
 `;
 const CommentButton = styled.button`
   width: 20%;
@@ -169,10 +175,17 @@ const CommentButton = styled.button`
   }
   transition: all 0.1s linear;
 `;
+const BookMark = styled.div`
+  cursor: pointer;
+  color: #91a7ff;
+  font-size: 20px;
+  &:active {
+    color: #dbe4ff;
+  }
+`;
 
-const Detail = ({ match, location }) => {
+const Detail = ({ match }) => {
   const history = useHistory();
-
   const { type, id } = match.params;
 
   let title;
@@ -219,10 +232,6 @@ const Detail = ({ match, location }) => {
     fetchPost();
   }, []);
 
-  // useEffect(() => {
-  //   console.log('useEffect', comments);
-  // }, [comments]);
-
   const sendComments = (e) => {
     e.preventDefault();
     if (!user) {
@@ -241,10 +250,8 @@ const Detail = ({ match, location }) => {
         setState({
           ...state,
           comments: [...comments, res.data],
-          // comments: [res.data, ...comments],
         });
         setContent('');
-        // window.location.href = location.pathname;
       })
       .catch((err) => {
         console.log('sendComment err', err || err.reponse.data);
@@ -266,6 +273,7 @@ const Detail = ({ match, location }) => {
   };
 
   const delPost = () => {
+    // 댓글잇는지확인
     const ok = window.confirm('삭제하시겠습니까?');
     ok &&
       boardApi
@@ -273,15 +281,14 @@ const Detail = ({ match, location }) => {
         .then((res) => {
           console.log('deletePost res', res);
           history.push(`/board/${type}`);
-          // window.location.href = `/board/${type}`;
         })
         .catch((err) => {
           console.log('deletePost err', err);
+          alert(err.response.data.message);
         });
   };
 
   const delComment = (cId) => {
-    // console.log(id, cId, t);
     const ok = window.confirm('댓글을 삭제하시겠습니까?');
     ok &&
       commentApi
@@ -295,7 +302,7 @@ const Detail = ({ match, location }) => {
           // window.location.href = location.pathname;
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response);
         });
   };
 
@@ -307,14 +314,12 @@ const Detail = ({ match, location }) => {
         setLikes(likes + 1);
       })
       .catch((err) => {
-        console.log('likePost', err);
-        alert('이미 좋아요를 누르셨습니다');
+        console.log('likePost', err.response);
+        alert(err.response.data.message);
       });
   };
 
   const selectComment = (cId) => {
-    // console.log('selectComment', cId, comments);
-
     const author = user && post && post.memberId === user.id;
     author &&
       !some &&
@@ -332,11 +337,11 @@ const Detail = ({ match, location }) => {
         })
         .catch((err) => {
           console.log('selectComment', err);
+          alert(err.response.data.message);
         });
   };
 
   const likeComment = (cId) => {
-    // console.log('likeComment', id, cId, t);
     if (!user) {
       const ok = window.confirm('로그인 하시겠습니까?');
       ok && history.push('/login');
@@ -354,13 +359,12 @@ const Detail = ({ match, location }) => {
         });
       })
       .catch((err) => {
-        console.log('likeComment', err);
-        alert('이미 좋아요를 누르셨습니다');
+        console.log('likeComment', err.response);
+        alert(err.response.data.message);
       });
   };
 
   const fixComment = (cId, text) => {
-    // console.log('fixComment', id, cId, text,t);
     commentApi
       .fixComment(id, cId, { content: text }, t)
       .then((res) => {
@@ -375,6 +379,20 @@ const Detail = ({ match, location }) => {
       })
       .catch((err) => {
         console.log('fixComment err', err);
+        alert(err.response.data.message);
+      });
+  };
+
+  const scrapPost = () => {
+    boardApi
+      .scrapPost(id, t)
+      .then((res) => {
+        console.log('scrapPost res', res);
+        alert('게시글 스크랩 성공.');
+      })
+      .catch((err) => {
+        console.log('scrapPost err', err.response);
+        alert(err.response.data.message);
       });
   };
 
@@ -384,7 +402,13 @@ const Detail = ({ match, location }) => {
         {title}
       </h1>
       <DetailContainer>
-        <div style={{ border: '1px solid lightgray', background: '#fff' }}>
+        <div
+          style={{
+            background: '#fff',
+            // borderRadius: 2,
+            border: '1px solid lightgray',
+          }}
+        >
           <Header>
             <div className="top">
               <div className="id">#{post.id && post.id}</div>
@@ -399,38 +423,53 @@ const Detail = ({ match, location }) => {
                 </div>
               </div>
             </div>
-            <Title>{post.title && post.title}</Title>
-            <div>
-              <span
-                className="author"
-                onClick={() =>
-                  history.push({
-                    pathname: `/profile/${post.memberId}`,
-                    state: {
-                      memberId: post.memberId,
-                    },
-                  })
-                }
-              >
-                {post.author}
-              </span>
-              <span style={{ color: 'gray', fontSize: 11 }}>
-                {post.createdDate &&
-                  `${post.createdDate.split('T')[0]} ${post.createdDate
-                    .split('T')[1]
-                    .substring(0, 8)} 작성`}
-              </span>
-              <span style={{ color: 'gray', fontSize: 11 }}>
-                {post.createdDate &&
-                  post.lastModifiedDate &&
-                  (post.createdDate === post.lastModifiedDate
-                    ? ''
-                    : ` ∙ ${
-                        post.lastModifiedDate.split('T')[0]
-                      } ${post.lastModifiedDate
-                        .split('T')[1]
-                        .substring(0, 8)} 수정`)}
-              </span>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <Title>{post.title && post.title}</Title>
+                <div>
+                  <div>
+                    <span
+                      className="author"
+                      onClick={() =>
+                        history.push({
+                          pathname: `/user/info/${post.memberId}`,
+                          state: {
+                            memberId: post.memberId,
+                          },
+                        })
+                      }
+                    >
+                      {post.author}
+                    </span>
+                    <span className="date">
+                      {post.createdDate &&
+                        `${post.createdDate.split('T')[0]} ${post.createdDate
+                          .split('T')[1]
+                          .substring(0, 8)} 작성`}
+                      {post.createdDate &&
+                        post.lastModifiedDate &&
+                        (post.createdDate === post.lastModifiedDate
+                          ? ''
+                          : ` ∙ ${
+                              post.lastModifiedDate.split('T')[0]
+                            } ${post.lastModifiedDate
+                              .split('T')[1]
+                              .substring(0, 8)} 수정`)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <BookMark title="게시글 스크랩" onClick={scrapPost}>
+                <BsBookmarkFill />
+              </BookMark>
             </div>
           </Header>
 
