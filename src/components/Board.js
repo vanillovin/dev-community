@@ -9,11 +9,16 @@ const BoardContainer = styled.div`
   width: 750px;
 `;
 
-const Board = () => {
-  const {
-    state: { type, sort, keyword = '', cond = 0 },
-  } = useLocation();
+const Board = ({ type }) => {
+  // const {
+  //   state: { sort = 'id', keyword = '', cond = 0 },
+  // } = useLocation();
+  const location = useLocation();
+  const sort = location.state ? location.state.sort : 'id';
+  const keyword = location.state ? location.state.keyword : '';
+  const cond = location.state ? location.state.cond : 0;
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
+  console.log('Board type', type, 'location', location);
 
   const sortStr =
     (sort === 'id' && 'createdDate') ||
@@ -34,7 +39,7 @@ const Board = () => {
     console.log(`fetchPosts type:${type} sort:${sortStr} keyword:${keyword}`);
     let response;
     try {
-      if (keyword !== '') {
+      if (keyword) {
         response = await boardApi.searchPosts(keyword, num, cond, type);
         console.log('searchPosts res', response);
       } else {

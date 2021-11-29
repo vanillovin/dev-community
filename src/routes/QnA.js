@@ -74,12 +74,13 @@ const SearchButton = styled.button`
 `;
 
 const QnA = () => {
+  const type = 'qna';
   const history = useHistory();
   const location = useLocation();
   const [keyword, setKeyword] = useState('');
   const [index, setIndex] = useState('0');
-  const sort = location.state.sort;
   console.log('QnA location', location);
+  const sort = location.state ? location.state.sort : 'id';
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -90,7 +91,7 @@ const QnA = () => {
     if (keyword.trim().length < 2) return;
     history.push({
       pathname: `/board/qna?query=${keyword}&sort=${sort}`,
-      state: { type: 'qna', sort, keyword, cond },
+      state: { type, sort, keyword, cond },
     });
   };
 
@@ -104,7 +105,7 @@ const QnA = () => {
             <Link
               to={{
                 pathname: '/board/qna?query=&sort=id',
-                state: { type: 'qna', sort: 'id' },
+                state: { type, sort: 'id' },
               }}
             >
               최신순
@@ -114,7 +115,7 @@ const QnA = () => {
             <Link
               to={{
                 pathname: '/board/qna?query=&sort=viewCount',
-                state: { type: 'qna', sort: 'viewCount' },
+                state: { type, sort: 'viewCount' },
               }}
             >
               조회순
@@ -124,7 +125,7 @@ const QnA = () => {
             <Link
               to={{
                 pathname: '/board/qna?query=&sort=likeCount',
-                state: { type: 'qna', sort: 'likeCount' },
+                state: { type, sort: 'likeCount' },
               }}
             >
               좋아요순
@@ -134,7 +135,7 @@ const QnA = () => {
             <Link
               to={{
                 pathname: '/board/qna?query=&sort=noteCount',
-                state: { type: 'qna', sort: 'noteCount' },
+                state: { type, sort: 'noteCount' },
               }}
             >
               댓글순

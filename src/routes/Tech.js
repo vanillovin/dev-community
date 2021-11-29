@@ -78,7 +78,7 @@ const Tech = () => {
   const location = useLocation();
   const [keyword, setKeyword] = useState('');
   const [index, setIndex] = useState('0');
-  const sort = location.state.sort;
+  const sort = location.state ? location.state.sort : 'id';
   console.log('Tech location', location);
 
   const onSubmit = (e) => {
