@@ -115,7 +115,7 @@ const Profile = () => {
     posts: {
       contents: [],
       commentsLength: null,
-      totalPage: null,
+      totalPages: null,
       currentPage: null,
       totalElements: null,
     },
@@ -141,7 +141,7 @@ const Profile = () => {
           ...posts,
           contents: p.contents,
           commentsLength: c.totalElements,
-          totalPage: p.totalPage,
+          totalPages: p.totalPages,
           currentPage: p.currentPage,
           totalElements: p.totalElements,
         },

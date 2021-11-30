@@ -3,9 +3,18 @@ import { Link, Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import Board from '../components/Board';
 import styled from 'styled-components';
 import { AiOutlineSearch } from 'react-icons/ai';
+import { useUser } from '../context';
 
 const Container = styled.div`
   width: 750px;
+`;
+const Header = styled.div`
+  width: 100%;
+  height: 40px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 const Title = styled.h1`
   font-size: 24px;
@@ -72,8 +81,24 @@ const SearchButton = styled.button`
   border: none;
   background-color: #fff;
 `;
+const Button = styled.button`
+  width: 80px;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  background-color: #dbe4ff;
+  &:hover {
+    background-color: #bac8ff;
+  }
+  &:active {
+    background-color: #91a7ff;
+  }
+  transition: all 0.1s linear;
+`;
 
-const Free = () => {
+const Free = ({ type }) => {
+  const loggedIn = Boolean(useUser());
   const history = useHistory();
   const location = useLocation();
   const [keyword, setKeyword] = useState('');
@@ -88,21 +113,37 @@ const Free = () => {
       (index === '1' && 'content') ||
       (index === '2' && 'all');
     history.push({
-      pathname: `/board/free?query=${keyword}&sort=${sort}`,
-      state: { type: 'free', sort, keyword, cond },
+      pathname: `/board/free?query=${keyword}`,
+      state: { type, sort, keyword, cond },
     });
   };
 
   return (
     <Container>
-      <Title>자유게시판</Title>
+      <Header>
+        <Title>자유게시판</Title>
+        {loggedIn && (
+          <Button
+            onClick={() =>
+              history.push({
+                pathname: '/write',
+                state: {
+                  type,
+                },
+              })
+            }
+          >
+            새 글 쓰기
+          </Button>
+        )}
+      </Header>
 
       <FilterContainer>
         <OrderList>
           <OrderItem active={sort === 'id'}>
             <Link
               to={{
-                pathname: '/board/free?query=&sort=id',
+                pathname: '/board/free?sort=id',
                 state: { type: 'free', sort: 'id' },
               }}
             >
@@ -112,7 +153,7 @@ const Free = () => {
           <OrderItem active={sort === 'viewCount'}>
             <Link
               to={{
-                pathname: '/board/free?query=&sort=viewCount',
+                pathname: '/board/free?sort=viewCount',
                 state: { type: 'free', sort: 'viewCount' },
               }}
             >
@@ -122,7 +163,7 @@ const Free = () => {
           <OrderItem active={sort === 'likeCount'}>
             <Link
               to={{
-                pathname: '/board/free?query=&sort=likeCount',
+                pathname: '/board/free?sort=likeCount',
                 state: { type: 'free', sort: 'likeCount' },
               }}
             >
@@ -132,7 +173,7 @@ const Free = () => {
           <OrderItem active={sort === 'noteCount'}>
             <Link
               to={{
-                pathname: '/board/free?query=&sort=noteCount',
+                pathname: '/board/free?sort=noteCount',
                 state: { type: 'free', sort: 'noteCount' },
               }}
             >

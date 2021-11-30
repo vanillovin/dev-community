@@ -55,14 +55,14 @@ const Test = ({ id, name }) => {
     loading: true,
     data: {
       contents: [],
-      totalPage: null,
+      totalPages: null,
       currentPage: null,
       totalElements: null,
     },
   });
   const {
     loading,
-    data: { contents, totalPage, currentPage, totalElements },
+    data: { contents, totalPages, currentPage, totalElements },
   } = state;
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
 
@@ -75,7 +75,7 @@ const Test = ({ id, name }) => {
         loading: false,
         data: {
           ...data,
-          totalPage: data.totalPage,
+          totalPages: data.totalPages,
           currentPage: data.currentPage,
           totalElements: data.totalElements,
           contents: data.contents,
@@ -98,7 +98,7 @@ const Test = ({ id, name }) => {
         loading: false,
         data: {
           ...data,
-          totalPage: data.totalPage,
+          totalPages: data.totalPages,
           currentPage: data.currentPage,
           totalElements: data.totalElements,
           contents: data.contents,
@@ -165,7 +165,10 @@ const Test = ({ id, name }) => {
         <div style={{ textAlign: 'center', marginTop: 30 }}>
           {name === '스크랩'
             ? '스크랩한 게시물이 없습니다.'
-            : `작성한 ${name}이 없습니다.`}
+            : `작성한 ${
+                (name === 'boards' && '게시물') ||
+                (name === 'comments' && '댓글')
+              }이 없습니다.`}
         </div>
       )}
       {totalElements > 0 && (
@@ -173,7 +176,7 @@ const Test = ({ id, name }) => {
           page={page}
           setPage={setPage}
           fetchContents={fetchContents}
-          totalPage={totalPage}
+          totalPages={totalPages}
           currentPage={currentPage}
         />
       )}

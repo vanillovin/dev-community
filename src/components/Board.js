@@ -14,9 +14,9 @@ const Board = ({ type }) => {
   //   state: { sort = 'id', keyword = '', cond = 0 },
   // } = useLocation();
   const location = useLocation();
-  const sort = location.state ? location.state.sort : 'id';
-  const keyword = location.state ? location.state.keyword : '';
-  const cond = location.state ? location.state.cond : 0;
+  const sort = location.state?.sort || 'id';
+  const keyword = location.state?.keyword || '';
+  const cond = location.state?.cond || 0;
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
   console.log('Board type', type, 'location', location);
 
@@ -28,12 +28,13 @@ const Board = ({ type }) => {
 
   const [board, setBoard] = useState({
     loading: true,
-    totalPage: null,
+    totalPages: null,
     currentPage: null,
+    totalElements: null,
     posts: [],
     err: null,
   });
-  const { loading, totalPage, currentPage, posts } = board;
+  const { loading, totalPages, currentPage, totalElements, posts } = board;
 
   const fetchPosts = async (num) => {
     console.log(`fetchPosts type:${type} sort:${sortStr} keyword:${keyword}`);
@@ -49,8 +50,9 @@ const Board = ({ type }) => {
       setBoard({
         ...board,
         loading: false,
-        totalPage: response.data.totalPage,
+        totalPages: response.data.totalPages,
         currentPage: response.data.currentPage,
+        totalElements: response.data.totalElements,
         posts: response.data.contents,
       });
     } catch (err) {
@@ -70,12 +72,12 @@ const Board = ({ type }) => {
           {posts.map((post) => (
             <Post key={post.id} post={post} type={type} fci={posts[0].id} />
           ))}
-          {totalPage > 0 ? (
+          {totalElements > 0 ? (
             <PageList
               page={page}
               setPage={setPage}
               fetchContents={fetchPosts}
-              totalPage={totalPage}
+              totalPages={totalPages}
               currentPage={currentPage}
               sort={sortStr}
             />

@@ -107,7 +107,7 @@ const Write = ({
         .then((res) => {
           console.log('send pos res', res);
           const id = res.data.id;
-          // history.push(`/board/${type}/${id}`);
+          history.push(`/board/${type}/${id}`);
         })
         .catch((err) => {
           console.log('send post err', err || err.response.data);

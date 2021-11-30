@@ -47,13 +47,16 @@ const PageLI = styled.li`
 `;
 
 const PageList = ({
-  page = [1, 2, 3, 4, 5],
+  page,
   setPage,
   fetchContents,
-  totalPage,
+  totalPages,
   currentPage,
   sort,
 }) => {
+  console.log(
+    `PageList page:${page}, totalPages:${totalPages}, currentPage:${currentPage}, sort:${sort}`
+  );
   const onListClick = (e) => {
     const pNum = e.target.innerText;
     const cName = e.target.className;
@@ -68,7 +71,7 @@ const PageList = ({
       return;
     }
     if (cName.includes('next')) {
-      if (page[page.length - 1] >= totalPage) return;
+      if (page[page.length - 1] >= totalPages) return;
       setPage(page.map((num) => num + 5));
       fetchContents(page[0] + 5, sort);
       return;
@@ -80,14 +83,14 @@ const PageList = ({
       return;
     }
     if (cName.includes('last')) {
-      let x = totalPage;
-      if (totalPage % 5 === 1) x += 4;
-      if (totalPage % 5 === 2) x += 3;
-      if (totalPage % 5 === 3) x += 2;
-      if (totalPage % 5 === 4) x += 1;
-      if (currentPage === totalPage) return;
+      let x = totalPages;
+      if (totalPages % 5 === 1) x += 4;
+      if (totalPages % 5 === 2) x += 3;
+      if (totalPages % 5 === 3) x += 2;
+      if (totalPages % 5 === 4) x += 1;
+      if (currentPage === totalPages) return;
       setPage([1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1)));
-      fetchContents(totalPage, sort);
+      fetchContents(totalPages, sort);
       return;
     }
     fetchContents(pNum, sort);
@@ -106,10 +109,10 @@ const PageList = ({
           <PageLI
             key={i}
             active={currentPage === num}
-            test={num > totalPage && i + 1}
-            title={num > totalPage ? '' : num}
+            test={num > totalPages && i + 1}
+            title={num > totalPages ? '' : num}
           >
-            {num > totalPage ? '' : num}
+            {num > totalPages ? '' : num}
           </PageLI>
         ))}
         <PageLI className="next" name="li" title="뒤로 5페이지">
@@ -118,7 +121,7 @@ const PageList = ({
         <PageLI
           className="last"
           title="맨 뒤 페이지"
-          cs={currentPage === totalPage}
+          cs={currentPage === totalPages}
         >
           &raquo;
         </PageLI>

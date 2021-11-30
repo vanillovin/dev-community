@@ -307,6 +307,11 @@ const Detail = ({ match }) => {
   };
 
   const likePost = () => {
+    if (!user) {
+      const ok = window.confirm('로그인 하시겠습니까?');
+      ok && history.push('/login');
+      return;
+    }
     boardApi
       .likePost(id, t)
       .then((res) => {
@@ -467,9 +472,11 @@ const Detail = ({ match }) => {
                 </div>
               </div>
 
-              <BookMark title="게시글 스크랩" onClick={scrapPost}>
-                <BsBookmarkFill />
-              </BookMark>
+              {user && (
+                <BookMark title="게시글 스크랩" onClick={scrapPost}>
+                  <BsBookmarkFill />
+                </BookMark>
+              )}
             </div>
           </Header>
 

@@ -26,6 +26,7 @@ const Header = styled.div`
 const PostContainer = styled.div`
   border-left: ${(props) =>
     props.cmt ? '3px solid #91a7ff' : '3px solid #dbe4ff'};
+  border-left: ${(props) => props.selected && '3px solid #94d82d'};
   width: 100%;
   padding: 10px;
   display: grid;
@@ -169,6 +170,7 @@ const HomeBoard = ({ title, type }) => {
                   fc={posts[0].id === post.id}
                   lc={posts[posts.length - 1].id === post.id}
                   cmt={post.commentSize > 0}
+                  selected={post.selected}
                 >
                   <div
                     onClick={() => history.push(`/board/${type}/${post.id}`)}

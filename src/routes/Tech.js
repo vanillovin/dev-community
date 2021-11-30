@@ -3,9 +3,18 @@ import { Link, Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import Board from '../components/Board';
 import styled from 'styled-components';
 import { AiOutlineSearch } from 'react-icons/ai';
+import { useUser } from '../context';
 
 const Container = styled.div`
   width: 750px;
+`;
+const Header = styled.div`
+  width: 100%;
+  height: 40px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 const Title = styled.h1`
   font-size: 24px;
@@ -72,8 +81,24 @@ const SearchButton = styled.button`
   border: none;
   background-color: #fff;
 `;
+const Button = styled.button`
+  width: 80px;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  background-color: #dbe4ff;
+  &:hover {
+    background-color: #bac8ff;
+  }
+  &:active {
+    background-color: #91a7ff;
+  }
+  transition: all 0.1s linear;
+`;
 
-const Tech = () => {
+const Tech = ({ type }) => {
+  const loggedIn = Boolean(useUser());
   const history = useHistory();
   const location = useLocation();
   const [keyword, setKeyword] = useState('');
@@ -88,21 +113,37 @@ const Tech = () => {
       (index === '1' && 'content') ||
       (index === '2' && 'all');
     history.push({
-      pathname: `/board/tech?query=${keyword}&sort=${sort}`,
-      state: { type: 'tech', sort, keyword, cond },
+      pathname: `/board/tech?query=${keyword}`,
+      state: { type, sort, keyword, cond },
     });
   };
 
   return (
     <Container>
-      <Title>Tech</Title>
+      <Header>
+        <Title>Tech</Title>
+        {loggedIn && (
+          <Button
+            onClick={() =>
+              history.push({
+                pathname: '/write',
+                state: {
+                  type,
+                },
+              })
+            }
+          >
+            새 글 쓰기
+          </Button>
+        )}
+      </Header>
 
       <FilterContainer>
         <OrderList>
           <OrderItem active={sort === 'id'}>
             <Link
               to={{
-                pathname: '/board/tech?query=&sort=id',
+                pathname: '/board/tech?sort=id',
                 state: { type: 'tech', sort: 'id' },
               }}
             >
@@ -112,7 +153,7 @@ const Tech = () => {
           <OrderItem active={sort === 'viewCount'}>
             <Link
               to={{
-                pathname: '/board/tech?query=&sort=viewCount',
+                pathname: '/board/tech?sort=viewCount',
                 state: { type: 'tech', sort: 'viewCount' },
               }}
             >
@@ -122,7 +163,7 @@ const Tech = () => {
           <OrderItem active={sort === 'likeCount'}>
             <Link
               to={{
-                pathname: '/board/tech?query=&sort=likeCount',
+                pathname: '/board/tech?sort=likeCount',
                 state: { type: 'tech', sort: 'likeCount' },
               }}
             >
@@ -132,7 +173,7 @@ const Tech = () => {
           <OrderItem active={sort === 'noteCount'}>
             <Link
               to={{
-                pathname: '/board/tech?query=&sort=noteCount',
+                pathname: '/board/tech?sort=noteCount',
                 state: { type: 'tech', sort: 'noteCount' },
               }}
             >
