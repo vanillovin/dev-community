@@ -152,7 +152,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData(1);
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (ok, state) => {
     console.log(ok, state);

@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { memberApi } from './api';
-import { useHistory } from 'react-router';
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
-  const history = useHistory();
   const [state, setState] = useState({
     loading: true,
     t: null,
@@ -41,7 +39,7 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     getUser();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <UserContext.Provider value={{ state }}>{children}</UserContext.Provider>

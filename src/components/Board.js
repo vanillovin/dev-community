@@ -63,7 +63,7 @@ const Board = ({ type }) => {
 
   useEffect(() => {
     fetchPosts(1);
-  }, [type, sort, keyword, cond]);
+  }, [type, sort, keyword, cond]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <BoardContainer>

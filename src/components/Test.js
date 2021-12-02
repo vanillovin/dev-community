@@ -61,7 +61,6 @@ const Test = ({ id, name }) => {
     },
   });
   const {
-    loading,
     data: { contents, totalPages, currentPage, totalElements },
   } = state;
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
@@ -88,7 +87,7 @@ const Test = ({ id, name }) => {
 
   useEffect(() => {
     fetchData(1);
-  }, [id, name]);
+  }, [id, name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchContents = async (num) => {
     try {

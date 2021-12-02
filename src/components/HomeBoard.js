@@ -109,7 +109,7 @@ const HomeBoard = ({ title, type }) => {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function displayedAt(createdAt) {
     const dateStr = `${createdAt.split('T')[0]} ${

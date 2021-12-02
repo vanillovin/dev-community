@@ -9,7 +9,7 @@ import {
   AiOutlineEye,
   AiOutlineComment,
 } from 'react-icons/ai';
-import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
+import { BsBookmarkFill } from 'react-icons/bs';
 import Comment from '../components/Comment';
 import ReactHtmlParser from 'react-html-parser';
 
@@ -230,7 +230,7 @@ const Detail = ({ match }) => {
         });
     };
     fetchPost();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendComments = (e) => {
     e.preventDefault();
