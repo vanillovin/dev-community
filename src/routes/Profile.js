@@ -105,9 +105,9 @@ const Profile = () => {
   const t = useT();
   const user = useUser();
   const location = useLocation();
-  const {
-    state: { memberId },
-  } = useLocation();
+  // location.pathname or location.state.memberId
+  const id = location.pathname.split('/')[3] || location.state?.memberId;
+
   const [toggle, setToggle] = useState(false);
   const [state, setState] = useState({
     loading: true,
@@ -121,7 +121,6 @@ const Profile = () => {
     },
   });
   const { loading, userInfo, posts } = state;
-  const id = memberId ? memberId : user.id;
   console.log('Profile location', location);
 
   const fetchData = async (num) => {
@@ -153,7 +152,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData(1);
-  }, [memberId]);
+  }, [id]);
 
   const onSubmit = (ok, state) => {
     console.log(ok, state);
@@ -215,7 +214,7 @@ const Profile = () => {
               <div style={{ fontSize: 25, letterSpacing: 2 }}>
                 {userInfo.name}
               </div>
-              {user && user.id === memberId && (
+              {user && user.id === id && (
                 <div>
                   <Button onClick={() => setToggle(!toggle)}>
                     {!toggle ? '회원정보수정' : '취소하기'}
