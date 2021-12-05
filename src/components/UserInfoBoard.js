@@ -49,8 +49,8 @@ const Post = styled.div`
   }
 `;
 
-const Test = ({ id, name }) => {
-  console.log('Test', id, name);
+const UserInfoBoard = ({ id, name }) => {
+  console.log('UserInfoBoard', id, name);
   const [state, setState] = useState({
     loading: true,
     data: {
@@ -183,4 +183,4 @@ const Test = ({ id, name }) => {
   );
 };
 
-export default Test;
+export default UserInfoBoard;

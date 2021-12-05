@@ -5,7 +5,7 @@ import { memberApi } from '../api';
 import AuthForm from '../components/AuthForm';
 import { useT, useUser } from '../context';
 import { Route, Switch, useLocation } from 'react-router';
-import Test from '../components/Test';
+import UserInfoBoard from '../components/UserInfoBoard';
 
 const Container = styled.div`
   width: 750px;
@@ -265,16 +265,16 @@ const Profile = () => {
           <Activity>
             <Switch>
               <Route exact path={`/user/info/${id}`}>
-                <Test id={id} name="boards" />
+                <UserInfoBoard id={id} name="boards" />
               </Route>
               <Route exact path={`/user/info/${id}/posts`}>
-                <Test id={id} name="boards" />
+                <UserInfoBoard id={id} name="boards" />
               </Route>
               <Route exact path={`/user/info/${id}/comments`}>
-                <Test id={id} name="comments" />
+                <UserInfoBoard id={id} name="comments" />
               </Route>
               <Route exact path={`/user/info/${id}/scrapped`}>
-                <Test id={id} name="scraps" />
+                <UserInfoBoard id={id} name="scraps" />
               </Route>
             </Switch>
           </Activity>
