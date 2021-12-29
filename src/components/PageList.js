@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 const PageContainer = styled.div`
   user-select: none;
@@ -15,7 +16,6 @@ const PageUL = styled.ul`
   align-items: center;
   justify-content: center;
   border: 1px solid lightgray;
-
   .first {
     font-weight: bold;
   }
@@ -27,9 +27,7 @@ const PageLI = styled.li`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* cursor: pointer; */
   cursor: ${(props) => (props.cs ? 'not-allowed' : 'pointer')};
-
   width: 28px;
   height: 28px;
   width: ${(props) => (props.test ? '0px' : '28px')};
@@ -39,7 +37,6 @@ const PageLI = styled.li`
     border-right: 1px solid lightgray;
     border-right: ${(props) => (props.test ? 'none' : ' 1px solid lightgray')};
   }
-
   background-color: ${(props) => props.active && '#bac8ff'};
   :hover {
     background-color: ${(props) => !props.active && '#dbe4ff'};
@@ -47,39 +44,48 @@ const PageLI = styled.li`
 `;
 
 const PageList = ({
-  page,
-  setPage,
-  fetchContents,
+  pageState,
+  setPageState,
   totalPages,
   currentPage,
-  sort,
+  routeInfo,
+  searchKword,
 }) => {
+  const history = useHistory();
+  const { type, sort } = routeInfo;
   console.log(
-    `PageList page:${page}, totalPages:${totalPages}, currentPage:${currentPage}, sort:${sort}`
+    `PageList  
+pageState: [${pageState}] 
+totalPages: ${totalPages}  
+currentPage: ${currentPage} 
+searchKword: ${searchKword}
+routeInfo:`,
+    routeInfo
   );
-  const onListClick = (e) => {
+
+  const onClick = (e) => {
     const pNum = e.target.innerText;
     const cName = e.target.className;
     if (pNum === '') return;
     if (currentPage === +pNum) return;
     if (e.target.tagName === 'UL') return;
     if (cName.includes('prev')) {
-      if (page[0] !== 1) {
-        setPage(page.map((num) => num - 5));
-        fetchContents(page[0] - 5, sort);
+      if (pageState[0] !== 1) {
+        setPageState(pageState.map((num) => num - 5));
+        // fetchContents(pageState[0] - 5);
       }
       return;
     }
     if (cName.includes('next')) {
-      if (page[page.length - 1] >= totalPages) return;
-      setPage(page.map((num) => num + 5));
-      fetchContents(page[0] + 5, sort);
+      if (pageState[pageState.length - 1] >= totalPages) return;
+      setPageState(pageState.map((num) => num + 5));
+      // fetchContents(pageState[0] + 5);
       return;
     }
     if (cName.includes('first')) {
       if (currentPage === 1) return;
-      setPage([1, 2, 3, 4, 5]);
-      fetchContents(1, sort);
+      setPageState([1, 2, 3, 4, 5]);
+      // fetchContents(1);
       return;
     }
     if (cName.includes('last')) {
@@ -89,23 +95,35 @@ const PageList = ({
       if (totalPages % 5 === 3) x += 2;
       if (totalPages % 5 === 4) x += 1;
       if (currentPage === totalPages) return;
-      setPage([1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1)));
-      fetchContents(totalPages, sort);
+      setPageState([1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1)));
+      // fetchContents(totalPages);
       return;
     }
-    fetchContents(pNum, sort);
+    // fetchContents(pNum);
+    history.push({
+      pathname: `/board/${type}?sort=${sort}${
+        searchKword ? `&searchType=${searchKword}` : ''
+      }&page=${pNum}`,
+      state: {
+        type,
+        sort,
+        page: pNum,
+        cond: searchKword.split('=')[0],
+        kword: searchKword.split('=')[1],
+      },
+    });
   };
 
   return (
     <PageContainer>
-      <PageUL onClick={onListClick}>
+      <PageUL onClick={onClick}>
         <PageLI className="first" title="맨 앞 페이지" cs={currentPage === 1}>
           &laquo;
         </PageLI>
         <PageLI className="prev" title="앞으로 5페이지">
           &#60;
         </PageLI>
-        {page.map((num, i) => (
+        {pageState.map((num, i) => (
           <PageLI
             key={i}
             active={currentPage === num}

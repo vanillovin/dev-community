@@ -112,8 +112,12 @@ const Free = ({ type }) => {
       (index === '0' && 'title') ||
       (index === '1' && 'content') ||
       (index === '2' && 'all');
+    if (keyword.trim().length < 2) {
+      alert('검색어를 2글자 이상 입력해주세요');
+      return;
+    }
     history.push({
-      pathname: `/board/free?query=${keyword}`,
+      pathname: `/board/free?searchType=${cond}=${keyword}`,
       state: { type, sort, keyword, cond },
     });
   };

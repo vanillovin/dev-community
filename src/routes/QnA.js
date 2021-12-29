@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import Board from '../components/Board';
 import styled from 'styled-components';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { useUser } from '../context';
+import { boardApi } from '../api';
+import PageList from '../components/PageList';
 
 const Container = styled.div`
   width: 750px;
@@ -61,7 +63,7 @@ const SearchSelect = styled.select`
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 0 6px 0 8px;
+  padding: 0 8px;
   background-color: #fff;
 `;
 const SearchInput = styled.input`
@@ -102,21 +104,120 @@ const QnA = () => {
   const type = 'qna';
   const history = useHistory();
   const location = useLocation();
+  const sort = location.state?.sort || 'id';
+  const isKword = location.state?.kword;
+  const kwordStr = location.pathname.split('searchType=')[1];
+  const searchKword = kwordStr
+    ? kwordStr.includes('&page=')
+      ? kwordStr?.substring(0, kwordStr.indexOf('&page='))
+      : kwordStr.substring(0, 20)
+    : '';
+  const sortStr =
+    (sort === 'id' && 'createdDate') ||
+    (sort === 'viewCount' && 'views') ||
+    (sort === 'noteCount' && 'commentSize') ||
+    (sort === 'likeCount' && 'likes');
+  let pageNum =
+    location.search.split('page=')[1] ||
+    location.state?.page ||
+    location.pathname.split('page=')[1] ||
+    1;
+
   const [keyword, setKeyword] = useState('');
   const [index, setIndex] = useState('0');
-  console.log('QnA location', location);
-  const sort = location.state ? location.state.sort : 'id';
+  const [pageState, setPageState] = useState([1, 2, 3, 4, 5]);
+  const cond =
+    (index === '0' && 'TITLE') ||
+    (index === '1' && 'CONTENT') ||
+    (index === '2' && 'ALL');
+
+  const [board, setBoard] = useState({
+    loading: true,
+    totalPages: null,
+    currentPage: null,
+    totalElements: null,
+    posts: [],
+    err: null,
+  });
+  const { loading, totalPages, currentPage, totalElements, posts } = board;
+
+  console.log(
+    `"QnA"
+- path: ${location.pathname}
+- sort: ${sort} / ${sortStr} 
+- searchKword: ${searchKword}  
+- pageNum: ${pageNum}
+- keywordState: ${keyword}
+`,
+    '- QnA location',
+    location,
+    '- QnA route state',
+    location.state
+  );
+
+  const fetchPosts = async () => {
+    console.log('Fn > fetchPosts pathname:', location, 'isKword:', searchKword);
+    let response;
+    try {
+      // 으아
+      if (isKword) {
+        response = await boardApi.searchPosts(keyword, pageNum, cond, 'QNA');
+        console.log('fetchPosts keyword res =>', response.data);
+      } else {
+        response = await boardApi.getPosts(pageNum, sortStr, type);
+        console.log(
+          'fetchPosts !keyword res =>',
+          pageNum,
+          sortStr,
+          response.data
+        );
+      }
+      setBoard({
+        ...board,
+        loading: false,
+        totalPages: response.data.totalPages,
+        currentPage: response.data.currentPage,
+        totalElements: response.data.totalElements,
+        posts: response.data.contents,
+      });
+    } catch (err) {
+      console.log('fetchPosts err =>', err);
+      setBoard({ ...board, error: err });
+    }
+  };
+
+  useEffect(() => {
+    console.log('"QnA" useEffect =>');
+    fetchPosts();
+  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const writePost = () => {
+    history.push({
+      pathname: '/write',
+      state: { type },
+    });
+  };
+
+  const routeInfo = {
+    type,
+    sort,
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const cond =
-      (index === '0' && 'title') ||
-      (index === '1' && 'content') ||
-      (index === '2' && 'all');
-    if (keyword.trim().length < 2) return;
+    if (keyword.trim().length < 2) {
+      alert('검색어를 2글자 이상 입력해주세요');
+      return;
+    }
     history.push({
-      pathname: `/board/qna?query=${keyword}`,
-      state: { type, sort, keyword, cond },
+      pathname: `/board/qna?sort=id&searchType=${cond}=${keyword}`,
+      state: {
+        type,
+        sort: 'id',
+        page: 1,
+        cond: searchKword.split('=')[0],
+        kword: searchKword.split('=')[1],
+      },
     });
   };
 
@@ -124,20 +225,7 @@ const QnA = () => {
     <Container>
       <Header>
         <Title>Q&A</Title>
-        {loggedIn && (
-          <Button
-            onClick={() =>
-              history.push({
-                pathname: '/write',
-                state: {
-                  type,
-                },
-              })
-            }
-          >
-            새 글 쓰기
-          </Button>
-        )}
+        {loggedIn && <Button onClick={writePost}>새 글 쓰기</Button>}
       </Header>
 
       <FilterContainer>
@@ -198,7 +286,7 @@ const QnA = () => {
             minLength="2"
             maxLength="20"
           />
-          <SearchButton type="submit" onClick={onSubmit}>
+          <SearchButton onClick={onSubmit}>
             <AiOutlineSearch className="sbtn" />
           </SearchButton>
         </SearchForm>
@@ -206,10 +294,26 @@ const QnA = () => {
 
       <Switch>
         <Route exact path="/board/qna">
-          <Board type="qna" />
+          <Board loading={loading} posts={posts} type="qna" />
+          <PageList
+            pageState={pageState}
+            setPageState={setPageState}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            routeInfo={routeInfo}
+            searchKword={searchKword}
+          />
         </Route>
         <Route exact path="/board/qna?*">
-          <Board type="qna" />
+          <Board loading={loading} posts={posts} type="qna" />
+          <PageList
+            pageState={pageState}
+            setPageState={setPageState}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            routeInfo={routeInfo}
+            searchKword={searchKword}
+          />
         </Route>
       </Switch>
     </Container>

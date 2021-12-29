@@ -6,6 +6,7 @@ import AuthForm from '../components/AuthForm';
 import { useT, useUser } from '../context';
 import { Route, Switch, useLocation } from 'react-router';
 import UserInfoBoard from '../components/UserInfoBoard';
+import PageList from '../components/PageList';
 
 const Container = styled.div`
   width: 750px;
@@ -105,7 +106,6 @@ const Profile = () => {
   const t = useT();
   const user = useUser();
   const location = useLocation();
-  // location.pathname or location.state.memberId
   const id = location.pathname.split('/')[3] || location.state?.memberId;
 
   const [toggle, setToggle] = useState(false);
@@ -121,7 +121,7 @@ const Profile = () => {
     },
   });
   const { loading, userInfo, posts } = state;
-  console.log('Profile location', location);
+  console.log('Profile location', typeof user.id, typeof id, location);
 
   const fetchData = async (num) => {
     console.log('fetchData num', num);
@@ -152,7 +152,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData(1);
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (ok, state) => {
     console.log(ok, state);
@@ -200,6 +200,11 @@ const Profile = () => {
     address: '',
   };
 
+  const [pageState, setPageState] = useState([1, 2, 3, 4, 5]);
+  const routeInfo = {
+    type: 'profile',
+  };
+
   return (
     <Container>
       {userInfo && (
@@ -214,7 +219,7 @@ const Profile = () => {
               <div style={{ fontSize: 25, letterSpacing: 2 }}>
                 {userInfo.name}
               </div>
-              {user && user.id === id && (
+              {user?.id === +id && (
                 <div>
                   <Button onClick={() => setToggle(!toggle)}>
                     {!toggle ? '회원정보수정' : '취소하기'}
@@ -228,7 +233,8 @@ const Profile = () => {
               <>
                 <div className="mid">
                   <span>
-                    나이: {userInfo.age} / 주소: {userInfo.address}
+                    {user &&
+                      `나이: ${userInfo.age} / 주소: ${userInfo.address}`}
                   </span>
                 </div>
 
@@ -265,16 +271,26 @@ const Profile = () => {
           <Activity>
             <Switch>
               <Route exact path={`/user/info/${id}`}>
-                <UserInfoBoard id={id} name="boards" />
+                {/* <UserInfoBoard id={id} name="boards" /> */}
+                <PageList
+                  pageState={pageState}
+                  setPageState={setPageState}
+                  totalPages={2}
+                  currentPage={1}
+                  routeInfo={{
+                    a: 1,
+                  }}
+                  searchKword={''}
+                />
               </Route>
               <Route exact path={`/user/info/${id}/posts`}>
-                <UserInfoBoard id={id} name="boards" />
+                {/* <UserInfoBoard id={id} name="boards" /> */}
               </Route>
               <Route exact path={`/user/info/${id}/comments`}>
-                <UserInfoBoard id={id} name="comments" />
+                {/* <UserInfoBoard id={id} name="comments" /> */}
               </Route>
               <Route exact path={`/user/info/${id}/scrapped`}>
-                <UserInfoBoard id={id} name="scraps" />
+                {/* <UserInfoBoard id={id} name="scraps" /> */}
               </Route>
             </Switch>
           </Activity>
@@ -313,7 +329,7 @@ const Profile = () => {
           </ToggleList>
         </UserActivity>
       ) : (
-        <div></div>
+        <div>?</div>
       )}
     </Container>
   );

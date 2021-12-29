@@ -397,7 +397,7 @@ const Detail = ({ match }) => {
       })
       .catch((err) => {
         console.log('scrapPost err', err.response);
-        alert(err.response.data.message);
+        alert(err.response?.data.message);
       });
   };
 

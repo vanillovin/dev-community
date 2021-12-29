@@ -162,7 +162,7 @@ const UserInfoBoard = ({ id, name }) => {
         ))
       ) : (
         <div style={{ textAlign: 'center', marginTop: 30 }}>
-          {name === '스크랩'
+          {name === 'scraps'
             ? '스크랩한 게시물이 없습니다.'
             : `작성한 ${
                 (name === 'boards' && '게시물') ||
@@ -170,6 +170,7 @@ const UserInfoBoard = ({ id, name }) => {
               }이 없습니다.`}
         </div>
       )}
+      {/* pageState, setPageState, totalPages, currentPage, routeInfo, searchKword, */}
       {totalElements > 0 && (
         <PageList
           page={page}
