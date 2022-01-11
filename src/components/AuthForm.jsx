@@ -75,8 +75,8 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
     }
     if (!name) return;
     if (name.trim() === '') return;
-    if (name.trim().length < 2 || name.trim().length > 20) {
-      return '이름은 2자 이상, 20자 이하로 입력해 주세요.';
+    if (name.trim().length < 2 || name.trim().length > 10) {
+      return '이름은 2자 이상, 10자 이하로 입력해 주세요.';
     }
     return true;
   };
@@ -153,7 +153,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
           name="name"
           value={name}
           onChange={onChange}
-          maxLength="20"
+          maxLength="10"
           placeholder="이름을 입력해주세요"
         />
         <CheckText>{checkName()}</CheckText>

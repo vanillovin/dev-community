@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { memberApi } from '../api';
+import { boardApi, memberApi } from '../api';
 import PageList from './PageList';
 
 const Post = styled.div`
@@ -170,7 +170,7 @@ const UserInfoBoard = ({ id, name }) => {
               }이 없습니다.`}
         </div>
       )}
-      {/* pageState, setPageState, totalPages, currentPage, routeInfo, searchKword, */}
+
       {totalElements > 0 && (
         <PageList
           page={page}

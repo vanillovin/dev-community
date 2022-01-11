@@ -121,17 +121,17 @@ const Profile = () => {
     },
   });
   const { loading, userInfo, posts } = state;
-  console.log('Profile location', typeof user.id, typeof id, location);
 
   const fetchData = async (num) => {
     console.log('fetchData num', num);
     try {
       const { data: userInfo } = await memberApi.getUser(id);
-      console.log('userGet', userInfo);
+      // console.log('userGet', userInfo);
       const { data: p } = await memberApi.getUserPosts(id, num);
-      console.log('Profile posts', p);
+      // console.log('Profile posts', p);
       const { data: c } = await memberApi.getUserComments(id, 1);
-      console.log('Profile comments', c);
+      // console.log('Profile comments', c);
+
       setState({
         ...state,
         userInfo,
@@ -152,6 +152,16 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData(1);
+    // (() => {
+    //   memberApi
+    //     .getNotices(id, 1)
+    //     .then((res) => {
+    //       console.log('notice res =>', res.data);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err?.response?.data);
+    //     });
+    // })();
   }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (ok, state) => {
@@ -198,11 +208,6 @@ const Profile = () => {
     age: user && user.data.age,
     password: '',
     address: '',
-  };
-
-  const [pageState, setPageState] = useState([1, 2, 3, 4, 5]);
-  const routeInfo = {
-    type: 'profile',
   };
 
   return (
@@ -271,26 +276,16 @@ const Profile = () => {
           <Activity>
             <Switch>
               <Route exact path={`/user/info/${id}`}>
-                {/* <UserInfoBoard id={id} name="boards" /> */}
-                <PageList
-                  pageState={pageState}
-                  setPageState={setPageState}
-                  totalPages={2}
-                  currentPage={1}
-                  routeInfo={{
-                    a: 1,
-                  }}
-                  searchKword={''}
-                />
+                <UserInfoBoard id={id} name="boards" />
               </Route>
               <Route exact path={`/user/info/${id}/posts`}>
-                {/* <UserInfoBoard id={id} name="boards" /> */}
+                <UserInfoBoard id={id} name="boards" />
               </Route>
               <Route exact path={`/user/info/${id}/comments`}>
-                {/* <UserInfoBoard id={id} name="comments" /> */}
+                <UserInfoBoard id={id} name="comments" />
               </Route>
               <Route exact path={`/user/info/${id}/scrapped`}>
-                {/* <UserInfoBoard id={id} name="scraps" /> */}
+                <UserInfoBoard id={id} name="scraps" />
               </Route>
             </Switch>
           </Activity>

@@ -182,7 +182,7 @@ const Header = () => {
             <Text>Q&amp;A</Text>
           </SLink>
         </Item>
-        {/* <Item>
+        <Item>
           <SLink
             to={{
               pathname: '/board/tech',
@@ -207,7 +207,7 @@ const Header = () => {
             </Icon>
             <Text>자유게시판</Text>
           </SLink>
-        </Item> */}
+        </Item>
       </List>
     </HeaderContainer>
   );

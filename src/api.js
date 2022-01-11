@@ -110,4 +110,5 @@ export const memberApi = {
   getUserComments: (uid, page) =>
     api.get(`members/${uid}/comments?page=${page}`),
   getUserScraps: (uid, page) => api.get(`members/${uid}/scraps?page=${page}`),
+  getNotices: (uid, page) => api.get(`members/${uid}/notices?page=${page}`),
 };

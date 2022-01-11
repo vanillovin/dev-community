@@ -11,7 +11,6 @@ import {
 } from 'react-icons/ai';
 import { BsBookmarkFill } from 'react-icons/bs';
 import Comment from '../components/Comment';
-import ReactHtmlParser from 'react-html-parser';
 
 const DetailContainer = styled.div`
   width: 750px;
@@ -481,9 +480,7 @@ const Detail = ({ match }) => {
           </Header>
 
           <Content>
-            <div>
-              {post.content ? ReactHtmlParser(post.content) : '로딩 중입니다!'}
-            </div>
+            <div>{post.content ? post.content : '로딩 중입니다!'}</div>
           </Content>
 
           <LikeContainer>
