@@ -22,7 +22,7 @@ const Post = styled.div`
   .type {
     cursor: pointer;
     font-size: 12px;
-    padding: 2px 3px;
+    padding: 1px 3px;
     margin-right: 5px;
     border-radius: 2px;
     background-color: #bac8ff;
@@ -33,7 +33,7 @@ const Post = styled.div`
   .id {
     color: gray;
     font-size: 13px;
-    margin-right: 10px;
+    margin-right: 5px;
   }
   .date {
     font-size: 11px;
@@ -61,6 +61,7 @@ const UserInfoBoard = ({ id, name }) => {
     },
   });
   const {
+    loading,
     data: { contents, totalPages, currentPage, totalElements },
   } = state;
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
@@ -68,9 +69,9 @@ const UserInfoBoard = ({ id, name }) => {
   const fetchData = async (num) => {
     try {
       const { data } = await memberApi.getUserData(id, name, num);
-      console.log('fetchData', data);
-      setState({
-        ...state,
+      console.log('userInfoBoard fetch res.data =>', data);
+      setState(prev => ({
+        ...prev,
         loading: false,
         data: {
           ...data,
@@ -79,9 +80,9 @@ const UserInfoBoard = ({ id, name }) => {
           totalElements: data.totalElements,
           contents: data.contents,
         },
-      });
+      }));
     } catch (err) {
-      console.log(err);
+      console.log('userInfoBoard fetch err =>', err);
     }
   };
 
@@ -108,7 +109,7 @@ const UserInfoBoard = ({ id, name }) => {
     }
   };
 
-  return (
+  return (!loading ?
     <>
       {contents && contents.length > 0 ? (
         contents.map((item) => (
@@ -180,8 +181,8 @@ const UserInfoBoard = ({ id, name }) => {
           currentPage={currentPage}
         />
       )}
-    </>
-  );
+    </> : <div>loading...</div>)
+  
 };
 
 export default UserInfoBoard;

@@ -83,14 +83,17 @@ const Write = ({
 
   const onSubmit = (e) => {
     // e.preventDefault();
-    console.log('Write onSubmit', type, title, content);
+    // console.log('Write onSubmit', type, title, content);
+
     if (type === '') {
       alert('게시판을 선택해 주세요');
       return;
-    } else if (title.trim() === '' || title.trim().length < 2) {
+    }
+    if (title.trim() === '' || title.trim().length < 2) {
       alert('제목은 2자 이상 입력해 주세요');
       return;
-    } else if (content.trim().length < 4) {
+    }
+    if (content.trim().length < 4) {
       // byte
       alert('내용은 4자 이상 입력해 주세요');
       return;
@@ -100,17 +103,20 @@ const Write = ({
       title,
       content,
     };
+
     const ok = window.confirm('게시물을 등록하시겠습니까?');
     ok &&
       boardApi
         .sendPost(type, data, t)
         .then((res) => {
-          console.log('send pos res', res);
+          console.log('sendPost res =>', res);
           const id = res.data.id;
           history.push(`/board/${type}/${id}`);
         })
         .catch((err) => {
-          console.log('send post err', err || err.response.data);
+          console.log('sendPost err =>', err || err.response?.status);
+          // localStorage.removeItem('user');
+          // window.location.href = '/'
         });
   };
 

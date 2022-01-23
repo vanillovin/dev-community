@@ -6,6 +6,7 @@ import Post from '../components/Post';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { boardApi } from '../api';
 import PageList from '../components/PageList';
+import { logRoles } from '@testing-library/react';
 
 const Container = styled.div`
   width: 750px;
@@ -123,10 +124,15 @@ const Board = () => {
   const [pageList, setPageList] = useState([1, 2, 3, 4, 5]);
 
   const onSubmit = (e) => {
+    console.log(index, '/', keyword);
     e.preventDefault();
     if (keyword.trim().length < 2) return 2;
+    // kword, page, cond, type
+    // boardApi.searchPosts(keyword, 1, cond, boardType)
   };
 
+  // 검색어를 입력하고 ENTER키나 검색버튼을 누르면 searchPosts api를 실행해서 boardsState 변경
+  // pagelist에서 다른 번호를 눌러도 위의 조건이 적용되어야함.
   const fetchBoardData = (page, sort = 'createdDate') => {
     boardApi
       .getPosts(page, sort, boardType)

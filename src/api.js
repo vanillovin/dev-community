@@ -110,5 +110,21 @@ export const memberApi = {
   getUserComments: (uid, page) =>
     api.get(`members/${uid}/comments?page=${page}`),
   getUserScraps: (uid, page) => api.get(`members/${uid}/scraps?page=${page}`),
+  // 사용자의 알림 목록 - 사용자의 알림을 조회합니다.
   getNotices: (uid, page) => api.get(`members/${uid}/notices?page=${page}`),
+  // 사용자의 모든 알림 읽기 - 사용자의 모든 알림을 읽음으로 수정.
+  readAllNotices: (uid, t) =>
+    api.put(`members/${uid}/notices`, null, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  // 사용자의 알림 읽기 - 사용자의 알림을 읽음으로 수정.
+  readNotices: (uid, noticeId, t) =>
+    api.put(`members/${uid}/notices/${noticeId}`, null, {
+      headers: {
+        'X-AUTH-TOKEN': t,
+      },
+    }),
+  getNoticeCounts: (uid) => api.get(`/members/${uid}/notices/counts`),
 };

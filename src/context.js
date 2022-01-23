@@ -10,13 +10,16 @@ export function UserProvider({ children }) {
     user: null,
     error: null,
   });
+
   const userLS = JSON.parse(localStorage.getItem('user'));
+  console.log('context userLS', userLS);
 
   const getUser = async () => {
     if (!userLS) return;
     try {
       const { data } = await memberApi.getUser(userLS.memberId);
-      console.log('context getUser res.data', data);
+      console.log('context getUser => res.data', data);
+
       setState({
         ...state,
         loading: false,
@@ -25,8 +28,9 @@ export function UserProvider({ children }) {
         error: null,
       });
     } catch (err) {
-      console.log('context getUser err', err);
+      console.log('context getUser => err', err);
       localStorage.removeItem('user');
+
       // 로그인페이지이동
       setState({
         ...state,
@@ -38,11 +42,14 @@ export function UserProvider({ children }) {
   };
 
   useEffect(() => {
+    console.log('context useEffect');
     getUser();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <UserContext.Provider value={{ state }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ state, setState }}>
+      {children}
+    </UserContext.Provider>
   );
 }
 
@@ -63,4 +70,9 @@ export function useUser() {
     state: { user },
   } = useContext(UserContext);
   return user;
+}
+
+export function useSetUser() {
+  const { setState } = useContext(UserContext);
+  return setState;
 }

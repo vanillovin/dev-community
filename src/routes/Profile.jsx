@@ -7,6 +7,7 @@ import { useT, useUser } from '../context';
 import { Route, Switch, useLocation } from 'react-router';
 import UserInfoBoard from '../components/UserInfoBoard';
 import PageList from '../components/PageList';
+import NoticeBoard from '../components/NoticeBoard';
 
 const Container = styled.div`
   width: 750px;
@@ -107,6 +108,7 @@ const Profile = () => {
   const user = useUser();
   const location = useLocation();
   const id = location.pathname.split('/')[3] || location.state?.memberId;
+  const isCurrentUser = user.id === Number(id);
 
   const [toggle, setToggle] = useState(false);
   const [state, setState] = useState({
@@ -152,16 +154,6 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData(1);
-    // (() => {
-    //   memberApi
-    //     .getNotices(id, 1)
-    //     .then((res) => {
-    //       console.log('notice res =>', res.data);
-    //     })
-    //     .catch((err) => {
-    //       console.log(err?.response?.data);
-    //     });
-    // })();
   }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (ok, state) => {
@@ -215,8 +207,8 @@ const Profile = () => {
       {userInfo && (
         <UserInfo>
           <Image>
-            {userInfo.name && userInfo.name.length > 4
-              ? userInfo.name.substring(0, 4)
+            {userInfo.name && userInfo.name.length > 6
+              ? userInfo.name.substring(0, 6)
               : userInfo.name}
           </Image>
           <Info>
@@ -224,7 +216,7 @@ const Profile = () => {
               <div style={{ fontSize: 25, letterSpacing: 2 }}>
                 {userInfo.name}
               </div>
-              {user?.id === +id && (
+              {isCurrentUser && (
                 <div>
                   <Button onClick={() => setToggle(!toggle)}>
                     {!toggle ? '회원정보수정' : '취소하기'}
@@ -276,8 +268,17 @@ const Profile = () => {
           <Activity>
             <Switch>
               <Route exact path={`/user/info/${id}`}>
-                <UserInfoBoard id={id} name="boards" />
+                {isCurrentUser ? (
+                  <NoticeBoard id={id} />
+                ) : (
+                  <UserInfoBoard id={id} name="boards" />
+                )}
               </Route>
+              {isCurrentUser && (
+                <Route exact path={`/user/info/${id}/notices`}>
+                  <NoticeBoard id={id} />
+                </Route>
+              )}
               <Route exact path={`/user/info/${id}/posts`}>
                 <UserInfoBoard id={id} name="boards" />
               </Route>
@@ -291,6 +292,18 @@ const Profile = () => {
           </Activity>
 
           <ToggleList>
+            {isCurrentUser && (
+              <Item active={location.pathname.includes('notices')}>
+                <Link
+                  to={{
+                    pathname: `/user/info/${id}/notices`,
+                    state: { memberId: id },
+                  }}
+                >
+                  알림
+                </Link>
+              </Item>
+            )}
             <Item active={location.pathname.includes('posts')}>
               <Link
                 to={{

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Redirect, withRouter } from 'react-router';
 import styled from 'styled-components';
 import { memberApi } from '../api';
-import { useUser } from '../context';
+import { useUser, useSetUser} from '../context';
+
 
 const LoginContainer = styled.div`
   width: 400px;
@@ -40,6 +41,7 @@ const Button = styled.button`
 
 const Login = () => {
   const user = useUser();
+  const setUser = useSetUser();
 
   const [login, setLogin] = useState({
     loginId: '',
@@ -62,7 +64,17 @@ const Login = () => {
       .then((res) => {
         console.log('login res', res, res.status);
         localStorage.setItem('user', JSON.stringify(res.data));
-        window.location.href = '/';
+        const userLS = res.data;
+        // window.location.href = '/';
+        memberApi.getUser(userLS.memberId).then(({ data }) => {
+          setUser(prev => ({
+            ...prev,
+            loading: false,
+            t: userLS.token,
+            user: { id: userLS.memberId, data },
+            error: null,
+          }));
+        });
       })
       .catch((err) => {
         console.log('login err', err, err.response.status);

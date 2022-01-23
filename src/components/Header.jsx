@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AiOutlineQuestion,
   AiFillWechat,
-  AiOutlineCodepen,
+  AiOutlineCodepen
 } from 'react-icons/ai';
+import { MdNotifications } from 'react-icons/md';
 import { useUser } from '../context';
+import { useQuery } from 'react-query';
+import { memberApi } from '../api';
 
 const HeaderContainer = styled.div`
   color: white;
@@ -41,6 +44,20 @@ const UserContainer = styled.div`
     text-align: center;
     :hover {
       text-decoration: underline;
+    }
+  }
+  .topUser {
+    display: flex;
+    align-items: center;
+    
+  }
+  .bot {
+    display: flex;
+    .noticeCircle {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #fa5252;
     }
   }
 `;
@@ -115,11 +132,17 @@ const Text = styled.div`
 const Header = () => {
   const user = useUser();
   const history = useHistory();
+  // console.log('Header user', user);
+  
+  // 유저가있을때 로그인했을때
+  const { data } = useQuery('Notice', () =>
+    memberApi.getNoticeCounts(user?.id).then(res => res.data));
 
   const logout = () => {
     localStorage.removeItem('user');
+    // state, history
     window.location.href = '/';
-  };
+  };  
 
   return (
     <HeaderContainer>
@@ -132,12 +155,18 @@ const Header = () => {
         {user ? (
           <UserContainer>
             <Link
-              to={{
+              className='topUser'
+              to = {{
                 pathname: `/user/info/${user.id}`,
                 state: { memberId: user.id },
               }}
+
             >
               <div className="username">{user.data.name}</div>
+              <div className='bot'>
+                <MdNotifications />
+                {data?.count > 0 && <div className='noticeCircle'></div>}
+              </div>
             </Link>
             <ButtonContainer>
               <button
