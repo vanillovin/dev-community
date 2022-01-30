@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Redirect, withRouter } from 'react-router';
 import styled from 'styled-components';
 import { memberApi } from '../api';
-import { useUser, useSetUser} from '../context';
-
+import { useUser, useSetUser } from '../context';
 
 const LoginContainer = styled.div`
   width: 400px;
@@ -62,12 +61,18 @@ const Login = () => {
     memberApi
       .login({ loginId, password })
       .then((res) => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
         console.log('login res', res, res.status);
-        localStorage.setItem('user', JSON.stringify(res.data));
+        localStorage.setItem(
+          'user',
+          JSON.stringify({ ...res.data, expireDate: tomorrow.toISOString() })
+        );
         const userLS = res.data;
         // window.location.href = '/';
         memberApi.getUser(userLS.memberId).then(({ data }) => {
-          setUser(prev => ({
+          setUser((prev) => ({
             ...prev,
             loading: false,
             t: userLS.token,

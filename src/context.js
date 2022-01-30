@@ -16,6 +16,14 @@ export function UserProvider({ children }) {
 
   const getUser = async () => {
     if (!userLS) return;
+
+    const expireDate = new Date(userLS.expireDate);
+    const now = new Date();
+    if (expireDate.getTime() < now.getTime()) {
+      localStorage.removeItem('user');
+      return;
+    }
+
     try {
       const { data } = await memberApi.getUser(userLS.memberId);
       console.log('context getUser => res.data', data);
