@@ -2,6 +2,7 @@ import React from 'react';
 import { AiOutlineLike, AiOutlineComment, AiOutlineEye } from 'react-icons/ai';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
+import dateFormatter from '../dateFormatter';
 
 const PostContainer = styled.div`
   width: 750px;
@@ -112,9 +113,9 @@ const Post = ({ post, type, fci }) => {
         </div>
         <div className="right">
           <div className="username">{post.author}</div>
-          <div className="date">{`${
-            post.createdDate.split('T')[0]
-          } ${post.createdDate.split('T')[1].substring(0, 8)}`}</div>
+          <div className="date">
+            {dateFormatter(post.createdDate, 'created')}
+          </div>
         </div>
       </PostRight>
     </PostContainer>

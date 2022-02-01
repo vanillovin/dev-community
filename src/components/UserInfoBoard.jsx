@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { boardApi, memberApi } from '../api';
 import PageList from './PageList';
+import dateFormatter from '../dateFormatter';
 
 const Post = styled.div`
   padding: 10px;
@@ -70,7 +71,7 @@ const UserInfoBoard = ({ id, name }) => {
     try {
       const { data } = await memberApi.getUserData(id, name, num);
       console.log('userInfoBoard fetch res.data =>', data);
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         loading: false,
         data: {
@@ -109,7 +110,7 @@ const UserInfoBoard = ({ id, name }) => {
     }
   };
 
-  return (!loading ?
+  return !loading ? (
     <>
       {contents && contents.length > 0 ? (
         contents.map((item) => (
@@ -142,9 +143,7 @@ const UserInfoBoard = ({ id, name }) => {
                     `#${item.id} 게시글을 스크랩 하였습니다.`)}
               </span>
               <span className="date">
-                {`${item.createdDate.split('T')[0]} ${item.createdDate
-                  .split('T')[1]
-                  .substring(0, 8)}`}
+                {dateFormatter(item.createdDate, 'created')}
               </span>
             </div>
             <div className="bot">
@@ -181,8 +180,10 @@ const UserInfoBoard = ({ id, name }) => {
           currentPage={currentPage}
         />
       )}
-    </> : <div>loading...</div>)
-  
+    </>
+  ) : (
+    <div>loading...</div>
+  );
 };
 
 export default UserInfoBoard;

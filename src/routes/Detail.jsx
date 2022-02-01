@@ -11,6 +11,14 @@ import {
 } from 'react-icons/ai';
 import { BsBookmarkFill } from 'react-icons/bs';
 import Comment from '../components/Comment';
+import dateFormatter from '../dateFormatter';
+
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remark2rehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+
+import parse from 'html-react-parser';
 
 const DetailContainer = styled.div`
   width: 750px;
@@ -400,6 +408,15 @@ const Detail = ({ match }) => {
       });
   };
 
+  const toHtml = (markdown) => {
+    return unified()
+      .use(remarkParse)
+      .use(remark2rehype)
+      .use(rehypeStringify)
+      .processSync(markdown)
+      .toString();
+  };
+
   return !loading ? (
     <>
       <h1 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
@@ -454,18 +471,15 @@ const Detail = ({ match }) => {
                     </span>
                     <span className="date">
                       {post.createdDate &&
-                        `${post.createdDate.split('T')[0]} ${post.createdDate
-                          .split('T')[1]
-                          .substring(0, 8)} 작성`}
+                        dateFormatter(post.createdDate, 'created', '작성')}
                       {post.createdDate &&
                         post.lastModifiedDate &&
-                        (post.createdDate === post.lastModifiedDate
-                          ? ''
-                          : ` ∙ ${
-                              post.lastModifiedDate.split('T')[0]
-                            } ${post.lastModifiedDate
-                              .split('T')[1]
-                              .substring(0, 8)} 수정`)}
+                        post.createdDate !== post.lastModifiedDate &&
+                        dateFormatter(
+                          post.lastModifiedDate,
+                          'modified',
+                          '수정'
+                        )}
                     </span>
                   </div>
                 </div>
@@ -480,7 +494,9 @@ const Detail = ({ match }) => {
           </Header>
 
           <Content>
-            <div>{post.content ? post.content : '로딩 중입니다!'}</div>
+            <div>
+              {post.content ? parse(toHtml(post.content)) : '로딩 중입니다!'}
+            </div>
           </Content>
 
           <LikeContainer>

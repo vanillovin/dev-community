@@ -8,6 +8,7 @@ import {
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
 import { useHistory } from 'react-router';
+import dateFormatter from '../dateFormatter';
 
 const Container = styled.div`
   padding: 10px;
@@ -189,20 +190,13 @@ const Comment = ({
                 <div>
                   <span className="date">
                     {cmt.createdDate &&
-                      `${cmt.createdDate.split('T')[0]} ${cmt.createdDate
-                        .split('T')[1]
-                        .substring(0, 8)} 작성`}
+                      dateFormatter(cmt.createdDate, 'created', '작성')}
                   </span>
                   <span className="date">
                     {cmt.createdDate &&
                       cmt.lastModifiedDate &&
-                      (cmt.createdDate === cmt.lastModifiedDate
-                        ? ''
-                        : ` ∙ ${
-                            cmt.lastModifiedDate.split('T')[0]
-                          } ${cmt.lastModifiedDate
-                            .split('T')[1]
-                            .substring(0, 8)} 수정`)}
+                      cmt.createdDate !== cmt.lastModifiedDate &&
+                      dateFormatter(cmt.lastModifiedDate, 'modified', '수정')}
                   </span>
                 </div>
               </div>
