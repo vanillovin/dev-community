@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { boardApi } from '../api';
 import styled from 'styled-components';
-import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useUser } from '../context';
 
 const Container = styled.div``;
@@ -94,7 +94,6 @@ function displayedAt(createdAt) {
 const HomeBoard = ({ title, type }) => {
   // console.log('HomeBoard', title, type);
   const user = useUser();
-  const history = useHistory();
 
   const [state, setState] = useState({
     loading: true,
@@ -133,26 +132,24 @@ const HomeBoard = ({ title, type }) => {
     fetchPosts();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const morePost = () => {
-    if (type === 'user')
-      history.push({
-        pathname: `profile/${user.id}`,
-        state: { memberId: user.id },
-      });
-    else
-      history.push({
-        pathname: `board/${type}`,
-        state: { type, sort: 'id' },
-      });
-  };
+  // history.push({
+  //   pathname: `profile/${user.id}`,
+  //   state: { memberId: user.id },
+  // });
 
   return (
     <Container>
       <Header>
         <div className="title">{title}</div>
-        <div className="more" onClick={morePost}>
+        <Link
+          className="more"
+          to={{
+            pathname: `board/${type}`,
+            state: { type, sort: 'id' },
+          }}
+        >
           {!(type === 'best') && '더 보기'}
-        </div>
+        </Link>
       </Header>
       <div>
         {!loading ? (
@@ -171,17 +168,11 @@ const HomeBoard = ({ title, type }) => {
                   cmt={post.commentSize > 0}
                   selected={post.selected}
                 >
-                  <div
-                    onClick={() => history.push(`/board/${type}/${post.id}`)}
-                    className="post-left"
-                  >
+                  <Link to={`/board/${type}/${post.id}`} className="post-left">
                     <span>{post.title}</span>
-                  </div>
+                  </Link>
                   <div className="post-right">
-                    <span
-                      className="username"
-                      title={post.author}
-                    >
+                    <span className="username" title={post.author}>
                       {post.author}
                     </span>
                     <span className="date" title={post.createdDate}>

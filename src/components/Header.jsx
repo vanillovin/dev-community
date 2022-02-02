@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AiOutlineQuestion,
@@ -180,7 +180,6 @@ function TopUser({ user }) {
 
 const Header = () => {
   const user = useUser();
-  const history = useHistory();
   console.log('Header user', user);
 
   const logout = () => {
@@ -201,16 +200,10 @@ const Header = () => {
           <UserContainer>
             <TopUser user={user} />
             <ButtonContainer>
-              <button
-                className="btn"
-                onClick={() =>
-                  history.push({
-                    pathname: '/write',
-                    state: { type: '' },
-                  })
-                }
-              >
-                글쓰기
+              <button className="btn">
+                <Link to={{ pathname: '/write', state: { type: '' } }}>
+                  글쓰기
+                </Link>
               </button>
               <button className="btn" onClick={logout}>
                 로그아웃

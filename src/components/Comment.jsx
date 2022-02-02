@@ -7,7 +7,6 @@ import {
 } from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
-import { useHistory } from 'react-router';
 import dateFormatter from '../dateFormatter';
 import { Link } from 'react-router-dom';
 
@@ -130,8 +129,7 @@ const Comment = ({
   likeComment,
   selectComment,
 }) => {
-  console.log('Comment', author, cmt);
-  const history = useHistory();
+  // console.log('Comment', author, cmt);
   const user = useUser();
   const [edit, setEdit] = useState(false);
   const [text, setText] = useState(cmt.content);

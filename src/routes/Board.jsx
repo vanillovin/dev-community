@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Post from '../components/Post';
 import { AiOutlineSearch } from 'react-icons/ai';
@@ -108,7 +108,6 @@ const SearchButton = styled.button`
 const Board = () => {
   const user = useUser();
   // console.log('Board', user);
-  const history = useHistory();
   const location = useLocation();
   const boardType = location.pathname.split('/')[2] || location.state?.type;
   const boardTitle =
@@ -176,15 +175,10 @@ const Board = () => {
       <Header>
         <Title>{boardTitle}</Title>
         {user && (
-          <Button
-            onClick={() => {
-              history.push({
-                pathname: '/write',
-                state: { type: boardType },
-              });
-            }}
-          >
-            새 글 쓰기
+          <Button>
+            <Link to={{ pathname: '/write', state: { type: boardType } }}>
+              새 글 쓰기
+            </Link>
           </Button>
         )}
       </Header>
