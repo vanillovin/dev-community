@@ -1,14 +1,13 @@
 function dateFormatter(date, type, text = '') {
+  // 중복제거 & tolocalstring
+  const base = `${new Date(date).toLocaleString('ko-kr')} ${text}`;
   if (type === 'created') {
-    return `${date.split('T')[0]} ${date.split('T')[1].substring(0, 8)}${
-      ' ' + text
-    }`;
+    return base;
   }
   if (type === 'modified') {
-    return ` ∙ ${date.split('T')[0]} ${date.split('T')[1].substring(0, 8)}${
-      ' ' + text
-    }`;
+    return ' ∙ ' + base;
   }
+  return undefined;
 }
 
 export default dateFormatter;
