@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, createRef } from 'react';
 import { Redirect, useHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
 import { useT, useUser } from '../context';
 import { boardApi } from '../api';
 
-const EditorContainer = styled.div`
+import Prism from 'prismjs';
+// 여기 css를 수정해서 코드 하이라이팅 커스텀 가능
+import 'prismjs/themes/prism.css';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor, Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
+import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+
+const Container = styled.div`
   width: 700px;
 `;
 const Select = styled.select`
@@ -21,14 +30,10 @@ const TitleInput = styled.input`
   margin-bottom: 10px;
   border: 1px solid lightgray;
 `;
-const ContentInput = styled.textarea`
+const EditorContainer = styled.div`
   width: 100%;
-  height: 300px;
-  outline: none;
-  padding: 10px 10px 10px 12px;
-  border: 1px solid lightgray;
-  resize: none;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  background-color: white;
 `;
 const ButtonContainer = styled.div`
   display: flex;
@@ -49,14 +54,17 @@ const Button = styled.button`
   transition: all 0.1s linear;
 `;
 
-const Editor = withRouter(({ history: h }) => {
-  console.log('Editor history', h);
+const EditPost = withRouter(({ history: h }) => {
+  console.log('EditPost history', h);
+
+  const editorRef = createRef();
 
   const {
     location: {
       state: { type: preType, id, title: preTitle, content: preContent },
     },
   } = h;
+  console.log('Editor component', preType, preTitle, preContent);
   const t = useT();
   const history = useHistory();
   const loggedIn = Boolean(useUser());
@@ -122,7 +130,7 @@ const Editor = withRouter(({ history: h }) => {
   return (
     <>
       {loggedIn ? (
-        <EditorContainer>
+        <Container>
           <Select name="type" required onChange={onChange} disabled>
             <option value={type} defaultChecked>
               {typeText}
@@ -136,19 +144,29 @@ const Editor = withRouter(({ history: h }) => {
             maxLength="50"
             required
           />
-          <ContentInput
-            name="content"
-            value={content}
-            onChange={onChange}
-            required
-          />
+          <EditorContainer>
+            <Editor
+              id="editor-input"
+              initialValue={preContent}
+              previewStyle="vertical"
+              initalEditType="markdown"
+              plugins={[
+                colorSyntax,
+                [codeSyntaxHighlight, { highlighter: Prism }],
+              ]}
+              ref={editorRef}
+              // onChange={onChangeEditorTextHandler}
+              height="600px"
+              useCommandShortcut={true}
+            />
+          </EditorContainer>
           <ButtonContainer>
             <Button onClick={cancelWrite}>취소하기</Button>
             <Button type="submit" onClick={onSave}>
               저장하기
             </Button>
           </ButtonContainer>
-        </EditorContainer>
+        </Container>
       ) : (
         <>
           <div>작성권한없음</div>
@@ -159,4 +177,4 @@ const Editor = withRouter(({ history: h }) => {
   );
 });
 
-export default Editor;
+export default EditPost;

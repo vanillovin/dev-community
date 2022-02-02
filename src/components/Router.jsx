@@ -6,7 +6,7 @@ import Login from '../routes/Login';
 import Signup from '../routes/Signup';
 import Profile from '../routes/Profile';
 import Write from '../routes/Write';
-import Editor from '../routes/Editor';
+import EditPost from '../routes/EditPost';
 import Detail from '../routes/Detail';
 import Board from '../routes/Board';
 
@@ -30,7 +30,7 @@ const Router = () => {
           <Route exact path="/board/free?*" component={Board} />
 
           <Route exact path="/write" component={Write} />
-          <Route exact path="/edit" component={Editor} />
+          <Route exact path="/edit" component={EditPost} />
           <Route exact path="/board/:type/:id" component={Detail} />
 
           <Redirect from="*" to="/" />
