@@ -33,9 +33,9 @@ const Header = styled.div`
   .top {
     /* border: 1px solid black; */
     height: 25px;
-    margin-bottom: 12px;
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
     justify-content: space-between;
   }
   .id {
@@ -112,16 +112,25 @@ const Title = styled.div`
   font-size: 19px;
   font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 `;
 const Content = styled.div`
+  /* 상속 */
+  ul,
+  li {
+    padding: 0 16px;
+    list-style: inside;
+  }
+
   width: 100%;
   min-height: 70px;
-  padding: 20px 10px;
-  font-size: 15px;
-  line-height: 1.4;
+  padding: 15px 10px;
   white-space: pre-line;
   overflow-wrap: break-word;
+
+  img {
+    width: 100%;
+  }
 `;
 const LikeContainer = styled.div`
   width: 100%;
@@ -184,6 +193,7 @@ const CommentButton = styled.button`
 `;
 const BookMark = styled.div`
   cursor: pointer;
+  margin-left: 50px;
   color: #91a7ff;
   font-size: 20px;
   &:active {
@@ -494,9 +504,7 @@ const Detail = ({ match }) => {
           </Header>
 
           <Content>
-            <div>
-              {post.content ? parse(toHtml(post.content)) : '로딩 중입니다!'}
-            </div>
+            {post.content ? parse(toHtml(post.content)) : '로딩 중입니다!'}
           </Content>
 
           <LikeContainer>

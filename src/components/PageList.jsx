@@ -9,6 +9,11 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  ul,
+  li {
+    padding: 0;
+    list-style: none;
+  }
 `;
 const PageUL = styled.ul`
   display: flex;

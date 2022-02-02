@@ -9,18 +9,17 @@ import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useUser } from '../context';
 import { useHistory } from 'react-router';
 import dateFormatter from '../dateFormatter';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   padding: 10px;
   border-bottom: 1px solid lightgray;
   white-space: pre-line;
   overflow-wrap: break-word;
-
   .author {
     cursor: pointer;
     color: #5c7cfa;
     font-size: 14px;
-    margin-right: 5px;
     :hover {
       text-decoration: underline;
     }
@@ -35,7 +34,7 @@ const Top = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  // background-color: orange,
+  line-height: 1;
 `;
 const SButton = styled.button`
   display: flex;
@@ -174,19 +173,15 @@ const Comment = ({
                 </>
               )}
               <div>
-                <div
+                <Link
                   className="author"
-                  onClick={() =>
-                    history.push({
-                      pathname: `/user/info/${cmt.memberId}`,
-                      state: {
-                        memberId: cmt.memberId,
-                      },
-                    })
-                  }
+                  to={{
+                    pathname: `/user/info/${cmt.memberId}`,
+                    state: { memberId: cmt.memberId },
+                  }}
                 >
                   {cmt.author}
-                </div>
+                </Link>
                 <div>
                   <span className="date">
                     {cmt.createdDate &&

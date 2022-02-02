@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import {
   AiOutlineQuestion,
   AiFillWechat,
-  AiOutlineCodepen
+  AiOutlineCodepen,
 } from 'react-icons/ai';
 import { MdNotifications } from 'react-icons/md';
 import { useUser } from '../context';
@@ -20,6 +20,11 @@ const HeaderContainer = styled.div`
   height: 100%;
   background-color: #4c6ef5;
   z-index: 100;
+  ul,
+  li {
+    padding: 0;
+    list-style: none;
+  }
 `;
 const Logo = styled.div`
   font-weight: bold;
@@ -49,7 +54,6 @@ const UserContainer = styled.div`
   .topUser {
     display: flex;
     align-items: center;
-    
   }
   .bot {
     display: flex;
@@ -129,20 +133,61 @@ const Text = styled.div`
   font-size: 15px;
 `;
 
+// 대충 할일목록 ->< 나중에 문제가 생기면 고치기 ^^
+
+// 앱상태(폼, 다크모드, user preference) <-> 서버와 동기화 되는 상태
+
+// react-query로 만든 custom hook
+// 파일을 따로 분리!
+// 컴포넌트 쪼개기, custom hook - 모든걸 커스텀훅 로직으로 만들어야함
+// 역할을 잘 나누기 위해서!
+// 역할을 잘 나눠서 빼기!!!~!!!식별해서 (화면을보여주는로직 vs 상태로직) 분리
+// react query에게 적절한 캐시키와 api 함수를 넣어주는 것!
+// 로직을 작게 쪼개기 위해서... 보너스로 좋은 점 중 하나임
+// 중복의 제거?... 보너스로 좋은 점 중 하나임
+
+// 서버에서 데이터를 가져와서 캐시 상태에 넣어두는 로직
+// 상태 로직 / state, redux => 상태 로직
+// react-query : 서버와 동기화 되는 상태를 캐시로 관리하는 라이브러리
+// api 요청 함수 파일 <-> 요청한 것을 리액트 쿼리라는 상태관리 라이브러리에 넣은 것.
+function useNotice(userId) {
+  return useQuery('Notice', () =>
+    memberApi.getNoticeCounts(userId).then((res) => res.data)
+  );
+}
+
+//  화면을 보여주는 로직 view
+function TopUser({ user }) {
+  // 유저가있을때 로그인했을때
+  const { data } = useNotice(user?.id);
+
+  return (
+    <Link
+      className="topUser"
+      to={{
+        pathname: `/user/info/${user.id}`,
+        state: { memberId: user.id },
+      }}
+    >
+      <div className="username">{user.data.name}</div>
+      <div className="bot">
+        <MdNotifications />
+        {data?.count > 0 && <div className="noticeCircle"></div>}
+      </div>
+    </Link>
+  );
+}
+
 const Header = () => {
   const user = useUser();
   const history = useHistory();
-  // console.log('Header user', user);
-  
-  // 유저가있을때 로그인했을때
-  const { data } = useQuery('Notice', () =>
-    memberApi.getNoticeCounts(user?.id).then(res => res.data));
+  console.log('Header user', user);
 
   const logout = () => {
     localStorage.removeItem('user');
     // state, history
     window.location.href = '/';
-  };  
+  };
 
   return (
     <HeaderContainer>
@@ -154,20 +199,7 @@ const Header = () => {
       <>
         {user ? (
           <UserContainer>
-            <Link
-              className='topUser'
-              to = {{
-                pathname: `/user/info/${user.id}`,
-                state: { memberId: user.id },
-              }}
-
-            >
-              <div className="username">{user.data.name}</div>
-              <div className='bot'>
-                <MdNotifications />
-                {data?.count > 0 && <div className='noticeCircle'></div>}
-              </div>
-            </Link>
+            <TopUser user={user} />
             <ButtonContainer>
               <button
                 className="btn"

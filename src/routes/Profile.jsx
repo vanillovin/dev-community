@@ -11,6 +11,10 @@ import NoticeBoard from '../components/NoticeBoard';
 
 const Container = styled.div`
   width: 750px;
+  ul,
+  li {
+    list-style: none;
+  }
 `;
 const UserInfo = styled.div`
   padding: 10px 16px;
@@ -28,7 +32,7 @@ const UserInfo = styled.div`
   .mid {
     color: #adb5bd;
     font-size: 12px;
-    margin: 15px 0 25px 1px;
+    margin: 5px 0 10px 1px;
   }
   .bot {
     display: flex;
@@ -41,7 +45,7 @@ const UserInfo = styled.div`
       margin-right: 10px;
     }
     .num {
-      margin-top: 10px;
+      margin-top: 5px;
       font-size: 20px;
       color: royalblue;
       font-weight: bold;
@@ -72,10 +76,13 @@ const Activity = styled.div`
   margin-right: 20px;
 `;
 const ToggleList = styled.ul`
+  margin: 0;
+  padding: 0;
   width: 15%;
 `;
 const Item = styled.li`
-  padding: 10px 14px;
+  list-style: none;
+  padding: 6px 14px;
   cursor: pointer;
   &:hover {
     background-color: #e9ecef;

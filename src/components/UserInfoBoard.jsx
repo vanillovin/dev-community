@@ -17,6 +17,7 @@ const Post = styled.div`
   border-left: ${(props) =>
     props.cmt ? '4px solid #748ffc' : '4px solid #dbe4ff'};
   border-left: ${(props) => props.selected && '4px solid #94d82d'};
+  line-height: 1;
   .bot {
     margin-top: 10px;
   }
@@ -41,7 +42,7 @@ const Post = styled.div`
     color: lightgray;
   }
   .title {
-    font-size: 13px;
+    font-size: 14px;
     cursor: pointer;
     color: royalblue;
     :hover {

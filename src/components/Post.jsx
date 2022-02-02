@@ -1,6 +1,6 @@
 import React from 'react';
 import { AiOutlineLike, AiOutlineComment, AiOutlineEye } from 'react-icons/ai';
-import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import dateFormatter from '../dateFormatter';
 
@@ -10,7 +10,6 @@ const PostContainer = styled.div`
   display: flex;
   align-items: center;
   background-color: #fff;
-
   border-left: ${(props) =>
     props.cmt ? '4px solid #748ffc' : '4px solid #dbe4ff'};
   border-left: ${(props) => props.selected && '4px solid #94d82d'};
@@ -19,24 +18,23 @@ const PostContainer = styled.div`
   border-top: ${(props) => props.first && '1px solid lightgray'};
 `;
 const PostLeft = styled.div`
-  padding-right: 15px;
-  width: 60%;
+  width: 55%;
   width: 500px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-right: 20px;
   .id {
     color: gray;
     font-size: 12px;
-    margin-bottom: 8px;
+    padding-bottom: 4px;
   }
   .title {
-    padding-right: 10px;
     color: #5c7cfa;
     cursor: pointer;
     font-size: 14px;
-    line-height: 1.1;
+    line-height: 1;
     word-spacing: -1px;
     &:hover {
       text-decoration: underline;
@@ -44,7 +42,7 @@ const PostLeft = styled.div`
   }
 `;
 const PostRight = styled.div`
-  width: 40%;
+  width: 45%;
   height: 100%;
   display: flex;
   align-items: center;
@@ -55,8 +53,8 @@ const PostRight = styled.div`
   .right {
     margin-left: 10px;
     .username {
+      padding-bottom: 2px;
       font-size: 12px;
-      margin-bottom: 3px;
       letter-spacing: -1px;
     }
     .date {
@@ -78,12 +76,6 @@ const Like = styled.div`
 `;
 
 const Post = ({ post, type, fci }) => {
-  const history = useHistory();
-
-  const detailPost = () => {
-    history.push(`/board/${type}/${post.id}`);
-  };
-
   return (
     <PostContainer
       first={fci === post.id}
@@ -92,9 +84,9 @@ const Post = ({ post, type, fci }) => {
     >
       <PostLeft>
         <div className="id">#{post.id}</div>
-        <div className="title" onClick={detailPost}>
+        <Link to={`/board/${type}/${post.id}`} className="title">
           {post.title}
-        </div>
+        </Link>
       </PostLeft>
       <PostRight>
         <div className="left">

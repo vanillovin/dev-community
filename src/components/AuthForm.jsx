@@ -9,6 +9,7 @@ const SignupForm = styled.form`
   flex-direction: column;
 `;
 const Text = styled.h3`
+  margin: 0;
   font-size: 14px;
   font-weight: bold;
   padding-left: 2px;

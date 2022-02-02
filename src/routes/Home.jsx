@@ -5,8 +5,8 @@ import styled from 'styled-components';
 const Grid = styled.div`
   display: grid;
   margin-top: 20px;
-  grid-gap: 45px 25px;
-  grid-template-columns: repeat(2, 450px);
+  grid-gap: 40px 20px;
+  grid-template-columns: repeat(2, 400px);
 `;
 
 const Home = () => {
