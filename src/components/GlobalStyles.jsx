@@ -1,8 +1,8 @@
 import { createGlobalStyle } from 'styled-components';
-import reset from 'styled-reset';
+// import reset from 'styled-reset';
+/* ${reset}; */
 
 const globalStyles = createGlobalStyle`
-  ${reset};
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
   a {
     text-decoration: none;
