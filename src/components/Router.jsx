@@ -28,13 +28,12 @@ const Router = () => {
           <Route exact path="/board/tech?*" component={Board} />
           <Route exact path="/board/free" component={Board} />
           <Route exact path="/board/free?*" component={Board} />
-          
+
           <Route exact path="/write" component={Write} />
           <Route exact path="/edit" component={Editor} />
           <Route exact path="/board/:type/:id" component={Detail} />
-          <Redirect from="*" to="/" />
 
-          {/* <Route exact path="/test" component={} /> */}
+          <Redirect from="*" to="/" />
           {/* <Route component={NotFoune} /> */}
         </Switch>
       </>
