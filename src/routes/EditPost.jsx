@@ -12,6 +12,7 @@ import { Editor, Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+import { useEffect } from 'react/cjs/react.development';
 
 const Container = styled.div`
   width: 700px;
@@ -55,16 +56,15 @@ const Button = styled.button`
 `;
 
 const EditPost = withRouter(({ history: h }) => {
-  console.log('EditPost history', h);
-
   const editorRef = createRef();
+  const saveBtnRef = createRef();
+  const data = editorRef.current?.getInstance().getMarkdown();
 
   const {
     location: {
       state: { type: preType, id, title: preTitle, content: preContent },
     },
   } = h;
-  console.log('Editor component', preType, preTitle, preContent);
   const t = useT();
   const history = useHistory();
   const loggedIn = Boolean(useUser());
@@ -89,29 +89,36 @@ const EditPost = withRouter(({ history: h }) => {
     });
   };
 
-  const onSave = () => {
-    console.log(title, content);
-
-    if (type === '') {
-      alert('게시판을 선택해 주세요');
-      return;
-    } else if (title.trim() === '' || title.trim().length < 2) {
-      alert('제목은 2자 이상 입력해 주세요');
-      return;
-    } else if (content.trim().length < 6) {
-      // byte
-      alert('내용은 6자 이상 입력해 주세요');
-      return;
+  useEffect(() => {
+    if (
+      (content.trim().length > 4 &&
+        title.trim().length > 2 &&
+        title !== preTitle) ||
+      content !== preContent
+    ) {
+      saveBtnRef.current.disabled = false;
+    } else {
+      saveBtnRef.current.disabled = true;
     }
+  }, [title, content, preTitle, preContent, saveBtnRef]);
 
-    const data = {
+  const onChangeEditorTextHandler = () => {
+    console.log(editorRef.current);
+    setState((prev) => ({
+      ...prev,
+      content: editorRef.current?.getInstance().getMarkdown(),
+    }));
+  };
+
+  const onSave = () => {
+    const post = {
       title,
       content,
     };
     const ok = window.confirm('게시물을 수정하시겠습니까?');
     ok &&
       boardApi
-        .fixPost(id, data, t)
+        .fixPost(id, post, t)
         .then((res) => {
           console.log('fixPost res', res);
           // window.location.href = `/board/${type}/${id}`;
@@ -122,7 +129,7 @@ const EditPost = withRouter(({ history: h }) => {
         });
   };
 
-  const cancelWrite = () => {
+  const cancelEdit = () => {
     const ok = window.confirm('취소하시겠습니까?');
     ok && history.goBack(); // 뒤로이동
   };
@@ -147,7 +154,7 @@ const EditPost = withRouter(({ history: h }) => {
           <EditorContainer>
             <Editor
               id="editor-input"
-              initialValue={preContent}
+              initialValue={content}
               previewStyle="vertical"
               initalEditType="markdown"
               plugins={[
@@ -155,14 +162,14 @@ const EditPost = withRouter(({ history: h }) => {
                 [codeSyntaxHighlight, { highlighter: Prism }],
               ]}
               ref={editorRef}
-              // onChange={onChangeEditorTextHandler}
+              onChange={onChangeEditorTextHandler}
               height="600px"
               useCommandShortcut={true}
             />
           </EditorContainer>
           <ButtonContainer>
-            <Button onClick={cancelWrite}>취소하기</Button>
-            <Button type="submit" onClick={onSave}>
+            <Button onClick={cancelEdit}>취소하기</Button>
+            <Button ref={saveBtnRef} type="submit" onClick={onSave}>
               저장하기
             </Button>
           </ButtonContainer>

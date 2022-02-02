@@ -81,9 +81,8 @@ const Write = ({
   const [state, setState] = useState({
     type: bType,
     title: '',
-    content: '',
   });
-  const { type, title, content } = state;
+  const { type, title } = state;
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -94,51 +93,61 @@ const Write = ({
   };
 
   const onSubmit = (e) => {
-    // e.preventDefault();
-    const content = editorRef.current.getInstance().getMarkdown();
-    console.log('Write onSubmit', type, title, content, content.length);
+    e.preventDefault();
 
-    // if (type === '') {
-    //   alert('게시판을 선택해 주세요');
-    //   return;
-    // }
-    // if (title.trim() === '' || title.trim().length < 2) {
-    //   alert('제목은 2자 이상 입력해 주세요');
-    //   return;
-    // }
+    // const content = editorRef.current.getInstance().getMarkdown();
     const instance = editorRef.current.getInstance();
     const data = instance.getMarkdown();
+    console.log(
+      `Write onSubmit
+      type: ${type}
+      title: ${title}
+      data: ${data}
+      data.length: ${data.length}
+      `
+    );
 
-    if (!data) {
-      // ...
-      instance.focus(); // ERROR
+    function focusElem(id) {
+      const elem = document.getElementById(id);
+      elem.focus();
     }
 
-    // if (content.trim().length < 4) {
-    //   // byte
-    //   alert('내용은 4자 이상 입력해 주세요');
-    //   return;
-    // }
+    if (type === '') {
+      alert('게시판을 선택해 주세요');
+      focusElem('board-select');
+      return;
+    }
+    if (title.trim() === '' || title.trim().length < 2) {
+      alert('제목은 2자 이상 입력해 주세요');
+      focusElem('title-input');
+      return;
+    }
+    if (data.trim().length < 4) {
+      // !data / byte
+      alert('내용은 4자 이상 입력해 주세요');
+      instance.focus();
+      return;
+    }
 
-    // const data = {
-    //   title,
-    //   content: editorRef.current.getInstance().getMarkdown(),
-    // };
+    const post = {
+      title,
+      content: data,
+    };
 
-    // const ok = window.confirm('게시물을 등록하시겠습니까?');
-    // ok &&
-    //   boardApi
-    //     .sendPost(type, data, t)
-    //     .then((res) => {
-    //       console.log('sendPost res =>', res);
-    //       const id = res.data.id;
-    //       history.push(`/board/${type}/${id}`);
-    //     })
-    //     .catch((err) => {
-    //       console.log('sendPost err =>', err || err.response?.status);
-    //       // localStorage.removeItem('user');
-    //       // window.location.href = '/'
-    //     });
+    const ok = window.confirm('게시물을 등록하시겠습니까?');
+    ok &&
+      boardApi
+        .sendPost(type, post, t)
+        .then((res) => {
+          console.log('sendPost res =>', res);
+          const id = res.data.id;
+          history.push(`/board/${type}/${id}`);
+        })
+        .catch((err) => {
+          console.log('sendPost err =>', err || err.response?.status);
+          // localStorage.removeItem('user');
+          // window.location.href = '/'
+        });
   };
 
   const cancelWrite = () => {
@@ -170,7 +179,7 @@ const Write = ({
       {loggedIn ? (
         <Container>
           <Title>새 글 쓰기</Title>
-          <Select name="type" required onChange={onChange}>
+          <Select id="board-select" name="type" required onChange={onChange}>
             <option value={type} defaultChecked>
               {typeText || '게시판 선택'}
             </option>
@@ -179,6 +188,7 @@ const Write = ({
             <option value="free">자유게시판</option>
           </Select>
           <TitleInput
+            id="title-input"
             placeholder="제목을 입력해 주세요"
             name="title"
             value={title}
@@ -189,6 +199,7 @@ const Write = ({
 
           <EditorContainer>
             <Editor
+              id="editor-input"
               initialValue="마크다운으로 내용을 입력하세요."
               previewStyle="vertical"
               initalEditType="markdown"

@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useT } from '../context';
 import { FaRegComment, FaCheck, FaThumbsUp } from 'react-icons/fa';
 import PageList from './PageList';
+import dateFormatter from '../dateFormatter';
 
 const Container = styled.div``;
 const NoticeHeader = styled.div`
@@ -176,8 +177,10 @@ const NoticeBoard = ({ id }) => {
                       (n.messageType === 'BOARD_LIKE' && <FaThumbsUp />) ||
                       (n.messageType === 'SELECTION' && <FaCheck />)}
                   </div>
-                  <span>{n.loginId} 님이 </span>
-                  <span className="id">#{n.boardId} </span>
+                  <span style={{ marginRight: 2 }}>{n.loginId} 님이</span>
+                  <span className="id" style={{ marginRight: 2 }}>
+                    #{n.boardId}{' '}
+                  </span>
                   <span>
                     {(n.messageType === 'COMMENT' &&
                       '게시물에 댓글을 등록했습니다.') ||
@@ -188,9 +191,9 @@ const NoticeBoard = ({ id }) => {
                       (n.messageType === 'SELECTION' &&
                         '게시물 회원님의 댓글을 채택했습니다.')}
                   </span>
-                  <span className="date">{`${
-                    n.createdDate.split('T')[0]
-                  } ${n.createdDate.split('T')[1].substring(0, 8)}`}</span>
+                  <span className="date">
+                    {dateFormatter(n.createdDate, 'created')}
+                  </span>
                 </Top>
                 <Bottom
                   onClick={() =>

@@ -116,21 +116,38 @@ const Title = styled.div`
 `;
 const Content = styled.div`
   /* 상속 */
-  ul,
-  li {
-    padding: 0 16px;
-    list-style: inside;
+  ol,
+  ul {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    padding-inline-start: 30px;
   }
-
-  width: 100%;
-  min-height: 70px;
-  padding: 15px 10px;
-  white-space: pre-line;
-  overflow-wrap: break-word;
-
   img {
     width: 100%;
   }
+  blockquote {
+    margin: 1.2rem 0px;
+    border-left: 4px solid #ffe066;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background: rgb(249, 249, 250);
+    padding: 5px 5px 5px 15px;
+    color: var(--text1);
+  }
+  pre {
+    font-family: 'Fira Mono', source-code-pro, Menlo, Monaco, Consolas,
+      'Courier New', monospace;
+    padding: 10px;
+    line-height: 1.4;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    letter-spacing: 0px;
+    background: rgb(249, 249, 250);
+  }
+  width: 100%;
+  min-height: 70px;
+  padding: 10px 15px 15px 15px;
+  overflow-wrap: break-word;
 `;
 const LikeContainer = styled.div`
   width: 100%;
@@ -193,7 +210,7 @@ const CommentButton = styled.button`
 `;
 const BookMark = styled.div`
   cursor: pointer;
-  margin-left: 50px;
+  margin-left: 40px;
   color: #91a7ff;
   font-size: 20px;
   &:active {
@@ -278,6 +295,7 @@ const Detail = ({ match }) => {
   const onChange = (e) => setContent(e.target.value);
 
   const goEditor = () => {
+    console.log('goEditor', type, post.id, post.title, post.content);
     history.push({
       pathname: '/edit',
       state: {

@@ -40,7 +40,7 @@ const PostContainer = styled.div`
     color: black;
     margin: auto 0;
     cursor: pointer;
-    line-height: 1.2;
+    line-height: 1;
     overflow-wrap: break-word;
     span:first-child {
       :hover {
@@ -159,28 +159,27 @@ const HomeBoard = ({ title, type }) => {
               borderLeft: 0,
             }}
           >
-            {posts &&
-              posts.map((post) => (
-                <PostContainer
-                  key={post.id}
-                  fc={posts[0].id === post.id}
-                  lc={posts[posts.length - 1].id === post.id}
-                  cmt={post.commentSize > 0}
-                  selected={post.selected}
-                >
-                  <Link to={`/board/${type}/${post.id}`} className="post-left">
-                    <span>{post.title}</span>
-                  </Link>
-                  <div className="post-right">
-                    <span className="username" title={post.author}>
-                      {post.author}
-                    </span>
-                    <span className="date" title={post.createdDate}>
-                      {displayedAt(post.createdDate)}
-                    </span>
-                  </div>
-                </PostContainer>
-              ))}
+            {posts?.map((post) => (
+              <PostContainer
+                key={post.id}
+                fc={posts[0].id === post.id}
+                lc={posts[posts.length - 1].id === post.id}
+                cmt={post.commentSize > 0}
+                selected={post.selected}
+              >
+                <Link to={`/board/${type}/${post.id}`} className="post-left">
+                  <span>{post.title}</span>
+                </Link>
+                <div className="post-right">
+                  <span className="username" title={post.author}>
+                    {post.author}
+                  </span>
+                  <span className="date" title={post.createdDate}>
+                    {displayedAt(post.createdDate)}
+                  </span>
+                </div>
+              </PostContainer>
+            ))}
           </div>
         ) : (
           <div style={{ marginTop: 10, textAlign: 'center' }}>
