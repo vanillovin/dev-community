@@ -43,6 +43,13 @@ const Button = styled.button`
     background-color: #91a7ff;
   }
   transition: all 0.1s linear;
+  .link {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 const FilterContainer = styled.div`
   display: flex;
@@ -176,7 +183,10 @@ const Board = () => {
         <Title>{boardTitle}</Title>
         {user && (
           <Button>
-            <Link to={{ pathname: '/write', state: { type: boardType } }}>
+            <Link
+              className="link"
+              to={{ pathname: '/write', state: { type: boardType } }}
+            >
               새 글 쓰기
             </Link>
           </Button>

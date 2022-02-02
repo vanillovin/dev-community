@@ -89,6 +89,13 @@ const ButtonContainer = styled.div`
       background-color: rgba(255, 255, 255, 0.1);
     }
   }
+  .link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
 `;
 const AuthContainer = styled(UserContainer)`
   font-size: 14px;
@@ -201,7 +208,10 @@ const Header = () => {
             <TopUser user={user} />
             <ButtonContainer>
               <button className="btn">
-                <Link to={{ pathname: '/write', state: { type: '' } }}>
+                <Link
+                  className="link"
+                  to={{ pathname: '/write', state: { type: '' } }}
+                >
                   글쓰기
                 </Link>
               </button>
