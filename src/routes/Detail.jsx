@@ -13,11 +13,7 @@ import { BsBookmarkFill } from 'react-icons/bs';
 import Comment from '../components/Comment';
 import dateFormatter from '../dateFormatter';
 
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remark2rehype from 'remark-rehype';
-import rehypeStringify from 'rehype-stringify';
-
+import { marked } from 'marked';
 import parse from 'html-react-parser';
 
 const DetailContainer = styled.div`
@@ -242,6 +238,7 @@ const Detail = ({ match }) => {
   const [toggle, setToggle] = useState(false);
   const [likes, setLikes] = useState();
   const some = comments.some((cmt) => cmt.selected === true);
+  console.log(post);
 
   useEffect(() => {
     const fetchPost = () => {
@@ -437,12 +434,7 @@ const Detail = ({ match }) => {
   };
 
   const toHtml = (markdown) => {
-    return unified()
-      .use(remarkParse)
-      .use(remark2rehype)
-      .use(rehypeStringify)
-      .processSync(markdown)
-      .toString();
+    return marked.parse(markdown);
   };
 
   return !loading ? (
