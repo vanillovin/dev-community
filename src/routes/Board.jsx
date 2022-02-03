@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import Post from '../components/Post';
 import { AiOutlineSearch } from 'react-icons/ai';
@@ -114,7 +113,6 @@ const SearchButton = styled.button`
 
 const Board = () => {
   const user = useUser();
-  // console.log('Board', user);
   const location = useLocation();
   const boardType = location.pathname.split('/')[2] || location.state?.type;
   const boardTitle =
@@ -130,19 +128,54 @@ const Board = () => {
     currentPage: 1,
     totalElements: null,
     totalPages: null,
+    index: 'title',
+    keyword: '',
   });
-  const { sort, isLoading, contents, currentPage, totalElements, totalPages } =
-    boards;
-  const [keyword, setKeyword] = useState('');
-  const [index, setIndex] = useState('0');
+  const {
+    sort,
+    isLoading,
+    contents,
+    currentPage,
+    totalElements,
+    totalPages,
+    index,
+    keyword,
+  } = boards;
+  const [indexInput, setIndexInput] = useState('title'); // searchMode
+  const [keywordInput, setKeywordInput] = useState('');
   const [pageList, setPageList] = useState([1, 2, 3, 4, 5]);
 
+  const history = useHistory();
+
+  // https://developer.mozilla.org/ko/docs/Web/API/URLSearchParams
+  // location.search; // /index=1&keyword=토끼
+
+  // 주소창과 상태를 동기화
+  // 상태에 따라
+  useEffect(() => {
+    const searchParams = new URLSearchParams();
+    searchParams.set('index', index);
+    searchParams.set('keyword', keyword);
+    console.log('searchParams', searchParams.toString());
+
+    history.push(`/board/${boardType}?` + searchParams.toString());
+  }, [index, keyword]);
+
+  // 검색어는 어딘가에서 유지되야 함=> keyword, index 상태를 boards 에 추가!
+  // 주소창 search params로 현재 검색중인 검색어를 동기화 갱신, useEffect (주소창 갱신)
+  // searchPosts를 이용해서... index랑 keyword 바뀔 때마다, if문으로 데이터 불러오기
+
   const onSubmit = (e) => {
-    console.log(index, '/', keyword);
+    console.log(indexInput, '/', keywordInput);
+
     e.preventDefault();
-    if (keyword.trim().length < 2) return 2;
-    // kword, page, cond, type
-    // boardApi.searchPosts(keyword, 1, cond, boardType)
+    if (keywordInput.trim().length < 2) return;
+
+    setBoards((prev) => ({
+      ...prev,
+      keyword: keywordInput,
+      index: indexInput,
+    }));
   };
 
   // 검색어를 입력하고 ENTER키나 검색버튼을 누르면 searchPosts api를 실행해서 boardsState 변경
@@ -152,21 +185,36 @@ const Board = () => {
       .getPosts(page, sort, boardType)
       .then((res) => {
         console.log('fetchBoardData res =>', res.data);
-        setBoards({
-          ...boards,
+        setBoards((prev) => ({
+          ...prev,
           sort,
           ...res.data,
-        });
+        }));
       })
-      .catch((err) => {
-        console.log('fetchBoardData err =>', err.response.data);
+      .catch(console.error);
+  };
+
+  // ALL, CONTENT, ERROR, TITLE
+  const fetchSearchBoardData = (keyword, page, index) => {
+    boardApi
+      .searchPosts(keyword, page, index, boardType)
+      .then((res) => {
+        setBoards((prev) => ({
+          ...prev,
+          sort,
+          ...res.data,
+        }));
       })
-      .finally(() => {});
+      .catch(console.error);
   };
 
   useEffect(() => {
-    fetchBoardData(1);
-  }, [boardType]);
+    if (keyword === '') {
+      fetchBoardData(1);
+    } else {
+      fetchSearchBoardData(keyword, 1, index);
+    }
+  }, [boardType, keyword, index]);
 
   const orderListClick = (e) => {
     const innerText = e.target.innerText;
@@ -203,16 +251,16 @@ const Board = () => {
         </OrderList>
 
         <SearchForm onSubmit={onSubmit}>
-          <SearchSelect onChange={(e) => setIndex(e.target.value)}>
-            <option value="0" defaultValue>
+          <SearchSelect onChange={(e) => setIndexInput(e.target.value)}>
+            <option value="title" defaultValue>
               제목
             </option>
-            <option value="1">내용</option>
-            <option value="2">제목+내용</option>
+            <option value="content">내용</option>
+            <option value="all">제목+내용</option>
           </SearchSelect>
           <SearchInput
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            value={keywordInput}
+            onChange={(e) => setKeywordInput(e.target.value)}
             minLength="2"
             maxLength="20"
           />
@@ -232,7 +280,7 @@ const Board = () => {
               fci={contents[0].id}
             />
           ))}
-          {totalPages > 0 ? (
+          {/* {totalPages > 0 ? (
             <PageList
               page={pageList}
               setPage={setPageList}
@@ -245,7 +293,7 @@ const Board = () => {
             <div style={{ marginTop: 150, textAlign: 'center' }}>
               아직 게시물이 없습니다.
             </div>
-          )}
+          )} */}
         </>
       ) : (
         <div>loading..</div>
