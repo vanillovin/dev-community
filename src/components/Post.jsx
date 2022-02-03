@@ -34,7 +34,7 @@ const PostLeft = styled.div`
     color: #5c7cfa;
     cursor: pointer;
     font-size: 14px;
-    line-height: 1;
+    line-height: 1.1;
     word-spacing: -1px;
     &:hover {
       text-decoration: underline;
