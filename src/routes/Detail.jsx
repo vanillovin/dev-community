@@ -120,15 +120,27 @@ const Content = styled.div`
   }
   img {
     width: 100%;
+    margin: 5px 0;
+  }
+  a {
+    color: #364fc7;
+    &:hover {
+      text-decoration: underline;
+    }
   }
   blockquote {
-    margin: 1.2rem 0px;
-    border-left: 4px solid #ffe066;
+    margin: 1.4rem 6px;
+    border-left: 5px solid #bac8ff;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
-    background: rgb(249, 249, 250);
+    background: rgb(250, 250, 250);
     padding: 5px 5px 5px 15px;
-    color: var(--text1);
+    color: rgb(33, 37, 41);
+    a {
+      /* &:after {
+        content: ']';
+      } */
+    }
   }
   pre {
     font-family: 'Fira Mono', source-code-pro, Menlo, Monaco, Consolas,
@@ -142,7 +154,7 @@ const Content = styled.div`
   }
   width: 100%;
   min-height: 70px;
-  padding: 10px 15px 15px 15px;
+  padding: 10px;
   overflow-wrap: break-word;
 `;
 const LikeContainer = styled.div`
