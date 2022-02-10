@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import Post from '../components/Post';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { boardApi } from '../api';
-import PageList from '../components/PageList';
 import { useUser } from '../context';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
+import Post from '../components/Post';
+import PageList from '../components/PageList';
 
 const Container = styled.div`
   width: 750px;
@@ -136,119 +136,51 @@ const Board = () => {
   });
   const { keyword, searchMode } = searchInfo;
 
+  // 검색 결과 이후에 cancle 버튼을 누르거나, 최신순 조회순 등 탭, 다른 boardType을 클릭해도
+  // http://localhost:3000/board/qna?searchMode=undefined&keyword=undefined
+  // url이 저렇게 뜸. useEffect를 어떻게 섞어쓸 수 있을까
   const { isLoading, data } = useQuery(
-    [`${boardType}Board`, curPage, sort],
-    () => boardApi.getPosts(curPage, sort, boardType).then((res) => res.data)
-  );
-
-  // # 조건? 과 요구사항
-  // 검색 결과 boards와 type별(qna, tech, free) boards의 api 요청 주소가 다름.
-  // queryParams? url은 건들지 않고, 일단 위에 [`${boardType}Board`, ...] <- 이 키의 data를
-  // 검색 버튼을 눌렀을 때 실행되는 handleSearch 함수를 호출해서 검색 api data로 결과로 바꾸고 싶음.
-  //
-  // -문제점
-  //   -검색어 input을 입력할 때마다 위의 const { isLoading, data } = useQuery(
-  //    [`${boardType}Board`, curPage, sort], () => board; ... 데이터가 계속 요청됨.
-  //   -몇 초 뒤에 mutate로 호출한 값이 사라지고 불규칙하게? 다시 위에 data가 재요청돼서
-  //    검색결과 data가 사라진다.
-  //
-  // -궁금한 점
-  //   -onSuccess에서 result 값은 위에서 요청한 url 값이 맞는가?
-  //   -그리고 pagenation 인가,, state가 바뀔 때마다 재요청 되도록 query key 배열 안에
-  //    state들을 넣어놨는데, 그럼 mutate나 데이터를 건드는 작업을 할 때
-  //    [`${a}b`] 이렇게만 입력했는데 정상적으로 결과를 받았는데
-  //    [`${a}b`, state, state] 이런 식으로 초반에 입력된 키와 똑같이 입력하는지,,
-  //
-  // 너무 어렵다. react-query에 대한 자료도 별로 없고 문서도 복잡하다ㅜㅜ
-
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation(
-    () =>
-      boardApi
-        .searchPosts(keyword, curPage, searchMode, boardType)
-        .then((res) => res.data),
-    {
-      // onMutate: () => {
-      //   const previousValue = queryClient.getQueryData([`${boardType}Board`]);
-      //   console.log('previousValue', data);
-      //   queryClient.setQueryData([`${boardType}Board`], (old) => {
-      //     console.log('old', old);
-      //     return [old, data];
-      //   });
-      //   return previousValue;
-      // },
-      onSuccess: (result) => {
-        console.log('성공 메시지:', result);
-        queryClient.setQueriesData([`${boardType}Board`], result);
-      },
+    [`${boardType}Board`, curPage, sort, searchInfo],
+    () => {
+      if (!keyword || !searchMode) {
+        return boardApi
+          .getPosts(curPage, sort, boardType)
+          .then((res) => res.data);
+      } else {
+        return boardApi
+          .searchPosts(keyword, curPage, searchMode, boardType)
+          .then((res) => res.data);
+      }
     }
   );
 
-  console.log('Board react-query data', data);
+  console.log('Board data', data, curPage, sort);
 
   const handleSearch = (e) => {
     e.preventDefault();
+    console.log('handleSearch');
     if (keywordInput.trim().length < 2) {
       alert('검색어는 2글자 이상 입력해주세요.');
       return;
     }
     setSearchInfo({
+      ...searchInfo,
       keyword: keywordInput,
       searchMode: searchModeInput,
     });
-    mutate();
-    // mutate();
   };
 
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams();
-  //   searchParams.set('searchMode', searchMode);
-  //   searchParams.set('keyword', keyword);
-  //   console.log('searchParams', searchParams.toString());
+  useEffect(() => {
+    const searchParams = new URLSearchParams();
+    searchParams.set('searchMode', searchMode);
+    searchParams.set('keyword', keyword);
+    console.log('searchParams', searchParams.toString());
 
-  //   history.push(`/board/${boardType}?` + searchParams.toString());
-  // }, [searchMode, keyword]);
+    history.push(`/board/${boardType}?` + searchParams.toString());
+    // }, [keyword, searchMode]);
+  }, [boardType, history, keyword, searchMode]);
 
-  // const { mutate } = useMutation(
-  //   () =>
-  //     boardApi
-  //       .searchPosts(keyword, curPage, searchMode, boardType)
-  //       .then((res) => res.data),
-  //   {
-  //     onSuccess: () => {
-  //       refetch();
-  //       queryClient.invalidateQueries([
-  //         `${boardType}Board`,
-  //         curPage,
-  //         sort,
-  //         searchInfo,
-  //       ]);
-  //     },
-  //   }
-  // );
-
-  // const fetchSearchBoardData = (keyword, page, searchMode) => {
-  //   boardApi
-  //     .searchPosts(keyword, page, searchMode, boardType)
-  //     .then((res) => {
-  //       setBoards((prev) => ({
-  //         ...prev,
-  //         sort,
-  //         ...res.data,
-  //       }));
-  //     })
-  //     .catch(console.error);
-  // };
-
-  // useEffect(() => {
-  //   if (keyword === '') {
-  //     fetchBoardData(1);
-  //   } else {
-  //     fetchSearchBoardData(keyword, 1, searchMode);
-  //   }
-  // }, [boardType, keyword, searchMode]);
-
-  const orderListClick = (e) => {
+  const handleOrderListClick = (e) => {
     const innerText = e.target.innerText;
     let sort = 'createdDate';
     if (innerText === '조회순') sort = 'views';
@@ -256,6 +188,15 @@ const Board = () => {
     if (innerText === '댓글순') sort = 'commentSize';
     setCurPage(1);
     setSort(sort);
+    setSearchInfo({});
+  };
+
+  const handleCancelSearch = (e) => {
+    e.preventDefault();
+    setKeywordInput('');
+    setSearchInfo({});
+    history.push(`/board/${boardType}`);
+    // http://localhost:3000/board/qna?searchMode=undefined&keyword=undefined
   };
 
   return (
@@ -275,14 +216,14 @@ const Board = () => {
       </Header>
 
       <FilterContainer>
-        <OrderList onClick={orderListClick}>
+        <OrderList onClick={handleOrderListClick}>
           <OrderItem active={sort === 'createdDate'}>최신순</OrderItem>
           <OrderItem active={sort === 'views'}>조회순</OrderItem>
           <OrderItem active={sort === 'commentSize'}>댓글순</OrderItem>
           <OrderItem active={sort === 'likes'}>좋아요순</OrderItem>
         </OrderList>
 
-        <SearchForm handleSearch={handleSearch}>
+        <SearchForm onSubmit={handleSearch}>
           <SearchSelect onChange={(e) => setSearchModeInput(e.target.value)}>
             <option value="title" defaultValue>
               제목
@@ -296,6 +237,9 @@ const Board = () => {
             minLength="2"
             maxLength="20"
           />
+          <button className="dbtn" onClick={handleCancelSearch}>
+            x
+          </button>
           <SearchButton type="submit" onClick={handleSearch}>
             <AiOutlineSearch className="sbtn" />
           </SearchButton>
