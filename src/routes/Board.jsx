@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { AiOutlineSearch } from 'react-icons/ai';
+import { MdCancel } from 'react-icons/md';
 import { boardApi } from '../api';
 import { useUser } from '../context';
 import { useQuery } from 'react-query';
@@ -78,11 +79,10 @@ const SearchForm = styled.form`
   align-items: center;
   outline: 1px solid lightgray;
   background-color: #fff;
-  &:hover {
-    outline: 1px solid #748ffc;
-    .sbtn {
-      color: #748ffc;
-    }
+  &:focus-within {
+    outline: 1px solid #bac8ff;
+    box-shadow: 0px 0px 4px #bac8ff;
+    transition: all 0.1s ease-in-out;
   }
 `;
 const SearchSelect = styled.select`
@@ -110,6 +110,33 @@ const SearchButton = styled.button`
   cursor: pointer;
   border: none;
   background-color: #fff;
+  &:hover {
+    .sbtn {
+      color: #748ffc;
+    }
+  }
+`;
+const CancelButton = styled.button`
+  border: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #ffe066;
+  cursor: pointer;
+  &:hover {
+    background-color: #ffd43b;
+  }
+  .cbtn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    svg {
+      font-size: 1rem;
+      color: white;
+      margin-right: 2px;
+    }
+  }
 `;
 
 const Board = () => {
@@ -130,15 +157,25 @@ const Board = () => {
 
   const [searchModeInput, setSearchModeInput] = useState('title'); // searchModeInput
   const [keywordInput, setKeywordInput] = useState('');
-  const [searchInfo, setSearchInfo] = useState({
+
+  const initSearchInfo = {
     keyword: '',
     searchMode: '',
-  });
+  };
+  const [searchInfo, setSearchInfo] = useState(initSearchInfo);
   const { keyword, searchMode } = searchInfo;
 
-  // 검색 결과 이후에 cancle 버튼을 누르거나, 최신순 조회순 등 탭, 다른 boardType을 클릭해도
-  // http://localhost:3000/board/qna?searchMode=undefined&keyword=undefined
-  // url이 저렇게 뜸. useEffect를 어떻게 섞어쓸 수 있을까
+  const fetchBoards = (page = 1) => {
+    console.log('fetchBoards page', page);
+    setCurPage(page);
+  };
+
+  // const { isLoading, data } = useQuery(
+  //   ['notices', page],
+  //   () => fetchProjects(page),
+  //   { keepPreviousData: true }
+  // );
+
   const { isLoading, data } = useQuery(
     [`${boardType}Board`, curPage, sort, searchInfo],
     () => {
@@ -154,7 +191,7 @@ const Board = () => {
     }
   );
 
-  console.log('Board data', data, curPage, sort);
+  console.log('Board data', curPage, data, sort);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -171,32 +208,28 @@ const Board = () => {
   };
 
   useEffect(() => {
+    if (!keyword || !searchMode) return;
     const searchParams = new URLSearchParams();
     searchParams.set('searchMode', searchMode);
     searchParams.set('keyword', keyword);
     console.log('searchParams', searchParams.toString());
-
+    setSort('createdDate');
     history.push(`/board/${boardType}?` + searchParams.toString());
-    // }, [keyword, searchMode]);
   }, [boardType, history, keyword, searchMode]);
 
   const handleOrderListClick = (e) => {
-    const innerText = e.target.innerText;
-    let sort = 'createdDate';
-    if (innerText === '조회순') sort = 'views';
-    if (innerText === '좋아요순') sort = 'likes';
-    if (innerText === '댓글순') sort = 'commentSize';
+    const sort = e.target.dataset.name;
     setCurPage(1);
     setSort(sort);
-    setSearchInfo({});
+    setSearchInfo(initSearchInfo);
+    history.push(`/board/${boardType}`);
   };
 
   const handleCancelSearch = (e) => {
     e.preventDefault();
     setKeywordInput('');
-    setSearchInfo({});
+    setSearchInfo(initSearchInfo);
     history.push(`/board/${boardType}`);
-    // http://localhost:3000/board/qna?searchMode=undefined&keyword=undefined
   };
 
   return (
@@ -217,10 +250,16 @@ const Board = () => {
 
       <FilterContainer>
         <OrderList onClick={handleOrderListClick}>
-          <OrderItem active={sort === 'createdDate'}>최신순</OrderItem>
-          <OrderItem active={sort === 'views'}>조회순</OrderItem>
-          <OrderItem active={sort === 'commentSize'}>댓글순</OrderItem>
-          <OrderItem active={sort === 'likes'}>좋아요순</OrderItem>
+          {[
+            ['최신순', 'createdDate'],
+            ['조회순', 'views'],
+            ['댓글순', 'commentSize'],
+            ['좋아요순', 'likes'],
+          ].map(([text, name]) => (
+            <OrderItem key={name} data-name={name} active={sort === name}>
+              {text}
+            </OrderItem>
+          ))}
         </OrderList>
 
         <SearchForm onSubmit={handleSearch}>
@@ -237,12 +276,17 @@ const Board = () => {
             minLength="2"
             maxLength="20"
           />
-          <button className="dbtn" onClick={handleCancelSearch}>
-            x
-          </button>
-          <SearchButton type="submit" onClick={handleSearch}>
+          <SearchButton type="submit">
             <AiOutlineSearch className="sbtn" />
           </SearchButton>
+          {/* 폼안에 버튼 만들 때 조심하기 */}
+          {(keyword || searchMode) && (
+            <CancelButton type="button" onClick={handleCancelSearch}>
+              <div className="cbtn">
+                <MdCancel /> clear
+              </div>
+            </CancelButton>
+          )}
         </SearchForm>
       </FilterContainer>
 
@@ -256,6 +300,20 @@ const Board = () => {
               fci={data?.contents[0].id}
             />
           ))}
+          {data?.totalElements > 0 ? (
+            <PageList
+              page={pageList}
+              setPage={setPageList}
+              fetchContents={fetchBoards}
+              totalPages={data?.totalPages}
+              currentPage={data?.currentPage}
+              sort={sort}
+            />
+          ) : (
+            <div style={{ marginTop: 150, textAlign: 'center' }}>
+              아직 게시물이 없습니다.
+            </div>
+          )}
         </>
       ) : (
         <div>loading..</div>
