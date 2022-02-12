@@ -238,6 +238,7 @@ const Header = () => {
             to={{
               pathname: '/board/qna',
               state: { type: 'qna', sort: 'id' },
+              search: '?page=1',
             }}
           >
             <Icon>
@@ -251,6 +252,7 @@ const Header = () => {
             to={{
               pathname: '/board/tech',
               state: { type: 'tech', sort: 'id' },
+              search: '?page=1',
             }}
           >
             <Icon>
@@ -264,6 +266,7 @@ const Header = () => {
             to={{
               pathname: '/board/free',
               state: { type: 'free', sort: 'id' },
+              search: '?page=1',
             }}
           >
             <Icon>
