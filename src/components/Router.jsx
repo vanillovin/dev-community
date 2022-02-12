@@ -23,11 +23,8 @@ const Router = () => {
           <Route exact path="/user/info/:id/*" component={Profile} />
 
           <Route exact path="/board/qna" component={Board} />
-          <Route exact path="/board/qna?*" component={Board} />
           <Route exact path="/board/tech" component={Board} />
-          <Route exact path="/board/tech?*" component={Board} />
           <Route exact path="/board/free" component={Board} />
-          <Route exact path="/board/free?*" component={Board} />
 
           <Route exact path="/write" component={Write} />
           <Route exact path="/edit" component={EditPost} />
