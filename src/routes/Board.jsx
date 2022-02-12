@@ -147,39 +147,46 @@ const Board = () => {
     (boardType === 'qna' && 'Q&A') ||
     (boardType === 'tech' && 'Tech') ||
     (boardType === 'free' && '자유게시판');
-  // const sort = location.pathname.split('=')[1] || location.state?.sort || null;
 
   const history = useHistory();
 
   const [sort, setSort] = useState('createdDate');
-  const [curPage, setCurPage] = useState(1);
-  const [pageList, setPageList] = useState([1, 2, 3, 4, 5]);
+
+  const search = new URLSearchParams(location.search);
+  // const sort = search.get('sort');
+  const curPage = Number(search.get('page')) || 1;
+  let x = curPage;
+  if (curPage % 5 === 1) x += 4;
+  if (curPage % 5 === 2) x += 3;
+  if (curPage % 5 === 3) x += 2;
+  if (curPage % 5 === 4) x += 1;
+  const initPageList =
+    curPage > 5
+      ? [1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1))
+      : [1, 2, 3, 4, 5];
+
+  const [pageList, setPageList] = useState(initPageList);
+
+  useEffect(() => {
+    // console.log('useEffect => boardType', boardType, '/ curPage', curPage);
+    return () => setPageList([1, 2, 3, 4, 5]);
+  }, [boardType]);
 
   const [searchModeInput, setSearchModeInput] = useState('title'); // searchModeInput
   const [keywordInput, setKeywordInput] = useState('');
 
   const initSearchInfo = {
+    searchMode: 'title',
     keyword: '',
-    searchMode: '',
   };
   const [searchInfo, setSearchInfo] = useState(initSearchInfo);
   const { keyword, searchMode } = searchInfo;
 
-  const fetchBoards = (page = 1) => {
-    console.log('fetchBoards page', page);
-    setCurPage(page);
-  };
-
-  // const { isLoading, data } = useQuery(
-  //   ['notices', page],
-  //   () => fetchProjects(page),
-  //   { keepPreviousData: true }
-  // );
-
+  // 상태랑 아무 상관도 없음.
   const { isLoading, data } = useQuery(
     [`${boardType}Board`, curPage, sort, searchInfo],
-    () => {
-      if (!keyword || !searchMode) {
+    async () => {
+      if (!keyword) {
         return boardApi
           .getPosts(curPage, sort, boardType)
           .then((res) => res.data);
@@ -191,43 +198,59 @@ const Board = () => {
     }
   );
 
-  console.log('Board data', curPage, data, sort);
+  // 얘가 setCurrentPage
+  const fetchBoards = (page = 1) => {
+    // 현재 url의 searchParams
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', page);
+    console.log('searchParams', searchParams.toString());
+    history.push(`/board/${boardType}?` + searchParams.toString());
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('handleSearch');
+    fetchBoards(1);
     if (keywordInput.trim().length < 2) {
       alert('검색어는 2글자 이상 입력해주세요.');
       return;
     }
     setSearchInfo({
-      ...searchInfo,
-      keyword: keywordInput,
       searchMode: searchModeInput,
+      keyword: keywordInput,
     });
   };
 
   useEffect(() => {
     if (!keyword || !searchMode) return;
-    const searchParams = new URLSearchParams();
+    const searchParams = new URLSearchParams(location.search);
     searchParams.set('searchMode', searchMode);
     searchParams.set('keyword', keyword);
     console.log('searchParams', searchParams.toString());
     setSort('createdDate');
     history.push(`/board/${boardType}?` + searchParams.toString());
-  }, [boardType, history, keyword, searchMode]);
+  }, [boardType, history, keyword, location.search, searchMode]);
 
-  const handleOrderListClick = (e) => {
-    const sort = e.target.dataset.name;
-    setCurPage(1);
+  const handleOrderListClick = ({ target: { tagName, dataset } }) => {
+    if (tagName === 'UL') return;
+
+    fetchBoards(1);
+    const sort = dataset.name;
+
     setSort(sort);
+
+    setSearchModeInput('title');
+    setKeywordInput('');
+
     setSearchInfo(initSearchInfo);
-    history.push(`/board/${boardType}`);
+    history.push(`/board/${boardType}?sort=${sort}&page=1`);
   };
 
-  const handleCancelSearch = (e) => {
-    e.preventDefault();
+  const handleCancelSearch = () => {
+    fetchBoards(1);
+
+    setSearchModeInput('title');
     setKeywordInput('');
+
     setSearchInfo(initSearchInfo);
     history.push(`/board/${boardType}`);
   };
@@ -263,7 +286,10 @@ const Board = () => {
         </OrderList>
 
         <SearchForm onSubmit={handleSearch}>
-          <SearchSelect onChange={(e) => setSearchModeInput(e.target.value)}>
+          <SearchSelect
+            value={searchModeInput}
+            onChange={(e) => setSearchModeInput(e.target.value)}
+          >
             <option value="title" defaultValue>
               제목
             </option>
@@ -280,7 +306,7 @@ const Board = () => {
             <AiOutlineSearch className="sbtn" />
           </SearchButton>
           {/* 폼안에 버튼 만들 때 조심하기 */}
-          {(keyword || searchMode) && (
+          {keyword !== '' && (
             <CancelButton type="button" onClick={handleCancelSearch}>
               <div className="cbtn">
                 <MdCancel /> clear
@@ -306,6 +332,7 @@ const Board = () => {
               setPage={setPageList}
               fetchContents={fetchBoards}
               totalPages={data?.totalPages}
+              // typeof curPage - numbers
               currentPage={data?.currentPage}
               sort={sort}
             />
