@@ -1,230 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
-import { boardApi, commentApi } from '../api';
-import { useT, useUser } from '../context';
+import { BsBookmarkFill } from 'react-icons/bs';
 import {
   AiOutlineSetting,
   AiOutlineLike,
   AiOutlineEye,
   AiOutlineComment,
 } from 'react-icons/ai';
-import { BsBookmarkFill } from 'react-icons/bs';
-import Comment from '../components/Comment';
-import dateFormatter from '../dateFormatter';
+
+import * as S from './style.js';
+import { boardApi, commentApi } from '../../api';
+import { useT, useUser } from '../../context';
+import Comment from '../../components/Comment';
+import dateFormatter from '../../dateFormatter';
 
 import { marked } from 'marked';
 import parse from 'html-react-parser';
-
-const DetailContainer = styled.div`
-  width: 750px;
-  min-width: 750px;
-`;
-const Header = styled.div`
-  padding: 10px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid lightgray;
-  .top {
-    /* border: 1px solid black; */
-    height: 25px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    justify-content: space-between;
-  }
-  .id {
-    color: gray;
-  }
-  .top-right {
-    display: flex;
-    align-items: center;
-  }
-  .icon {
-    color: gray;
-    font-size: 14px;
-    margin-left: 10px;
-    display: flex;
-    align-items: center;
-    span {
-      margin-left: 3px;
-      margin-right: 1px;
-    }
-  }
-  .author {
-    color: #5c7cfa;
-    cursor: pointer;
-    font-size: 14px;
-    margin-right: 5px;
-    :hover {
-      text-decoration: underline;
-    }
-  }
-  .date {
-    color: gray;
-    font-size: 11px;
-  }
-`;
-const SettingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  div {
-    border-radius: 2px;
-    border: 1px solid lightgray;
-  }
-  .setbtn {
-    color: #495057;
-    font-size: 20px;
-    cursor: pointer;
-    margin-left: 6px;
-    :hover {
-      color: #adb5bd;
-    }
-  }
-`;
-const SettingButton = styled.button`
-  user-select: none;
-  color: #495057;
-  border: none;
-  cursor: pointer;
-  padding: 5px 10px;
-  background-color: transparent;
-  border-top: 1px solid lightgray;
-  border-right: 1px solid lightgray;
-  border-bottom: 1px solid lightgray;
-  &:hover {
-    background-color: #f1f3f5;
-  }
-  &:nth-child(1) {
-    border-left: 1px solid lightgray;
-    border-radius: 2px 0 0 2px;
-  }
-  &:nth-child(2) {
-    border-radius: 0 2px 2px 0;
-  }
-`;
-const Title = styled.div`
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 5px;
-`;
-const Content = styled.div`
-  /* 상속 */
-  ol,
-  ul {
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    padding-inline-start: 30px;
-  }
-  img {
-    width: 100%;
-    margin: 5px 0;
-  }
-  a {
-    color: #364fc7;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-  blockquote {
-    margin: 1.4rem 6px;
-    border-left: 5px solid #bac8ff;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    background: rgb(250, 250, 250);
-    padding: 5px 5px 5px 15px;
-    color: rgb(33, 37, 41);
-    a {
-      /* &:after {
-        content: ']';
-      } */
-    }
-  }
-  pre {
-    font-family: 'Fira Mono', source-code-pro, Menlo, Monaco, Consolas,
-      'Courier New', monospace;
-    padding: 10px;
-    line-height: 1.4;
-    font-size: 0.875rem;
-    overflow-x: auto;
-    letter-spacing: 0px;
-    background: rgb(249, 249, 250);
-  }
-  width: 100%;
-  min-height: 70px;
-  padding: 10px;
-  overflow-wrap: break-word;
-`;
-const LikeContainer = styled.div`
-  width: 100%;
-  height: 40px;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-const LikeButton = styled.button`
-  all: unset;
-  color: #495057;
-  cursor: pointer;
-  display: flex;
-  font-size: 20px;
-  align-items: center;
-  & > div {
-    margin-left: 5px;
-    font-size: 16px;
-  }
-  &:hover {
-    color: #adb5bd;
-  }
-`;
-const CommentContainer = styled.div`
-  width: 100%;
-  margin-top: 30px;
-  background: white;
-  /* border-radius: 2px; */
-  border: 1px solid lightgray;
-  /* box-shadow: 0 1px 8px 0px rgba(0, 0, 0, 0.1); */
-`;
-const CommentForm = styled.form`
-  width: 100%;
-  height: 80px;
-  display: flex;
-`;
-const CommentInput = styled.textarea`
-  width: 80%;
-  padding: 10px;
-  border: none;
-  resize: none;
-  outline: none;
-`;
-const CommentButton = styled.button`
-  width: 20%;
-  height: 100%;
-  border: none;
-  font-size: 14px;
-  border-left: 1px solid lightgray;
-  cursor: pointer;
-  background-color: #dbe4ff;
-  &:hover {
-    background-color: #bac8ff;
-  }
-  &:active {
-    background-color: #91a7ff;
-  }
-  transition: all 0.1s linear;
-`;
-const BookMark = styled.div`
-  cursor: pointer;
-  margin-left: 40px;
-  color: #91a7ff;
-  font-size: 20px;
-  &:active {
-    color: #dbe4ff;
-  }
-`;
 
 const Detail = ({ match }) => {
   const history = useHistory();
@@ -317,7 +109,7 @@ const Detail = ({ match }) => {
   };
 
   const delPost = () => {
-    // 댓글잇는지확인
+    // 댓글있는지확인
     const ok = window.confirm('삭제하시겠습니까?');
     ok &&
       boardApi
@@ -454,7 +246,7 @@ const Detail = ({ match }) => {
       <h1 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
         {title}
       </h1>
-      <DetailContainer>
+      <S.DetailContainer>
         <div
           style={{
             background: '#fff',
@@ -462,7 +254,7 @@ const Detail = ({ match }) => {
             border: '1px solid lightgray',
           }}
         >
-          <Header>
+          <S.Header>
             <div className="top">
               <div className="id">#{post.id && post.id}</div>
               <div className="top-right">
@@ -485,7 +277,7 @@ const Detail = ({ match }) => {
               }}
             >
               <div>
-                <Title>{post.title && post.title}</Title>
+                <S.Title>{post.title && post.title}</S.Title>
                 <div>
                   <div>
                     <span
@@ -518,28 +310,32 @@ const Detail = ({ match }) => {
               </div>
 
               {user && (
-                <BookMark title="게시글 스크랩" onClick={scrapPost}>
+                <S.BookMark title="게시글 스크랩" onClick={scrapPost}>
                   <BsBookmarkFill />
-                </BookMark>
+                </S.BookMark>
               )}
             </div>
-          </Header>
+          </S.Header>
 
-          <Content>
+          <S.Content>
             {post.content ? parse(toHtml(post.content)) : '로딩 중입니다!'}
-          </Content>
+          </S.Content>
 
-          <LikeContainer>
-            <LikeButton type="submit" onClick={likePost} title="게시글 좋아요">
+          <S.LikeContainer>
+            <S.LikeButton
+              type="submit"
+              onClick={likePost}
+              title="게시글 좋아요"
+            >
               <AiOutlineLike />
               <div>{likes}</div>
-            </LikeButton>
+            </S.LikeButton>
             {user && post && post.memberId === user.id && (
-              <SettingContainer>
+              <S.SettingContainer>
                 {toggle && (
                   <>
-                    <SettingButton onClick={goEditor}>수정</SettingButton>
-                    <SettingButton onClick={delPost}>삭제</SettingButton>
+                    <S.SettingButton onClick={goEditor}>수정</S.SettingButton>
+                    <S.SettingButton onClick={delPost}>삭제</S.SettingButton>
                   </>
                 )}
                 <AiOutlineSetting
@@ -547,12 +343,12 @@ const Detail = ({ match }) => {
                   className="setbtn"
                   onClick={() => setToggle(!toggle)}
                 />
-              </SettingContainer>
+              </S.SettingContainer>
             )}
-          </LikeContainer>
+          </S.LikeContainer>
         </div>
 
-        <CommentContainer>
+        <S.CommentContainer>
           <div
             style={{
               background: '#e9ecef',
@@ -576,22 +372,22 @@ const Detail = ({ match }) => {
             />
           ))}
 
-          <CommentForm>
-            <CommentInput
+          <S.CommentForm>
+            <S.CommentInput
               value={content}
               onChange={onChange}
               placeholder="댓글 달기"
             />
-            <CommentButton
+            <S.CommentButton
               type="submit"
               title="댓글 등록"
               onClick={sendComments}
             >
               등록
-            </CommentButton>
-          </CommentForm>
-        </CommentContainer>
-      </DetailContainer>
+            </S.CommentButton>
+          </S.CommentForm>
+        </S.CommentContainer>
+      </S.DetailContainer>
     </>
   ) : (
     <div>loading...</div>

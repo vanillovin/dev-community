@@ -50,6 +50,7 @@ const CheckText = styled.p`
 `;
 
 const AuthForm = ({ initialState, onSubmit, text }) => {
+  console.log('AuthForm initialState', initialState);
   const [state, setstate] = useState({
     name: initialState.name,
     age: initialState.age,

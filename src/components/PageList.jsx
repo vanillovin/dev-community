@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import { Link, useHistory } from 'react-router-dom';
 
 const PageContainer = styled.div`
   user-select: none;
@@ -20,113 +21,91 @@ const PageUL = styled.ul`
   align-items: center;
   justify-content: center;
   border: 1px solid lightgray;
-
-  .first {
-    font-weight: bold;
-  }
-  .last {
-    font-weight: bold;
-  }
 `;
 const PageLI = styled.li`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* cursor: pointer; */
-  cursor: ${(props) => (props.cs ? 'not-allowed' : 'pointer')};
-
-  width: 28px;
-  height: 28px;
+  cursor: pointer;
+  /* cursor: ${(props) => (props.cs ? 'not-allowed' : 'pointer')}; */
   width: ${(props) => (props.test ? '0px' : '28px')};
   height: ${(props) => (props.test ? '0px' : '28px')};
-
   :not(:last-child) {
     border-right: 1px solid lightgray;
     border-right: ${(props) => (props.test ? 'none' : ' 1px solid lightgray')};
   }
-
   background-color: ${(props) => props.active && '#bac8ff'};
   :hover {
     background-color: ${(props) => !props.active && '#dbe4ff'};
   }
 `;
 
-const PageList = ({
-  page,
-  setPage,
-  fetchContents,
-  totalPages,
-  currentPage,
-  sort,
-}) => {
-  const onClick = (e) => {
-    const pNum = e.target.innerText;
-    const cName = e.target.className;
-    if (pNum === '') return;
-    if (currentPage === +pNum) return;
-    if (e.target.tagName === 'UL') return;
-    if (cName.includes('prev')) {
-      if (page[0] !== 1) {
-        setPage(page.map((num) => num - 5));
-        fetchContents(page[0] - 5, sort);
-      }
-      return;
-    }
-    if (cName.includes('next')) {
-      if (page[page.length - 1] >= totalPages) return;
-      setPage(page.map((num) => num + 5));
-      fetchContents(page[0] + 5, sort);
-      return;
-    }
-    if (cName.includes('first')) {
-      if (currentPage === 1) return;
-      setPage([1, 2, 3, 4, 5]);
-      fetchContents(1, sort);
-      return;
-    }
-    if (cName.includes('last')) {
-      let x = totalPages;
-      if (totalPages % 5 === 1) x += 4;
-      if (totalPages % 5 === 2) x += 3;
-      if (totalPages % 5 === 3) x += 2;
-      if (totalPages % 5 === 4) x += 1;
-      if (currentPage === totalPages) return;
-      setPage([1, 2, 3, 4, 5].map((num) => num + 5 * (x / 5 - 1)));
-      fetchContents(totalPages, sort);
-      return;
-    }
-    fetchContents(pNum, sort);
+const PageList = ({ currentPageNumber, endPageNumber }) => {
+  const history = useHistory();
+  const searchParams = new URLSearchParams(history.location.search);
+
+  const pageListState = useMemo(() => {
+    const pages = 5;
+    let ret = Array.from(
+      { length: pages },
+      (_, i) => currentPageNumber + i - 2
+    ).filter((x) => x > 0 && x <= endPageNumber);
+    if (ret.length === pages) return ret;
+    if (ret[0] === 1)
+      return Array.from(
+        { length: Math.min(pages, endPageNumber) },
+        (_, i) => i + 1
+      );
+    return Array.from(
+      { length: pages },
+      (_, i) => endPageNumber - pages + i + 1
+    ).filter((x) => x > 0);
+  }, [currentPageNumber, endPageNumber]);
+
+  const goToFirst = () => {
+    searchParams.set('page', String(1));
+    history.push(history.location.pathname + '?' + searchParams.toString());
+  };
+
+  const goToPrev = () => {
+    searchParams.set('page', String(Math.max(1, currentPageNumber - 1)));
+    history.push(history.location.pathname + '?' + searchParams.toString());
+  };
+
+  const goToNumPage = (pNum) => {
+    searchParams.set('page', String(pNum));
+    history.push(history.location.pathname + '?' + searchParams.toString());
+  };
+
+  const goToNext = () => {
+    searchParams.set(
+      'page',
+      String(Math.min(endPageNumber, currentPageNumber + 1))
+    );
+    history.push(history.location.pathname + '?' + searchParams.toString());
+  };
+
+  const goToLast = () => {
+    searchParams.set('page', String(endPageNumber));
+    history.push(history.location.pathname + '?' + searchParams.toString());
   };
 
   return (
     <PageContainer>
-      <PageUL onClick={onClick}>
-        <PageLI className="first" title="맨 앞 페이지" cs={currentPage === 1}>
-          &laquo;
-        </PageLI>
-        <PageLI className="prev" title="앞으로 5페이지">
-          &#60;
-        </PageLI>
-        {page.map((num, i) => (
+      <PageUL>
+        <PageLI onClick={goToFirst}>&laquo;</PageLI>
+        <PageLI onClick={goToPrev}>&lt;</PageLI>
+        {pageListState.map((num, i) => (
           <PageLI
+            active={num === currentPageNumber}
+            onClick={() => goToNumPage(num)}
             key={i}
-            active={currentPage === num}
-            test={num > totalPages && i + 1}
-            title={num > totalPages ? '' : num}
           >
-            {num > totalPages ? '' : num}
+            {num}
           </PageLI>
         ))}
-        <PageLI className="next" name="li" title="뒤로 5페이지">
-          &#62;
-        </PageLI>
-        <PageLI
-          className="last"
-          title="맨 뒤 페이지"
-          cs={currentPage === totalPages}
-        >
-          &raquo;
-        </PageLI>
+        <PageLI onClick={goToNext}>&gt;</PageLI>
+        <PageLI onClick={goToLast}>&raquo;</PageLI>
       </PageUL>
     </PageContainer>
   );

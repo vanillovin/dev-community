@@ -168,7 +168,11 @@ const HomeBoard = ({ title, type }) => {
                 selected={post.selected}
               >
                 <Link to={`/board/${type}/${post.id}`} className="post-left">
-                  <span>{post.title}</span>
+                  <span>
+                    {post.title.length > 40
+                      ? `${post.title.substring(0, 40)}...`
+                      : post.title}
+                  </span>
                 </Link>
                 <div className="post-right">
                   <span className="username" title={post.author}>

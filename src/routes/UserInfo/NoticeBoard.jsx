@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { memberApi } from '../api';
+import { memberApi } from '../../api';
 import styled from 'styled-components';
-import { useT } from '../context';
+import { useT } from '../../context';
 import { FaRegComment, FaCheck, FaThumbsUp } from 'react-icons/fa';
-import PageList from './PageList';
-import dateFormatter from '../dateFormatter';
+import PageList from '../../components/PageList';
+import dateFormatter from '../../dateFormatter';
 
 const Container = styled.div``;
 const NoticeHeader = styled.div`
@@ -84,7 +84,6 @@ const NoticeBoard = ({ id }) => {
   const history = useHistory();
 
   const [page, setPage] = useState(1);
-  const [pageList, setPageList] = useState([1, 2, 3, 4, 5]);
 
   let { data: noticeCounts, refetch } = useQuery('NoticeCounts', () =>
     memberApi.getNoticeCounts(id).then((res) => res.data)
@@ -209,13 +208,6 @@ const NoticeBoard = ({ id }) => {
       ) : (
         <div>loading...</div>
       )}
-      <PageList
-        page={pageList}
-        setPage={setPageList}
-        fetchContents={fetchProjects}
-        totalPages={data?.totalPages}
-        currentPage={data?.currentPage}
-      />
     </>
   );
 };

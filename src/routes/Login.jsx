@@ -70,13 +70,12 @@ const Login = () => {
           JSON.stringify({ ...res.data, expireDate: tomorrow.toISOString() })
         );
         const userLS = res.data;
-        // window.location.href = '/';
         memberApi.getUser(userLS.memberId).then(({ data }) => {
           setUser((prev) => ({
             ...prev,
             loading: false,
             t: userLS.token,
-            user: { id: userLS.memberId, data },
+            user: { ...prev.user, ...data },
             error: null,
           }));
         });

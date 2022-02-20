@@ -1,8 +1,6 @@
-import React, { useState, createRef } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { Redirect, useHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
-import { useT, useUser } from '../context';
-import { boardApi } from '../api';
 
 import Prism from 'prismjs';
 // 여기 css를 수정해서 코드 하이라이팅 커스텀 가능
@@ -12,7 +10,9 @@ import { Editor, Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { useEffect } from 'react/cjs/react.development';
+
+import { useT, useUser } from '../context';
+import { boardApi } from '../api';
 
 const Container = styled.div`
   width: 700px;

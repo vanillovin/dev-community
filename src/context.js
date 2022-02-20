@@ -32,12 +32,13 @@ export function UserProvider({ children }) {
         ...state,
         loading: false,
         t: userLS.token,
-        user: { id: userLS.memberId, data },
+        user: { id: userLS.memberId, ...data },
         error: null,
       });
     } catch (err) {
       console.log('context getUser => err', err);
-      localStorage.removeItem('user');
+
+      // localStorage.removeItem('user');
 
       // 로그인페이지이동
       setState({
@@ -50,7 +51,6 @@ export function UserProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log('context useEffect');
     getUser();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

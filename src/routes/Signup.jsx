@@ -5,58 +5,12 @@ import { memberApi } from '../api';
 import { useUser } from '../context';
 import AuthForm from '../components/AuthForm';
 
-// const SignupContainer = styled.div`
-//   width: 400px;
-// `;
 const Title = styled.h1`
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 30px;
 `;
-// const SignupForm = styled.form`
-//   display: flex;
-//   flex-direction: column;
-// `;
-// const Text = styled.h3`
-//   font-size: 14px;
-//   font-weight: bold;
-//   padding-left: 2px;
-//   margin-bottom: 8px;
-// `;
-// const Input = styled.input`
-//   padding: 10px;
-//   margin-bottom: 4px;
-//   border-radius: 2px;
-//   border: 1px solid lightgray;
-// `;
-// const Select = styled.select`
-//   padding: 10px;
-//   margin-bottom: 4px;
-//   border-radius: 2px;
-//   border: 1px solid lightgray;
-// `;
-// const Button = styled.button`
-//   border: none;
-//   height: 40px;
-//   cursor: pointer;
-//   margin-top: 14px;
-//   border-radius: 2px;
-//   background-color: #bac8ff;
-//   &:hover {
-//     background-color: #91a7ff;
-//   }
-//   &:active {
-//     background-color: #748ffc;
-//   }
-//   transition: all 0.1s linear;
-// `;
-// const CheckText = styled.p`
-//   color: #5c7cfa;
-//   font-size: 14px;
-//   margin: 0 0 14px 2px;
-// `;
 
-// 회원가입 회원수정 INPUT ONCHANGE USESTATE
 const Signup = () => {
   const user = useUser();
   const history = useHistory();

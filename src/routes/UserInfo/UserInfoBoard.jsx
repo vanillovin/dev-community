@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { boardApi, memberApi } from '../api';
-import PageList from './PageList';
-import dateFormatter from '../dateFormatter';
+import { boardApi, memberApi } from '../../api';
+import PageList from '../../components/PageList';
+import dateFormatter from '../../dateFormatter';
 
 const Post = styled.div`
   padding: 10px;
@@ -54,7 +54,7 @@ const Post = styled.div`
 const UserInfoBoard = ({ id, name }) => {
   console.log('UserInfoBoard', id, name);
   const [state, setState] = useState({
-    loading: true,
+    isLoading: true,
     data: {
       contents: [],
       totalPages: null,
@@ -63,7 +63,7 @@ const UserInfoBoard = ({ id, name }) => {
     },
   });
   const {
-    loading,
+    isLoading,
     data: { contents, totalPages, currentPage, totalElements },
   } = state;
   const [page, setPage] = useState([1, 2, 3, 4, 5]);
@@ -74,7 +74,7 @@ const UserInfoBoard = ({ id, name }) => {
       console.log('userInfoBoard fetch res.data =>', data);
       setState((prev) => ({
         ...prev,
-        loading: false,
+        isLoading: false,
         data: {
           ...data,
           totalPages: data.totalPages,
@@ -111,7 +111,7 @@ const UserInfoBoard = ({ id, name }) => {
     }
   };
 
-  return !loading ? (
+  return !isLoading ? (
     <>
       {contents && contents.length > 0 ? (
         contents.map((item) => (
@@ -170,16 +170,6 @@ const UserInfoBoard = ({ id, name }) => {
                 (name === 'comments' && '댓글')
               }이 없습니다.`}
         </div>
-      )}
-
-      {totalElements > 0 && (
-        <PageList
-          page={page}
-          setPage={setPage}
-          fetchContents={fetchContents}
-          totalPages={totalPages}
-          currentPage={currentPage}
-        />
       )}
     </>
   ) : (

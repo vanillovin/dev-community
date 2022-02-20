@@ -10,6 +10,7 @@ import { MdNotifications } from 'react-icons/md';
 import { useUser } from '../context';
 import { useQuery } from 'react-query';
 import { memberApi } from '../api';
+import { useHistory } from 'react-router-dom';
 
 const HeaderContainer = styled.div`
   color: white;
@@ -173,10 +174,10 @@ function TopUser({ user }) {
       className="topUser"
       to={{
         pathname: `/user/info/${user.id}`,
-        state: { memberId: user.id },
+        state: { memberId: user?.id },
       }}
     >
-      <div className="username">{user.data.name}</div>
+      <div className="username">{user.name}</div>
       <div className="bot">
         <MdNotifications />
         {data?.count > 0 && <div className="noticeCircle"></div>}
@@ -187,6 +188,7 @@ function TopUser({ user }) {
 
 const Header = () => {
   const user = useUser();
+  const history = useHistory();
   console.log('Header user', user);
 
   const logout = () => {
@@ -199,7 +201,7 @@ const Header = () => {
     <HeaderContainer>
       <Logo>
         <SLink className="logo" to="/">
-          LOGO
+          Serenity
         </SLink>
       </Logo>
       <>
@@ -207,13 +209,13 @@ const Header = () => {
           <UserContainer>
             <TopUser user={user} />
             <ButtonContainer>
-              <button className="btn">
-                <Link
-                  className="link"
-                  to={{ pathname: '/write', state: { type: '' } }}
-                >
-                  글쓰기
-                </Link>
+              <button
+                className="btn"
+                onClick={() => {
+                  history.push({ pathname: '/write', state: { type: '' } });
+                }}
+              >
+                글쓰기
               </button>
               <button className="btn" onClick={logout}>
                 로그아웃
@@ -237,8 +239,8 @@ const Header = () => {
           <SLink
             to={{
               pathname: '/board/qna',
-              state: { type: 'qna', sort: 'id' },
-              search: '?page=1',
+              state: { type: 'qna', sort: 'createdDate' },
+              search: '?sort=createdDate&page=1',
             }}
           >
             <Icon>
@@ -251,8 +253,8 @@ const Header = () => {
           <SLink
             to={{
               pathname: '/board/tech',
-              state: { type: 'tech', sort: 'id' },
-              search: '?page=1',
+              state: { type: 'tech', sort: 'createdDate' },
+              search: '?sort=createdDate&page=1',
             }}
           >
             <Icon>
@@ -265,8 +267,8 @@ const Header = () => {
           <SLink
             to={{
               pathname: '/board/free',
-              state: { type: 'free', sort: 'id' },
-              search: '?page=1',
+              state: { type: 'free', sort: 'createdDate' },
+              search: '?sort=createdDate&page=1',
             }}
           >
             <Icon>

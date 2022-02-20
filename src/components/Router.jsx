@@ -4,7 +4,7 @@ import Header from './Header';
 import Home from '../routes/Home';
 import Login from '../routes/Login';
 import Signup from '../routes/Signup';
-import Profile from '../routes/Profile';
+import UserInfo from '../routes/UserInfo';
 import Write from '../routes/Write';
 import EditPost from '../routes/EditPost';
 import Detail from '../routes/Detail';
@@ -19,8 +19,8 @@ const Router = () => {
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup} />
-          <Route exact path="/user/info/:id" component={Profile} />
-          <Route exact path="/user/info/:id/*" component={Profile} />
+          <Route exact path="/user/info/:id" component={UserInfo} />
+          <Route exact path="/user/info/:id/*" component={UserInfo} />
 
           <Route exact path="/board/qna" component={Board} />
           <Route exact path="/board/tech" component={Board} />
