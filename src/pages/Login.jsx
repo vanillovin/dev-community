@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
 import { Redirect, withRouter } from 'react-router';
 import styled from 'styled-components';
-import { memberApi } from '../api';
-import { useUser, useSetUser } from '../context';
 
+import memberApi from '../apis/memberApi';
+import { customMedia } from '../commons/styles/GlobalStyles';
+import { useUser, useSetUser } from '../contexts/UserContext';
+
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  ${customMedia.lessThan('tablet')`
+    text-align: center;    
+    justify-content: center;
+  `}
+`;
 const LoginContainer = styled.div`
   width: 400px;
 `;
@@ -102,7 +113,7 @@ const Login = () => {
   };
 
   return (
-    <>
+    <Container>
       {!user ? (
         <LoginContainer>
           <Title>로그인</Title>
@@ -133,7 +144,7 @@ const Login = () => {
           <Redirect to="/" />
         </>
       )}
-    </>
+    </Container>
   );
 };
 

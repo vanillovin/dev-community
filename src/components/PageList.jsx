@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const PageContainer = styled.div`
   user-select: none;
@@ -45,7 +45,7 @@ const PageList = ({ currentPageNumber, endPageNumber }) => {
   const searchParams = new URLSearchParams(history.location.search);
 
   const pageListState = useMemo(() => {
-    const pages = 5;
+    const pages = 10;
     let ret = Array.from(
       { length: pages },
       (_, i) => currentPageNumber + i - 2

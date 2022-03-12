@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import {
   AiOutlineLike,
   AiOutlineCheck,
   AiOutlineComment,
 } from 'react-icons/ai';
 import { FiEdit, FiTrash } from 'react-icons/fi';
-import { useUser } from '../context';
-import dateFormatter from '../dateFormatter';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
+import { useUser } from '../../contexts/UserContext';
+import dateFormatter from '../../utils/dateFormatter';
+
+const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
 const Container = styled.div`
   padding: 10px;
   border-bottom: 1px solid lightgray;
@@ -52,7 +57,7 @@ const SButton = styled.button`
     background-color: ${(props) => props.some && '#94d82d'};
   }
 `;
-const Content = styled.div`
+const CommentContent = styled.div`
   width: 100%;
   font-size: 14px;
   line-height: 1.4;
@@ -60,22 +65,18 @@ const Content = styled.div`
   overflow-wrap: break-word;
   padding: 14px 10px 10px 4px;
 `;
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
 const Button = styled.div`
   display: flex;
   align-items: center;
-  font-size: 15px;
   color: #495057;
+  font-size: 0.9rem;
   cursor: pointer;
   &:hover {
-    color: #adb5bd;
+    opacity: 0.7;
   }
   color: #868e96;
   & + & {
-    margin-left: 20px;
+    margin-left: 15px;
   }
 `;
 const EditForm = styled.div`
@@ -122,19 +123,18 @@ const EditButton = styled.button`
 
 const Comment = ({
   cmt,
-  some,
-  author,
-  delComment,
-  fixComment,
-  likeComment,
-  selectComment,
+  isSelected,
+  isPostUser,
+  handleDeleteComment,
+  handleFixComment,
+  handleLikeComment,
+  handleSelectComment,
 }) => {
-  // console.log('Comment', author, cmt);
   const user = useUser();
   const [edit, setEdit] = useState(false);
   const [text, setText] = useState(cmt.content);
-
-  const onChagne = (e) => setText(e.target.value);
+  const [textInput, setTextInput] = useState(cmt.content);
+  const isCommentUser = +cmt.memberId === +user?.id;
 
   return (
     <>
@@ -142,7 +142,7 @@ const Comment = ({
         <div>
           <Top>
             <ButtonContainer>
-              {some ? (
+              {isSelected ? (
                 cmt.selected ? (
                   <SButton selected={cmt.selected} title="채택된 댓글">
                     <AiOutlineCheck />
@@ -154,16 +154,16 @@ const Comment = ({
                 )
               ) : (
                 <>
-                  {author && (
+                  {isPostUser && (
                     <SButton
                       title="댓글 채택"
-                      some={!some}
-                      onClick={() => selectComment(cmt.id)}
+                      some={!isSelected}
+                      onClick={() => handleSelectComment(cmt.id)}
                     >
                       <AiOutlineCheck />
                     </SButton>
                   )}
-                  {!author && (
+                  {!isPostUser && (
                     <SButton>
                       <AiOutlineComment />
                     </SButton>
@@ -196,11 +196,14 @@ const Comment = ({
             </ButtonContainer>
 
             <ButtonContainer>
-              <Button onClick={() => likeComment(cmt.id)} title="댓글 좋아요">
+              <Button
+                onClick={() => handleLikeComment(cmt.id)}
+                title="댓글 좋아요"
+              >
                 <AiOutlineLike />
                 <span style={{ marginLeft: 4 }}>{cmt.likes}</span>
               </Button>
-              {user && cmt.memberId === user.id && (
+              {isCommentUser && (
                 <>
                   <Button title="댓글 수정">
                     <FiEdit
@@ -216,7 +219,7 @@ const Comment = ({
                       onClick={() => {
                         cmt.selected
                           ? alert('채택된 댓글은 삭제할 수 없습니다.')
-                          : delComment(cmt.id);
+                          : handleDeleteComment(cmt.id);
                       }}
                     />
                   </Button>
@@ -227,15 +230,18 @@ const Comment = ({
         </div>
 
         {!edit ? (
-          <Content>{cmt.content}</Content>
+          <CommentContent>{cmt.content}</CommentContent>
         ) : (
           <EditForm>
-            <EditInput value={text} onChange={onChagne} />
+            <EditInput
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+            />
             <EditButtonContainer>
               <EditButton onClick={() => setEdit(false)}>취소</EditButton>
               <EditButton
                 onClick={() => {
-                  fixComment(cmt.id, text);
+                  handleFixComment(cmt.id, textInput, setText);
                   setEdit(false);
                 }}
               >

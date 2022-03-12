@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
+import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { memberApi } from '../../api';
-import styled from 'styled-components';
-import { useT } from '../../context';
 import { FaRegComment, FaCheck, FaThumbsUp } from 'react-icons/fa';
-import PageList from '../../components/PageList';
-import dateFormatter from '../../dateFormatter';
+
+import memberApi from '../../apis/memberApi';
+import { useT } from '../../contexts/UserContext';
+import dateFormatter from '../../utils/dateFormatter';
+import PageList from '../PageList';
 
 const Container = styled.div``;
 const NoticeHeader = styled.div`
@@ -16,6 +17,7 @@ const NoticeHeader = styled.div`
   padding: 10px 15px;
   margin-bottom: 10px;
   background-color: rgba(65, 105, 225, 0.15);
+  font-size: 0.9rem;
   .count {
     color: #fa5252;
     font-weight: bold;
@@ -24,16 +26,17 @@ const NoticeHeader = styled.div`
     cursor: pointer;
     display: flex;
     align-items: center;
+    :hover {
+      opacity: 0.7;
+    }
   }
   .check {
     width: 15px;
     height: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
     background-color: black;
     color: white;
-    font-size: 8px;
+    font-size: 7px;
     margin-right: 6px;
     border-radius: 50%;
   }
@@ -63,10 +66,9 @@ const Post = styled.div`
 const Top = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
   color: gray;
   font-size: 13px;
-  /* margin-right: 10px; */
+  margin-bottom: 3px;
 `;
 const Bottom = styled.div`
   font-size: 14px;
@@ -77,51 +79,38 @@ const Bottom = styled.div`
   }
 `;
 
-// 고치기 -> 갈아엎어야실력오름
-// get만 useQuery - 나머지는다 useMutation
 const NoticeBoard = ({ id }) => {
   const t = useT();
   const history = useHistory();
 
-  const [page, setPage] = useState(1);
+  const searchParams = new URLSearchParams(history.location.search);
+  const curPage = Number(searchParams.get('page')) || 1;
 
   let { data: noticeCounts, refetch } = useQuery('NoticeCounts', () =>
     memberApi.getNoticeCounts(id).then((res) => res.data)
   );
 
-  const fetchProjects = (page = 1) => {
-    console.log('fetchProjects page', page);
-    setPage(page);
-    return memberApi.getNotices(id, page).then((res) => res.data);
+  const fetchProjects = async (curPage) => {
+    const res = await memberApi.getNotices(id, curPage);
+    return res.data;
   };
 
   const { isLoading, data } = useQuery(
-    ['notices', page],
-    () => fetchProjects(page),
+    ['notices', curPage],
+    () => fetchProjects(curPage),
     { keepPreviousData: true }
   );
 
   const goToPost = (type, id) => history.push(`/board/${type}/${id}`);
 
   const queryClient = useQueryClient();
-
-  // 선언적 명령적
-  // usequery는 만들자마자 실행되는데 mutate는 아직 실행되지 않음.
-  // https://tkdodo.eu/blog/mastering-mutations-in-react-query#invalidation
-  // () => memberApi.readAllNotices(id, t),
-  // refetch -> useMutation 객체 구조 분해 할당 공부하기!
-  // 다른토큰과다른아이디를쓸수도있음 () => {}
   const { mutate } = useMutation(() => memberApi.readAllNotices(id, t), {
     onSuccess: () => {
       refetch();
-      queryClient.invalidateQueries(['notices', page]);
+      queryClient.invalidateQueries(['notices', curPage]);
     },
   });
 
-  // 원리 -> 사용법 동작
-  // fetch 404 에러안던져짐 status
-  // status code에 따라 다르게동작을해야할때 (단순성공실패x)
-  // switch도 여러가지동작
   const readOneNotice = (noticeId, boardType, boardId) => {
     console.log(id, noticeId, t);
     const type =
@@ -138,10 +127,6 @@ const NoticeBoard = ({ id }) => {
         console.log('NoticeBoard readOneNotice err =>', err);
       });
   };
-
-  // 2xx 번 대 응답 -> 성공!
-  // 안 좋은 응답 -> 실패
-  // 애초에 서버에서 응답을 받지 못한 경우... -> 예외
 
   return (
     <>
@@ -207,6 +192,13 @@ const NoticeBoard = ({ id }) => {
         </Container>
       ) : (
         <div>loading...</div>
+      )}
+
+      {data?.totalElements > 0 && (
+        <PageList
+          currentPageNumber={data?.currentPage}
+          endPageNumber={data?.totalPages}
+        />
       )}
     </>
   );

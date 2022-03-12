@@ -1,53 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-const AuthContainer = styled.div`
-  width: 400px;
-`;
-const SignupForm = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-const Text = styled.h3`
-  margin: 0;
-  font-size: 14px;
-  font-weight: bold;
-  padding-left: 2px;
-  margin-bottom: 8px;
-`;
-const Input = styled.input`
-  padding: 10px;
-  border-radius: 2px;
-  margin-bottom: 4px;
-  border: 1px solid lightgray;
-`;
-const Select = styled.select`
-  padding: 10px;
-  margin-bottom: 4px;
-  border-radius: 2px;
-  border: 1px solid lightgray;
-`;
-const Button = styled.button`
-  border: none;
-  height: 40px;
-  cursor: pointer;
-  margin-top: 14px;
-  border-radius: 2px;
-  background-color: #bac8ff;
-  &:hover {
-    background-color: #91a7ff;
-  }
-  &:active {
-    background-color: #748ffc;
-  }
-  transition: all 0.1s linear;
-`;
-const CheckText = styled.p`
-  color: #5c7cfa;
-  font-size: 14px;
-  margin: 0 0 14px 2px;
-  margin-bottom: ${(props) => props.margin && '0px'};
-`;
+function focusElem(id) {
+  const elem = document.getElementById(id);
+  elem.focus();
+}
 
 const AuthForm = ({ initialState, onSubmit, text }) => {
   console.log('AuthForm initialState', initialState);
@@ -129,27 +86,26 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
 
   const checkAddress = () => (address === '' ? false : true);
 
-  const validation = () => {
-    let ok;
-    if (
-      checkName() === true &&
-      checkID() === true &&
-      checkAge() === true &&
-      checkPW() === true &&
-      checkAddress() === true
-    ) {
-      ok = true;
-    } else {
-      ok = false;
-    }
-    return ok;
-  };
+  // 아예 버튼을 못 누르게, 버튼 눌렀을 때 밑에 에러, ..
+  const validation = () =>
+    [
+      [checkName, 'authNameInput'],
+      [checkAge, 'authAgeInput'],
+      [checkID, 'authIDInput'],
+      [checkPW, 'authPWInput'],
+      [checkAddress, 'authAddrSelect'],
+    ].every(([fn, id]) => {
+      console.log('AuthForm validation test', fn(), id);
+      if (fn() !== true) focusElem(id);
+      return fn() === true;
+    });
 
   return (
     <AuthContainer>
       <SignupForm onSubmit={onSubmit}>
         <Text>이름</Text>
         <Input
+          id="authNameInput"
           required
           type="text"
           name="name"
@@ -162,6 +118,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
         <CheckText>{checkName()}</CheckText>
         <Text>나이</Text>
         <Input
+          id="authAgeInput"
           required
           type="number"
           name="age"
@@ -176,6 +133,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
           <>
             <Text>아이디</Text>
             <Input
+              id="authIDInput"
               required
               type="text"
               name="loginId"
@@ -189,6 +147,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
         <CheckText margin={text === '저장하기'}>{checkID()}</CheckText>
         <Text>비밀번호</Text>
         <Input
+          id="authPWInput"
           required
           type="password"
           name="password"
@@ -199,7 +158,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
         />
         <CheckText>{checkPW()}</CheckText>
         <Text>주소</Text>
-        <Select required name="address" onChange={onChange}>
+        <Select id="authAddrSelect" required name="address" onChange={onChange}>
           <option value="" defaultValue>
             시/도 선택
           </option>
@@ -223,6 +182,7 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
         <Button
           onClick={(e) => {
             e.preventDefault();
+            validation();
             onSubmit(validation(), state);
           }}
         >
@@ -234,3 +194,51 @@ const AuthForm = ({ initialState, onSubmit, text }) => {
 };
 
 export default AuthForm;
+
+const AuthContainer = styled.div`
+  width: 400px;
+`;
+const SignupForm = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+const Text = styled.h3`
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+  padding-left: 2px;
+  margin-bottom: 8px;
+`;
+const Input = styled.input`
+  padding: 10px;
+  border-radius: 2px;
+  margin-bottom: 4px;
+  border: 1px solid lightgray;
+`;
+const Select = styled.select`
+  padding: 10px;
+  margin-bottom: 4px;
+  border-radius: 2px;
+  border: 1px solid lightgray;
+`;
+const Button = styled.button`
+  border: none;
+  height: 40px;
+  cursor: pointer;
+  margin-top: 14px;
+  border-radius: 2px;
+  background-color: #bac8ff;
+  &:hover {
+    background-color: #91a7ff;
+  }
+  &:active {
+    background-color: #748ffc;
+  }
+  transition: all 0.1s linear;
+`;
+const CheckText = styled.p`
+  color: #5c7cfa;
+  font-size: 14px;
+  margin: 0 0 14px 2px;
+  margin-bottom: ${(props) => props.margin && '0px'};
+`;

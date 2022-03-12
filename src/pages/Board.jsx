@@ -1,22 +1,70 @@
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useQuery } from 'react-query';
+import styled from 'styled-components';
+import { BsPencilFill } from 'react-icons/bs';
 
-import * as S from './style.js';
-import { boardApi } from '../../api';
-import { useUser } from '../../context';
-import Filter from './Filter';
-import Post from '../../components/Post';
-import PageList from '../../components/PageList';
+import boardApi from '../apis/boardApi';
+import { useUser } from '../contexts/UserContext';
+import Filter from '../components/Board/Filter';
+import Post from '../components/Board/Post';
+import PageList from '../components/PageList';
+import getBoardTitle from '../utils/getBoardTitle';
+import { customMedia } from '../commons/styles/GlobalStyles';
+
+const Container = styled.div`
+  width: 800px;
+  ul,
+  li {
+    list-style: none;
+    padding: 0 0 0 1px;
+  }
+  ${customMedia.lessThan('tablet')`
+    width: 100%;
+    padding: 15px;
+  `}
+`;
+const Header = styled.div`
+  width: 100%;
+  height: 40px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: bold;
+  margin: 15px 0 30px 0;
+`;
+const Button = styled.button`
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  background-color: #5c7cfa;
+  &:hover {
+    background-color: #4263eb;
+  }
+  &:active {
+    background-color: #364fc7;
+  }
+  transition: all 0.1s linear;
+  svg {
+    margin-right: 5px;
+  }
+`;
 
 const Board = () => {
   const user = useUser();
   const location = useLocation();
   const boardType = location.state?.type || location.pathname.split('/')[2];
-  const boardTitle =
-    (boardType === 'qna' && 'Q&A') ||
-    (boardType === 'tech' && 'Tech') ||
-    (boardType === 'free' && '자유게시판');
+  const boardTitle = getBoardTitle(boardType, true);
 
   const history = useHistory();
 
@@ -88,11 +136,15 @@ const Board = () => {
     history.push({ pathname: '/write', state: { type: boardType } });
 
   return (
-    <S.Container>
-      <S.Header>
-        <S.Title>{boardTitle}</S.Title>
-        {user && <S.Button onClick={goToWrite}>새 글 쓰기</S.Button>}
-      </S.Header>
+    <Container>
+      <Header>
+        <Title>{boardTitle}</Title>
+        {user && (
+          <Button onClick={goToWrite}>
+            <BsPencilFill />새 글 쓰기
+          </Button>
+        )}
+      </Header>
 
       <Filter
         sort={sort}
@@ -118,7 +170,7 @@ const Board = () => {
               endPageNumber={data?.totalPages}
             />
           ) : (
-            <div style={{ marginTop: 150, textAlign: 'center' }}>
+            <div style={{ marginTop: 50, textAlign: 'center' }}>
               아직 게시물이 없습니다.
             </div>
           )}
@@ -126,7 +178,7 @@ const Board = () => {
       ) : (
         <div>loading..</div>
       )}
-    </S.Container>
+    </Container>
   );
 };
 

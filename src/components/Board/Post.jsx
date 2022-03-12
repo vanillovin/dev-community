@@ -2,10 +2,12 @@ import React from 'react';
 import { AiOutlineLike, AiOutlineComment, AiOutlineEye } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import dateFormatter from '../dateFormatter';
+
+import dateFormatter from '../../utils/dateFormatter';
+import { customMedia } from '../../commons/styles/GlobalStyles';
 
 const PostContainer = styled.div`
-  width: 750px;
+  width: 100%;
   padding: 10px;
   display: flex;
   align-items: center;
@@ -19,7 +21,6 @@ const PostContainer = styled.div`
 `;
 const PostLeft = styled.div`
   width: 55%;
-  width: 500px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -40,6 +41,14 @@ const PostLeft = styled.div`
       text-decoration: underline;
     }
   }
+  ${customMedia.lessThan('tablet')`
+    .id {
+        font-size: 10px;
+      }
+    .title {
+      font-size: 12px;
+    }
+  `}
 `;
 const PostRight = styled.div`
   width: 45%;
@@ -62,8 +71,20 @@ const PostRight = styled.div`
       font-size: 10px;
     }
   }
+  ${customMedia.lessThan('tablet')`
+    .title {
+      font-size: 12px;
+    }
+    .right .username {
+      font-size: 11px;
+      padding-bottom: 0px;
+    }
+    .right .date {
+      font-size: 9px;
+    }
+  `}
 `;
-const Like = styled.div`
+const Icon = styled.div`
   width: 46px;
   font-size: 14px;
   display: flex;
@@ -73,6 +94,13 @@ const Like = styled.div`
     font-size: 12px;
     margin-left: 2px;
   }
+  ${customMedia.lessThan('tablet')`
+    width: 36px;
+    font-size: 11px;
+    span {
+      font-size: 11px;
+    }
+  `}
 `;
 
 const Post = ({ post, type, fci }) => {
@@ -90,18 +118,18 @@ const Post = ({ post, type, fci }) => {
       </PostLeft>
       <PostRight>
         <div className="left">
-          <Like len={post.commentSize > 0}>
+          <Icon len={post.commentSize > 0}>
             <AiOutlineComment />
             <span>{post.commentSize}</span>
-          </Like>
-          <Like len={post.likes > 0}>
+          </Icon>
+          <Icon len={post.likes > 0}>
             <AiOutlineLike />
             <span>{post.likes}</span>
-          </Like>
-          <Like len={post.views > 0}>
+          </Icon>
+          <Icon len={post.views > 0}>
             <AiOutlineEye style={{ fontSize: 15 }} />
             <span>{post.views}</span>
-          </Like>
+          </Icon>
         </div>
         <div className="right">
           <div className="username">{post.author}</div>

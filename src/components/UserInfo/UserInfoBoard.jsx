@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { boardApi, memberApi } from '../../api';
+import { Link, useHistory } from 'react-router-dom';
+import { useQuery } from 'react-query';
+
+import memberApi from '../../apis/memberApi';
+import dateFormatter from '../../utils/dateFormatter';
 import PageList from '../../components/PageList';
-import dateFormatter from '../../dateFormatter';
 
 const Post = styled.div`
   padding: 10px;
@@ -52,73 +54,26 @@ const Post = styled.div`
 `;
 
 const UserInfoBoard = ({ id, name }) => {
-  console.log('UserInfoBoard', id, name);
-  const [state, setState] = useState({
-    isLoading: true,
-    data: {
-      contents: [],
-      totalPages: null,
-      currentPage: null,
-      totalElements: null,
-    },
-  });
-  const {
-    isLoading,
-    data: { contents, totalPages, currentPage, totalElements },
-  } = state;
-  const [page, setPage] = useState([1, 2, 3, 4, 5]);
+  const history = useHistory();
 
-  const fetchData = async (num) => {
-    try {
-      const { data } = await memberApi.getUserData(id, name, num);
-      console.log('userInfoBoard fetch res.data =>', data);
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        data: {
-          ...data,
-          totalPages: data.totalPages,
-          currentPage: data.currentPage,
-          totalElements: data.totalElements,
-          contents: data.contents,
-        },
-      }));
-    } catch (err) {
-      console.log('userInfoBoard fetch err =>', err);
+  const searchParams = new URLSearchParams(history.location.search);
+  const curPage = Number(searchParams.get('page')) || 1;
+
+  const { isLoading, data, isError } = useQuery(
+    [`UserInfo ${name}`, curPage],
+    async () => {
+      return memberApi.getUserData(id, name, curPage).then((res) => res.data);
     }
-  };
-
-  useEffect(() => {
-    fetchData(1);
-  }, [id, name]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchContents = async (num) => {
-    try {
-      const { data } = await memberApi.getUserData(id, name, num);
-      setState({
-        ...state,
-        loading: false,
-        data: {
-          ...data,
-          totalPages: data.totalPages,
-          currentPage: data.currentPage,
-          totalElements: data.totalElements,
-          contents: data.contents,
-        },
-      });
-    } catch (err) {
-      console.log('fetchContents err', err);
-    }
-  };
+  );
 
   return !isLoading ? (
     <>
-      {contents && contents.length > 0 ? (
-        contents.map((item) => (
+      {data && data?.contents.length > 0 ? (
+        data?.contents.map((item) => (
           <Post
             key={item.id}
-            lci={contents[0].id === item.id}
-            fci={contents[contents.length - 1].id === item.id}
+            lci={data?.contents[0].id === item.id}
+            fci={data?.contents[data?.contents.length - 1].id === item.id}
             cmt={item.commentSize > 0}
             selected={item.selected}
           >
@@ -170,6 +125,13 @@ const UserInfoBoard = ({ id, name }) => {
                 (name === 'comments' && '댓글')
               }이 없습니다.`}
         </div>
+      )}
+
+      {data?.totalElements > 0 && (
+        <PageList
+          currentPageNumber={data?.currentPage}
+          endPageNumber={data?.totalPages}
+        />
       )}
     </>
   ) : (

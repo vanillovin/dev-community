@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { boardApi } from '../api';
+import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { useUser } from '../context';
+import { useQuery } from 'react-query';
+
+import boardApi from '../apis/boardApi';
 
 const Container = styled.div``;
 const Header = styled.div`
@@ -40,7 +41,7 @@ const PostContainer = styled.div`
     color: black;
     margin: auto 0;
     cursor: pointer;
-    line-height: 1;
+    line-height: 1.1;
     overflow-wrap: break-word;
     span:first-child {
       :hover {
@@ -92,50 +93,18 @@ function displayedAt(createdAt) {
 }
 
 const HomeBoard = ({ title, type }) => {
-  // console.log('HomeBoard', title, type);
-  const user = useUser();
-
-  const [state, setState] = useState({
-    loading: true,
-    posts: [],
-    err: null,
-  });
-  const { loading, posts } = state;
-
-  const fetchPosts = async () => {
-    try {
-      let response;
+  const { isLoading, data, isError } = useQuery(
+    ['HomeBoard', type],
+    async () => {
       if (type === 'best') {
-        response = await boardApi.getBestPosts();
-        console.log('Board getBestPosts res', type, response.data);
-        setState({
-          ...state,
-          loading: false,
-          posts: response.data.contents.slice(0, 10),
-        });
-        return;
+        const res = await boardApi.getBestPosts();
+        return res.data.contents.slice(0, 10);
+      } else {
+        const res_1 = await boardApi.getPosts(1, 'createdDate', type);
+        return res_1.data.contents.slice(0, 10);
       }
-      response = await boardApi.getPosts(1, 'createdDate', type);
-      console.log('Board getPosts res', type, response.data);
-      setState({
-        ...state,
-        loading: false,
-        posts: response.data.contents.slice(0, 10),
-      });
-    } catch (err) {
-      console.log(err);
-      setState({ ...state, error: err });
     }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // history.push({
-  //   pathname: `profile/${user.id}`,
-  //   state: { memberId: user.id },
-  // });
+  );
 
   return (
     <Container>
@@ -146,24 +115,25 @@ const HomeBoard = ({ title, type }) => {
           to={{
             pathname: `board/${type}`,
             state: { type, sort: 'id' },
+            search: '?sort=createdDate&page=1',
           }}
         >
-          {!(type === 'best') && '더 보기'}
+          {type !== 'best' && '더 보기'}
         </Link>
       </Header>
-      <div>
-        {!loading ? (
+      <>
+        {!isLoading ? (
           <div
             style={{
               border: '1px solid lightgray',
               borderLeft: 0,
             }}
           >
-            {posts?.map((post) => (
+            {data?.map((post) => (
               <PostContainer
                 key={post.id}
-                fc={posts[0].id === post.id}
-                lc={posts[posts.length - 1].id === post.id}
+                fc={data[0].id === post.id}
+                lc={data[data.length - 1].id === post.id}
                 cmt={post.commentSize > 0}
                 selected={post.selected}
               >
@@ -186,11 +156,9 @@ const HomeBoard = ({ title, type }) => {
             ))}
           </div>
         ) : (
-          <div style={{ marginTop: 10, textAlign: 'center' }}>
-            {user ? '' : 'loading...'}
-          </div>
+          <div style={{ marginTop: 10, textAlign: 'center' }}>loading...</div>
         )}
-      </div>
+      </>
     </Container>
   );
 };

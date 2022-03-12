@@ -1,22 +1,26 @@
 import React, { useState, createRef, useEffect } from 'react';
 import { Redirect, useHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
-import { useT, useUser } from '../context';
-import { boardApi } from '../api';
 
 import Prism from 'prismjs';
 // 여기 css를 수정해서 코드 하이라이팅 커스텀 가능
 import 'prismjs/themes/prism.css';
-
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor, Viewer } from '@toast-ui/react-editor';
-
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
+import { useT, useUser } from '../contexts/UserContext';
+import boardApi from '../apis/boardApi';
+import { customMedia } from '../commons/styles/GlobalStyles';
+
 const Container = styled.div`
-  width: 750px;
+  width: 800px;
+  ${customMedia.lessThan('tablet')`
+    width: 100%;
+    padding: 15px;
+  `}
 `;
 const Title = styled.h1`
   font-size: 24px;
@@ -51,12 +55,11 @@ const Button = styled.button`
   cursor: pointer;
   padding: 10px;
   border: none;
-  background-color: #dbe4ff;
+  background-color: ${(props) =>
+    props.name === 'cancel' ? '#dbe4ff' : '#91a7ff'};
   &:hover {
-    background-color: #bac8ff;
-  }
-  &:active {
-    background-color: #91a7ff;
+    background-color: ${(props) =>
+      props.name === 'cancel' ? '#bac8ff' : '#748ffc'};
   }
   transition: all 0.1s linear;
 `;
@@ -66,6 +69,11 @@ function PostView() {
   return <Viewer plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]} />;
 }
 
+function focusElem(id) {
+  const elem = document.getElementById(id);
+  elem.focus();
+}
+
 // Editor 사용
 const Write = ({
   match,
@@ -73,7 +81,6 @@ const Write = ({
     state: { type: bType },
   },
 }) => {
-  //   console.log(match, bType);
   const t = useT();
   const history = useHistory();
   const loggedIn = Boolean(useUser());
@@ -98,19 +105,11 @@ const Write = ({
     // const content = editorRef.current.getInstance().getMarkdown();
     const instance = editorRef.current.getInstance();
     const data = instance.getMarkdown();
-    console.log(
-      `Write onSubmit
+    console.log(`Write onSubmit
       type: ${type}
       title: ${title}
       data: ${data}
-      data.length: ${data.length}
-      `
-    );
-
-    function focusElem(id) {
-      const elem = document.getElementById(id);
-      elem.focus();
-    }
+      data.length: ${data.length}`);
 
     if (type === '') {
       alert('게시판을 선택해 주세요');
@@ -169,7 +168,6 @@ const Write = ({
 
   useEffect(() => {
     console.log(editorRef.current.getInstance());
-    console.log(editorRef.current.getInstance());
     editorRef.current.getInstance().focus();
     // console.log(editorRef.current.getInstance().getCurrentModeEditor().focus);
   }, []);
@@ -215,8 +213,10 @@ const Write = ({
           </EditorContainer>
 
           <ButtonContainer>
-            <Button onClick={cancelWrite}>취소하기</Button>
-            <Button type="submit" onClick={onSubmit}>
+            <Button name={'cancel'} onClick={cancelWrite}>
+              취소하기
+            </Button>
+            <Button name={'save'} type="submit" onClick={onSubmit}>
               등록하기
             </Button>
           </ButtonContainer>

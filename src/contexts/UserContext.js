@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { memberApi } from './api';
+
+import memberApi from '../apis/memberApi';
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
   const [state, setState] = useState({
-    loading: true,
+    isLoading: true,
     t: null,
     user: null,
-    error: null,
+    isError: null,
   });
 
   const userLS = JSON.parse(localStorage.getItem('user'));
@@ -27,25 +28,22 @@ export function UserProvider({ children }) {
     try {
       const { data } = await memberApi.getUser(userLS.memberId);
       console.log('context getUser => res.data', data);
-
       setState({
         ...state,
-        loading: false,
+        isLoading: false,
         t: userLS.token,
         user: { id: userLS.memberId, ...data },
-        error: null,
+        isError: null,
       });
     } catch (err) {
       console.log('context getUser => err', err);
-
       // localStorage.removeItem('user');
-
       // 로그인페이지이동
       setState({
         ...state,
-        loading: false,
+        isLoading: false,
         user: null,
-        error: err,
+        isError: err,
       });
     }
   };

@@ -1,9 +1,10 @@
 import React from 'react';
-import Router from './components/Router';
-import GlobalStyles from './components/GlobalStyles';
-import { UserProvider } from './context';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+
+import GlobalStyles from './commons/styles/GlobalStyles';
+import { UserProvider } from './contexts/UserContext';
+import Router from './components/Router';
 
 const queryClient = new QueryClient();
 

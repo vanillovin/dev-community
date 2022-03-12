@@ -11,11 +11,16 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
-import { useT, useUser } from '../context';
-import { boardApi } from '../api';
+import boardApi from '../apis/boardApi';
+import { useT, useUser } from '../contexts/UserContext';
+import { customMedia } from '../commons/styles/GlobalStyles';
 
 const Container = styled.div`
-  width: 700px;
+  width: 800px;
+  ${customMedia.lessThan('tablet')`
+    width: 100%;
+    padding: 15px;
+  `}
 `;
 const Select = styled.select`
   width: 100%;
