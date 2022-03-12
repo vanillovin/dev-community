@@ -1,6 +1,6 @@
-# [Serenity (serendipity + community)]()
+# dev community
 
-개발자들을 위한 커뮤니티 웹사이트. okky 클론 사이트
+개발자들을 위한 커뮤니티 웹사이트 (okky 클론)
 
 ---
 
